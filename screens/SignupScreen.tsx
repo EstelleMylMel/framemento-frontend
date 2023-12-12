@@ -15,11 +15,40 @@ type SignupScreenProps = {
     const handleSubscription = (): void => {
 
       // Vérifier que les 3 champs sont remplis
-      // Vérifier le bon format de l'adresse email content@content.content
-      // Si c'est bon --> 
-        //fetch
-          //si le fetch est bon --> stocker le user et token dans le store + navigate vers la page suivant
-          //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'eest pas bon.
+      if ( email !== ''  && username  !== ''  && password !== '' ) {
+
+        const pattern: RegExp = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/ // regex qui vérifie le format traditionnel d'une adresse email
+        // Vérifier le bon format de l'adresse email content@content.content
+        const emailFormatIsValid : boolean  = pattern.test(email);
+      
+        // Si c'est bon --> 
+        if ( emailFormatIsValid ) {
+          
+          //Enregistrement du profil dans la db
+          fetch('http://192.168.1.16:3000/users/signup', {
+            method: 'POST',
+            headers: { 'Content-Type' : 'application/json'},
+            body: JSON.stringify({email, username, password}),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if ( data.result ) {
+              console.log(data);
+              //si le fetch est bon --> stocker le user et token dans le store + navigate vers la page suivant
+            }
+            else  {
+              console.log(data);
+              //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
+            } 
+          });
+          
+        } else {
+          // Gérer le cas où le format de l'email n'est pas valide
+        }
+        
+      } else { 
+        // Gérer le cas où les champs sont mal remplis
+      }
     }
 
     return (

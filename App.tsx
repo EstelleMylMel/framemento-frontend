@@ -1,6 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
+/// REDUX PERSIST ///
+import { persistStore, persistReducer } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from 'redux-persist/lib/storage';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import user from './reducers/user'; 
+
+const reducers = combineReducers({ user });
+const persistConfig = { key: 'Framemento', storage};
+
+const store = configureStore({
+  reducer: persistReducer(persistConfig, reducers),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
+ });
+
+const persistor = persistStore(store);
+
 /// NAVIGATION ///
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -90,15 +108,19 @@ const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-     <AppStack.Navigator screenOptions={{ headerShown: false }}>
-       <AppStack.Screen name="Welcome" component={WelcomeScreen} />
-       <AppStack.Screen name="Signup" component={SignupScreen} />
-       <AppStack.Screen name="Rolls" component={RollsScreen} />
-       {/* <AppStack.Screen name="SignIn" component={SignInScreen} />
-       <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
-     </AppStack.Navigator>
-   </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+          <NavigationContainer>
+            <AppStack.Navigator screenOptions={{ headerShown: false }}>
+              <AppStack.Screen name="Welcome" component={WelcomeScreen} />
+              <AppStack.Screen name="Signup" component={SignupScreen} />
+              <AppStack.Screen name="Rolls" component={RollsScreen} />
+              {/* <AppStack.Screen name="SignIn" component={SignInScreen} />
+              <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
+            </AppStack.Navigator>
+      </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
 
