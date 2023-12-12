@@ -93,7 +93,7 @@ export default function App() {
     <NavigationContainer>
      <AppStack.Navigator screenOptions={{ headerShown: false }}>
        <AppStack.Screen name="Welcome" component={WelcomeScreen} />
-       <AppStack.Screen name="SignUp" component={SignupScreen} />
+       <AppStack.Screen name="Signup" component={SignupScreen} />
        <AppStack.Screen name="Rolls" component={RollsScreen} />
        {/* <AppStack.Screen name="SignIn" component={SignInScreen} />
        <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}

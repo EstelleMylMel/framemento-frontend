@@ -9,7 +9,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.h1}>Framemento</Text>
-            <TouchableOpacity onPress={()=> navigation.navigate('Signupscreen')}>
+            <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>S'INSCRIRE</Text>
             </TouchableOpacity>
