@@ -1,11 +1,23 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { UserState } from '../reducers/user';
 
 type WelcomeScreenProps = {
     navigation: NavigationProp<ParamListBase>;
   };
 
 export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
+
+    const user = useSelector((state: { user: UserState }) => state.user.value)
+
+
+    /// Redirection sur la page rolls si l'utilisateur est déjà connecté
+    useEffect(()=> {
+      user ? navigation.navigate('Rolls') : undefined;
+    },[]);
+
     return (
         <View style={styles.container}>
             <Text style={styles.h1}>Framemento</Text>
@@ -13,11 +25,11 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>S'INSCRIRE</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate('Signin')}>
               {/* Faut il faire un composant pour les boutons ? */}
-              <Text>S'INSCRIRE</Text>
+              <Text>SE CONNECTER</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=> navigation.navigate('Rolls')}>
+            <TouchableOpacity>
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>ROLLS</Text>
             </TouchableOpacity>

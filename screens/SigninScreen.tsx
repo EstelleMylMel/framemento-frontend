@@ -4,24 +4,24 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-//const URL = '192.168.1.45';
+// CORRIGER DOTENV
+//const BACK_ADRESS = process.env.BACK_ADRESS;
 
-type SignupScreenProps = {
+type SigninScreenProps = {
     navigation: NavigationProp<ParamListBase>;
   };
 
-  export default function SignupScreen({ navigation }: SignupScreenProps) {
+  export default function SigninScreen({ navigation }: SigninScreenProps) {
 
-    const dispatch: any = useDispatch(); //CORRIGER LE TYPE ANY
+    const dispatch: any = useDispatch(); //CORRIGER LE TYPE
 
     const [ email, setEmail ] = useState<string>('');
-    const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
 
     const handleSubscription = (): void => {
 
       // Vérifier que les 3 champs sont remplis
-      if ( email !== ''  && username  !== ''  && password !== '' ) {
+      if ( email !== '' && password !== '' ) {
 
         const pattern: RegExp = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/ // regex qui vérifie le format traditionnel d'une adresse email
         // Vérifier le bon format de l'adresse email content@content.content
@@ -31,28 +31,22 @@ type SignupScreenProps = {
         if ( emailFormatIsValid ) {
           
           //Enregistrement du profil dans la db
-          fetch('http://192.168.1.45:3000/users/signup', {
+          fetch('http://192.168.1.45:3000/users/signin', {
             method: 'POST',
             headers: { 'Content-Type' : 'application/json'},
-            body: JSON.stringify({ email, username, password }),
+            body: JSON.stringify({email, password}),
           })
           .then(response => response.json())
           .then(data => {
-            console.log(data);
             if ( data.result ) {
-              console.log(data);
-              const { username, token } = data;
-              dispatch(updateUser({username, token}));
-              navigation.navigate('RollsScreen');
+              const {username, token} = data;
+                dispatch(updateUser({username, token}));
+                navigation.navigate('Rolls');
             }
             else  {
-              console.log('coucou');
               console.log(data);
               //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
             } 
-          })
-          .catch(error => {
-            console.error('Erreur lors du fetch :', error);
           });
           
         } else {
@@ -70,14 +64,11 @@ type SignupScreenProps = {
             <Text>Email</Text>
             <TextInput style={styles.input} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
             
-            <Text>Pseudo</Text>
-            <TextInput style={styles.input} placeholder={'john'} onChangeText={(value) => setUsername(value)} value={username}/>
-            
             <Text>Mot de passe</Text>
             <TextInput style={styles.input} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
             
             <TouchableOpacity onPress={handleSubscription}>
-              <Text>INSCRIPTION</Text>
+              <Text>CONNEXION</Text>
             </TouchableOpacity>
         </View>
     )
@@ -91,6 +82,5 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     input: {},
-    
 
   });

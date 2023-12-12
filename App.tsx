@@ -1,21 +1,33 @@
+// CORRIGER DOTENV
+//require('dotenv').config();
+
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 /// REDUX PERSIST ///
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+//import storage from 'redux-persist/lib/storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import user from './reducers/user'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+/// PERSITOR A FAIRE A LA FIN DU PROJET ? ///
 const reducers = combineReducers({ user });
-const persistConfig = { key: 'Framemento', storage};
+const persistConfig = { key: 'framemento', storage: AsyncStorage};
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
  });
+
+// SANS PERSISTOR // 
+// const store = configureStore({
+//   reducer: { user },
+//  });
+
 
 const persistor = persistStore(store);
 
@@ -26,6 +38,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import WelcomeScreen from './screens/WelcomeScreen';
 import SignupScreen from './screens/SignupScreen';
+import SigninScreen from './screens/SigninScreen';
 import RollsScreen from './screens/RollsScreen';
 import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
 
@@ -114,9 +127,9 @@ export default function App() {
             <AppStack.Navigator screenOptions={{ headerShown: false }}>
               <AppStack.Screen name="Welcome" component={WelcomeScreen} />
               <AppStack.Screen name="Signup" component={SignupScreen} />
+              <AppStack.Screen name="Signin" component={SigninScreen} />
               <AppStack.Screen name="Rolls" component={RollsScreen} />
-              {/* <AppStack.Screen name="SignIn" component={SignInScreen} />
-              <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
+              {/* <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
             </AppStack.Navigator>
       </NavigationContainer>
       </PersistGate>
