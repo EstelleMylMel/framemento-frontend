@@ -88,7 +88,7 @@ const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-    <View>App</View>
+    <View><Text>App</Text></View>
   //   <NavigationContainer>
   //    <AppStack.Navigator screenOptions={{ headerShown: false }}>
   //      <AppStack.Screen name="Welcome" component={WelcomeScreen} />
