@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-//const URL = '192.168.1.45';
+import { BACKEND_LOCAL_ADRESS } from "@env";
 
 type SignupScreenProps = {
     navigation: NavigationProp<ParamListBase>;
@@ -31,7 +31,7 @@ type SignupScreenProps = {
         if ( emailFormatIsValid ) {
           
           //Enregistrement du profil dans la db
-          fetch('http://192.168.1.45:3000/users/signup', {
+          fetch(`${BACKEND_LOCAL_ADRESS}/users/signup`, {
             method: 'POST',
             headers: { 'Content-Type' : 'application/json'},
             body: JSON.stringify({ email, username, password }),

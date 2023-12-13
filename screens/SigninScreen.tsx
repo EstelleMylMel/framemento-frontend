@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-// CORRIGER DOTENV
-//const BACK_ADRESS = process.env.BACK_ADRESS;
+import { BACKEND_LOCAL_ADRESS } from "@env";
+
+console.log(BACKEND_LOCAL_ADRESS)
 
 type SigninScreenProps = {
     navigation: NavigationProp<ParamListBase>;
@@ -31,7 +32,7 @@ type SigninScreenProps = {
         if ( emailFormatIsValid ) {
           
           //Enregistrement du profil dans la db
-          fetch('http://192.168.1.45:3000/users/signin', {
+          fetch(`${BACKEND_LOCAL_ADRESS}/users/signin`, {
             method: 'POST',
             headers: { 'Content-Type' : 'application/json'},
             body: JSON.stringify({email, password}),

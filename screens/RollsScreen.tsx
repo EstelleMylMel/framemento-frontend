@@ -8,7 +8,7 @@ type RollsScreenProps = {
   export default function RollsScreen({ navigation }: RollsScreenProps) {
     return (
         <View style={styles.container}>
-            
+            <Text>rolls screen</Text>
         </View>
     )
 }
