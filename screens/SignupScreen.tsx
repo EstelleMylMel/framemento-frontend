@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-import { BACKEND_LOCAL_ADRESS } from "@env";
+const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 type SignupScreenProps = {
     navigation: NavigationProp<ParamListBase>;
@@ -43,7 +43,7 @@ type SignupScreenProps = {
               console.log(data);
               const { username, token } = data;
               dispatch(updateUser({username, token}));
-              navigation.navigate('RollsScreen');
+              navigation.navigate('Rolls');
             }
             else  {
               console.log('coucou');

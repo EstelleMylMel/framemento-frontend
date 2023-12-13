@@ -4,29 +4,29 @@ import { StyleSheet, Text, View } from 'react-native';
 /// REDUX PERSIST ///
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-//import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import user from './reducers/user'; 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 /// PERSITOR A FAIRE A LA FIN DU PROJET ? ///
-const reducers = combineReducers({ user });
-const persistConfig = { key: 'framemento', storage: AsyncStorage};
+//const reducers = combineReducers({ user });
+//const persistConfig = { key: 'framemento', storage: AsyncStorage};
 
-const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
- });
-
-// SANS PERSISTOR // 
 // const store = configureStore({
-//   reducer: { user },
+//   reducer: persistReducer(persistConfig, reducers),
+//   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 //  });
 
+// SANS PERSISTOR // 
+const store = configureStore({
+  reducer: { user },
+ });
 
-const persistor = persistStore(store);
+
+//const persistor = persistStore(store);
 
 /// NAVIGATION ///
 import { NavigationContainer } from '@react-navigation/native';
@@ -119,7 +119,7 @@ const Drawer = createDrawerNavigator();
 export default function App() {
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
+      {/* <PersistGate persistor={persistor}> */}
           <NavigationContainer>
             <AppStack.Navigator screenOptions={{ headerShown: false }}>
               <AppStack.Screen name="Welcome" component={WelcomeScreen} />
@@ -129,7 +129,7 @@ export default function App() {
               {/* <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
             </AppStack.Navigator>
       </NavigationContainer>
-      </PersistGate>
+      {/* </PersistGate> */}
     </Provider>
   );
 }

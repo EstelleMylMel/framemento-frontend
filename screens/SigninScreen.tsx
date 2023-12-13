@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-import { BACKEND_LOCAL_ADRESS } from "@env";
-
-console.log(BACKEND_LOCAL_ADRESS)
+// console.log(BACKEND_LOCAL_ADRESS)
+// console.log(process.env.API_KEY)
+console.log(process.env.EXPO_PUBLIC_BACKEND_ADRESS)
+const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 type SigninScreenProps = {
     navigation: NavigationProp<ParamListBase>;
