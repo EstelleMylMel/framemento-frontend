@@ -55,14 +55,18 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
                 {/* Modal Text Inputs */}
                 <View style={styles.textInputs1}>
-                  <TextInput 
+                  <View>
+                    <View>
+                      <FontAwesome name='tag' style={styles.textInputIcon} />
+                      <Text>Nom</Text>
+                    </View>
+                    <TextInput 
                     placeholder='Nom'
                     style={styles.textInput}
                     value={name}
                     onChangeText={(value) => setName(value)}
-                  >
-                    <FontAwesome name='tag' style={styles.textInputIcon} />
-                  </TextInput>
+                    />
+                  </View>
                   <TextInput 
                     placeholder='Type de film'
                     style={styles.textInput}
