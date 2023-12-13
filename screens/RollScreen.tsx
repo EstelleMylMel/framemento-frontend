@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 // IMPORTS TYPES //
 import { RollType } from '../types/roll';
 import { UserState } from '../reducers/user';
+import { FrameType } from '../types/frame';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -19,11 +20,8 @@ export default function RollScreen({ navigation }: RollScreenProps) {
 
     const rollID = ''; // récupérer dans les props.
 
-    const rollData: RollType[] = useSelector((state: { user: UserState })=> {
-        if (state.user.value.rolls) {
-        state.user.value.rolls.find((roll: RollType)  => roll._id === rollID)
-        }
-    });
+    const [ rollData, setRollData ] = useState<RollType | undefined>();
+    const [ framesData, setFramesData ] = useState<FrameType[] | undefined>();
 
 
     useEffect(()=>{
@@ -33,7 +31,9 @@ export default function RollScreen({ navigation }: RollScreenProps) {
         .then(response => response.json())
         .then(data => {
             if (data.result) {
-                //setRollData(data.roll);
+                setRollData(data.roll);
+                rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
+                console.log(data.roll) //
             } else console.log('no data : ', data);
         })
         .catch(error => {
@@ -48,23 +48,36 @@ export default function RollScreen({ navigation }: RollScreenProps) {
 
     }
 
-    const noRoll = (
-        <Text style={styles.h2}>Ajoutez votre première photo</Text>
-    );
+    // si framesData ne vaut pas undefined, on map.
 
-    const roll = (
-        <View>
+    const frames = framesData?.map((frame: FrameType)=> {
+            
+            let title: string;
+            frame.title !== undefined ? title = frame.title : title = 'Trouver quoi mettre'; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
 
-        </View>
-    )
+            let imageURI: string | undefined;
+            frame.argenticPhoto ? imageURI = frame.argenticPhoto : imageURI = frame.phonePhoto;
+
+            return (
+            <View style={styles.frameTale}>
+                <Image source={{ uri: imageURI}}/>
+                <View style={styles.frameNumberContainer}>
+                    <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
+                </View>
+                <View style={styles.textContainer}>
+                    <Text style={styles.title}>{title}</Text>
+                    <Text style={styles.infos}>{`${frame.date.getDate()}/${frame.date.getMonth()}/${frame.date.getFullYear()} . ${frame.shutterSpeed} . ${frame.aperture}`}</Text>
+                </View>
+            </View>
+            )
+        })
 
     
 return (
     <View>
         {/*<Header></Header>*/}
 
-        { rollIsEmpty && noRoll}
-        { !rollIsEmpty && roll }
+        { frames || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
         
         <TouchableOpacity style={styles.addButton} onPress={()=> handleAddButton()}>
             <Text>+</Text>
@@ -86,5 +99,10 @@ const styles = StyleSheet.create({
      {
 
     },
-    
+    frameTale: {},
+    frameNumberContainer: {},
+    frameNumber: {},
+    textContainer: {},
+    title: {},
+    infos: {},
 })
