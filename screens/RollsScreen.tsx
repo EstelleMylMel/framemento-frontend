@@ -75,14 +75,13 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     })
       .then((response) => response.json())
       .then((data) => {
-        data.result && dispatch(addPlace(data.newPlace));
+        data.result && dispatch(addRoll(data.newRoll));
+        setName('');
+        setRollType('');
+        setImages(null);
+        setPushPull(0);
         setModalVisible(false);
-        setNewPlace('');
     });
-    // fetch POST /rolls (enregistre dans la collection rolls)
-    // .then(data) -> fetch POST /users/rolls (body: username: user.username du store et _id: data._id id du roll enregistré)
-    // addRoll to store
-    setModalVisible(false)
   };
 
 
@@ -152,84 +151,90 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                     style={styles.closeModalButton} 
                     activeOpacity={0.8}
                   >
-                    <FontAwesome name='xmark' style={styles.closeModalIcon} />
+                    <FontAwesome name='times' style={styles.closeModalIcon} />
                   </TouchableOpacity>
                   <Text style={styles.textModalHeader}>Nouvelle pellicule</Text>
                 </View>
 
                 {/* Modal Text Inputs */}
                 <View style={styles.textInputs1}>
-                  <View>
-                    <View>
+                  <View style={styles.textInputTopContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text>Nom</Text>
+                      <Text style={styles.textTitle}>Nom</Text>
                     </View>
                     <TextInput 
-                    placeholder='Nom'
+                    placeholder='-'
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
                     value={name}
                     onChangeText={(value) => setName(value)}
                     />
                   </View>
-                  <View>
-                    <View>
+                  <View style={styles.textInputContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='ghost' style={styles.textInputIcon} />
-                      <Text>Type de film</Text>
+                      <Text style={styles.textTitle}>Type de film</Text>
                     </View>
                     <TextInput 
-                    placeholder='Type de film'
+                    placeholder='-'
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
                     value={rollType}
                     onChangeText={(value) => setRollType(value)}
                     />
                   </View>
-                  <View>
-                    <View>
+                  <View style={styles.textInputContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='hashtag' style={styles.textInputIcon} />
-                      <Text>Nombre d'images</Text>
+                      <Text style={styles.textTitle}>Nombre d'images</Text>
                     </View>
                     <TextInput 
-                    placeholder="Nombre d'images"
+                    placeholder="-"
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
-                    value={images}
-                    onChangeText={(value) => setImages(value)}
+                    value={`${images}`}
+                    onChangeText={(value) => setImages(parseInt(value))}
                     />
                   </View>
-                  <View>
-                    <View>
+                  <View style={styles.textInputBottomContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='ghost' style={styles.textInputIcon} />
-                      <Text>Push / Pull</Text>
+                      <Text style={styles.textTitle}>Push / Pull</Text>
                     </View>
                     <TextInput 
-                    placeholder="Nombre d'images"
+                    placeholder="-"
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
-                    value={pushPull}
-                    onChangeText={(value) => setPushPull(value)}
+                    value={`${pushPull}`}
+                    onChangeText={(value) => setPushPull(parseInt(value))}
                     />
                   </View>
                 </View>
 
                 <View style={styles.textInputs2}>
-                  <Text>Appareil photo :</Text>
-                  <View>
-                    <View>
+                  <Text style={styles.textCamera}>Appareil photo</Text>
+                  <View style={styles.textInputTopContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='ghost' style={styles.textInputIcon} />
-                      <Text>Marque</Text>
+                      <Text style={styles.textTitle}>Marque</Text>
                     </View>
                     <TextInput 
-                    placeholder='Marque'
+                    placeholder='-'
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
                     value={brand}
                     onChangeText={(value) => setBrand(value)}
                     />
                   </View>
-                  <View>
-                    <View>
+                  <View style={styles.textInputBottomContainer}>
+                    <View style={styles.textInputSubContainer}>
                       <FontAwesome name='ghost' style={styles.textInputIcon} />
-                      <Text>Modèle</Text>
+                      <Text style={styles.textTitle}>Modèle</Text>
                     </View>
                     <TextInput 
-                    placeholder='Modèle'
+                    placeholder='-'
+                    placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
                     value={model}
                     onChangeText={(value) => setModel(value)}
@@ -268,34 +273,95 @@ const styles = StyleSheet.create({
       
     },
     centeredView: {
-
+      flex: 1,
+      backgroundColor: 'black',
+      alignItems: 'center'
     },
     modalView: {
 
     },
     modalHeader: {
-
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 52
     },
     closeModalButton: {
-
+      backgroundColor: '#101010',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 48,
+      width: 48,
+      marginLeft: 20,
+      borderRadius: 16
     },
     closeModalIcon: {
-
+      color: '#EEEEEE',
+      fontSize: 24,
     },
     textModalHeader: {
-
+      color: '#EEEEEE',
+      fontSize: 24,
+      marginLeft: 15
     },
     textInputs1: {
-
+      marginTop: 44,
     },
     textInputs2: {
-
+      marginTop: 24,
+    },
+    textInputTopContainer: {
+      backgroundColor: '#101010',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      height: 48,
+      width: 342,
+      marginBottom: 1,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16
+    },
+    textInputContainer: {
+      backgroundColor: '#101010',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      height: 48,
+      width: 342,
+      marginBottom: 1
+    },
+    textInputBottomContainer: {
+      backgroundColor: '#101010',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      height: 48,
+      width: 342,
+      marginBottom: 1,
+      borderBottomLeftRadius: 16,
+      borderBottomRightRadius: 16
+    },
+    textInputSubContainer: {
+      flexDirection: `row`,
+      alignItems: 'center'
+    },
+    textTitle: {
+      color: '#AAAAAA',
+      fontSize: 14
     },
     textInputIcon: {
-
+      color: '#AAAAAA',
+      fontSize: 20,
+      marginLeft: 12,
+      marginRight: 12
     },
     textInput: {
-      
+      color: '#AAAAAA',
+      fontSize: 14,
+      marginRight: 16
+    },
+    textCamera: {
+      color: '#AAAAAA',
+      textAlign: 'center',
+      fontSize: 16,
+      marginBottom: 12,
+      marginTop: 10
     },
     enregistrerButton: {
 
