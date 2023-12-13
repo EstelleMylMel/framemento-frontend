@@ -41,8 +41,8 @@ type SignupScreenProps = {
             console.log(data);
             if ( data.result ) {
               console.log(data);
-              const { username, token } = data;
-              dispatch(updateUser({username, token}));
+              const { username, token, rolls } = data;
+              dispatch(updateUser({username, token, rolls}));
               navigation.navigate('Rolls');
             }
             else  {

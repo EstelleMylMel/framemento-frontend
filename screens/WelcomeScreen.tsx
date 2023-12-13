@@ -32,7 +32,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             </TouchableOpacity>
             <TouchableOpacity>
               {/* Faut il faire un composant pour les boutons ? */}
-              <Text>ROLLS</Text>
+              <Text>DEV : ROLLS</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate('Roll')}>
+              <Text>DEV : ROLL</Text> 
             </TouchableOpacity>
         </View>
     )

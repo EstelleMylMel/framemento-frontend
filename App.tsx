@@ -33,11 +33,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
+
+/// ECRANS ///
 import WelcomeScreen from './screens/WelcomeScreen';
 import SignupScreen from './screens/SignupScreen';
 import SigninScreen from './screens/SigninScreen';
 import RollsScreen from './screens/RollsScreen';
-import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
+import RollScreen from './screens/RollScreen';
 
 /// ICONS ///
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -125,7 +128,9 @@ export default function App() {
               <AppStack.Screen name="Welcome" component={WelcomeScreen} />
               <AppStack.Screen name="Signup" component={SignupScreen} />
               <AppStack.Screen name="Signin" component={SigninScreen} />
-              <AppStack.Screen name="Rolls" component={RollsScreen} />
+              {/* POUR DEV */}
+              <AppStack.Screen name="Rolls" component={RollsScreen} /> 
+              <AppStack.Screen name="Roll" component={RollScreen} />
               {/* <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
             </AppStack.Navigator>
       </NavigationContainer>

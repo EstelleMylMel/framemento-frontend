@@ -4,9 +4,6 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
-// console.log(BACKEND_LOCAL_ADRESS)
-// console.log(process.env.API_KEY)
-console.log(process.env.EXPO_PUBLIC_BACKEND_ADRESS)
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 type SigninScreenProps = {
@@ -41,14 +38,17 @@ type SigninScreenProps = {
           .then(response => response.json())
           .then(data => {
             if ( data.result ) {
-              const {username, token} = data;
-                dispatch(updateUser({username, token}));
+              const {username, token, rolls } = data;
+                dispatch(updateUser({username, token, rolls}));
                 navigation.navigate('Rolls');
             }
             else  {
               console.log(data);
               //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
             } 
+          })
+          .catch(error => {
+            console.error('Erreur lors du fetch :', error);
           });
           
         } else {
