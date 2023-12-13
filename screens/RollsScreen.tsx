@@ -2,6 +2,11 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'reac
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useDispatch, useSelector } from 'react-redux';
+import type { Dispatch } from '@reduxjs/toolkit';
+import { UserState } from '../reducers/user';
+import { addRoll, importRolls, removeRoll } from '../reducers/user';
+import { RollType } from '../types/roll';
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -10,6 +15,9 @@ type RollsScreenProps = {
   };
 
 export default function RollsScreen({ navigation }: RollsScreenProps) {
+
+  const dispatch = useDispatch<Dispatch>();
+  const user = useSelector((state: { user: UserState }) => state.user.value);
 
   const [ modalVisible, setModalVisible ] = useState<boolean>(false);
   const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
@@ -20,22 +28,27 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ brand, setBrand ] = useState<string>('');
   const [ model, setModel ] = useState<string>('');
 
-  const [ rolls, setRolls ] = useState<{ name: string, rollType: string, images: Number, _id: String }[]>([]);
+
+  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER  AU MONTAGE DU COMPOSANT ///
 
   useEffect(() => {
     fetch(`${BACKEND_LOCAL_ADRESS}/rolls`)
     .then(response => response.json())
     .then(data => {
       if (!data.result) {
-        setNoRoll(true)
+        setNoRoll(true);
       }
       else {
-        setRolls(data.rolls)
+        setNoRoll(false);
+        dispatch(importRolls(data.rolls));
       }
     })
   }, []);
 
-  function handlePressOnTrash(rollId) {
+
+  /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
+
+  function handlePressOnTrash(rollId: string) {
     fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollId}`, { 
         method: 'DELETE',
         headers: { "Content-Type": "application/json" }, 
@@ -43,29 +56,12 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     .then(response => response.json())
     .then(data => {
         if (data.result) {
-          dispatch(removePlace(placeName))
+          dispatch(removeRoll(rollId))
         }
     });
   }
 
-  function handlePressOnTrash(placeName) {
-    fetch('https://locapic-backend-ebon.vercel.app/places', { 
-        method: 'DELETE',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            nickname: user.nickname,
-            name: placeName
-        }) 
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.result) {
-          dispatch(removePlace(placeName))
-        }
-    });
-  }
-
-  const rollsList = rolls.map((data, i) => {
+  const rollsList: JSX.Element[] = user.rolls.map((data: RollType, i: number) => {
     return (
       <View key={i} style={styles.rollContainer}>
         <View>
@@ -76,12 +72,15 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
             <Text>{`${data.images}`}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => handlePressOnTrash(data._id)}>
+        <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
           <FontAwesome name='o-trash' />
         </TouchableOpacity>
       </View>
     )
   })
+
+
+  /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
 
   function handlePressOnPlus() {
     setModalVisible(true)
@@ -102,6 +101,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   return (
       <View style={styles.container}>
           {noRoll && <Text>Ajoutez votre première pellicule</Text>}
+          {rollsList}
           <TouchableOpacity 
             style={styles.button} 
             activeOpacity={0.8}
