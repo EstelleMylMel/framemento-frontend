@@ -2,6 +2,12 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'reac
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useSelector } from 'react-redux';
+
+// IMPORTS TYPES //
+import { RollType } from '../types/roll';
+import { UserState } from '../reducers/user';
+
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -11,18 +17,23 @@ type RollScreenProps = {
 
 export default function RollScreen({ navigation }: RollScreenProps) {
 
-    const rollName = '';
+    const rollID = ''; // récupérer dans les props.
 
-    const [ rollData, setRollData ] = useState(null) // TYPER EN ROLLTYPE
+    const rollData: RollType[] = useSelector((state: { user: UserState })=> {
+        if (state.user.value.rolls) {
+        state.user.value.rolls.find((roll: RollType)  => roll._id === rollID)
+        }
+    });
+
 
     useEffect(()=>{
 
         /// Récuper le contenu de la pellicule
-        fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollName}`)
+        fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollID}`)
         .then(response => response.json())
         .then(data => {
             if (data.result) {
-                setRoll(data.roll);
+                //setRollData(data.roll);
             } else console.log('no data : ', data);
         })
         .catch(error => {

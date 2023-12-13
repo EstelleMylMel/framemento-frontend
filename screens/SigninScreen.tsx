@@ -38,8 +38,8 @@ type SigninScreenProps = {
           .then(response => response.json())
           .then(data => {
             if ( data.result ) {
-              const {username, token, rolls } = data;
-                dispatch(updateUser({username, token, rolls}));
+              const {_id, username, token, rolls } = data;
+                dispatch(updateUser({_id, username, token, rolls}));
                 navigation.navigate('Rolls');
             }
             else  {

@@ -4,6 +4,7 @@ import { RollType } from '../types/roll';
 
 export type UserState = {
  value: {
+    _id: string | null,
     username: string | null,
     token: string | null,
     rolls: RollType[] | null
@@ -11,13 +12,14 @@ export type UserState = {
 };
 
 export type UserStatePayloadAction = {
-       username: string | null,
-       token: string | null,
-       rolls: RollType[] | null
+      _id: string | null,
+      username: string | null,
+      token: string | null,
+      rolls: RollType[] | null
    };
 
 const initialState: UserState = {
- value: { username: null , token: null, rolls: null},
+ value: { _id: null, username: null , token: null, rolls: null},
 };
 
 export const userSlice = createSlice({
