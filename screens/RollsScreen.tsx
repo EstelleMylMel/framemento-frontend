@@ -3,13 +3,16 @@ import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
+
 type RollsScreenProps = {
     navigation: NavigationProp<ParamListBase>;
   };
 
 export default function RollsScreen({ navigation }: RollsScreenProps) {
 
-  const [ modalVisible, setModalVisible ] = useState<Boolean>(false);
+  const [ modalVisible, setModalVisible ] = useState<boolean>(false);
+  const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
   const [ name, setName ] = useState<string>('');
   const [ rollType, setRollType ] = useState<string>('');
   const [ images, setImages ] = useState<string>('');
@@ -17,18 +20,88 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ brand, setBrand ] = useState<string>('');
   const [ model, setModel ] = useState<string>('');
 
+  const [ rolls, setRolls ] = useState<{ name: string, rollType: string, images: Number, _id: String }[]>([]);
+
+  useEffect(() => {
+    fetch(`${BACKEND_LOCAL_ADRESS}/rolls`)
+    .then(response => response.json())
+    .then(data => {
+      if (!data.result) {
+        setNoRoll(true)
+      }
+      else {
+        setRolls(data.rolls)
+      }
+    })
+  }, []);
+
+  function handlePressOnTrash(rollId) {
+    fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollId}`, { 
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" }, 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result) {
+          dispatch(removePlace(placeName))
+        }
+    });
+  }
+
+  function handlePressOnTrash(placeName) {
+    fetch('https://locapic-backend-ebon.vercel.app/places', { 
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nickname: user.nickname,
+            name: placeName
+        }) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result) {
+          dispatch(removePlace(placeName))
+        }
+    });
+  }
+
+  const rollsList = rolls.map((data, i) => {
+    return (
+      <View key={i} style={styles.rollContainer}>
+        <View>
+          <Text style={styles.rollName}>{data.name}</Text>
+          <View style={styles.rollInfos}>
+            <Text>{data.rollType}</Text>
+            <Text>.</Text>
+            <Text>{`${data.images}`}</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={() => handlePressOnTrash(data._id)}>
+          <FontAwesome name='o-trash' />
+        </TouchableOpacity>
+      </View>
+    )
+  })
 
   function handlePressOnPlus() {
     setModalVisible(true)
-  }
+  };
 
   function handlePressOnX() {
     setModalVisible(false)
-  }
+  };
+
+  function handlePressOnEnregistrer() {
+    // fetch POST /rolls (enregistre dans la collection rolls)
+    // .then(data) -> fetch POST /users/rolls (body: username: user.username du store et _id: data._id id du roll enregistré)
+    // addRoll to store
+    setModalVisible(false)
+  };
+
 
   return (
       <View style={styles.container}>
-          <Text>Ajoutez votre première pellicule</Text>
+          {noRoll && <Text>Ajoutez votre première pellicule</Text>}
           <TouchableOpacity 
             style={styles.button} 
             activeOpacity={0.8}
@@ -67,48 +140,80 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                     onChangeText={(value) => setName(value)}
                     />
                   </View>
-                  <TextInput 
+                  <View>
+                    <View>
+                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <Text>Type de film</Text>
+                    </View>
+                    <TextInput 
                     placeholder='Type de film'
                     style={styles.textInput}
                     value={rollType}
                     onChangeText={(value) => setRollType(value)}
-                  >
-                    <FontAwesome name='ghost' style={styles.textInputIcon} />
-                  </TextInput>
-                  <TextInput 
+                    />
+                  </View>
+                  <View>
+                    <View>
+                      <FontAwesome name='hashtag' style={styles.textInputIcon} />
+                      <Text>Nombre d'images</Text>
+                    </View>
+                    <TextInput 
                     placeholder="Nombre d'images"
                     style={styles.textInput}
                     value={images}
                     onChangeText={(value) => setImages(value)}
-                  >
-                    <FontAwesome name='hashtag' style={styles.textInputIcon} />
-                  </TextInput>
-                  <TextInput 
+                    />
+                  </View>
+                  <View>
+                    <View>
+                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <Text>Push / Pull</Text>
+                    </View>
+                    <TextInput 
                     placeholder="Nombre d'images"
                     style={styles.textInput}
                     value={pushPull}
                     onChangeText={(value) => setPushPull(value)}
-                  >
-                    <FontAwesome name='ghost' style={styles.textInputIcon} />
-                  </TextInput>
+                    />
+                  </View>
                 </View>
+
                 <View style={styles.textInputs2}>
-                <TextInput 
+                  <Text>Appareil photo :</Text>
+                  <View>
+                    <View>
+                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <Text>Marque</Text>
+                    </View>
+                    <TextInput 
                     placeholder='Marque'
                     style={styles.textInput}
                     value={brand}
                     onChangeText={(value) => setBrand(value)}
-                  >
-                    <FontAwesome name='ghost' style={styles.textInputIcon} />
-                  </TextInput>
-                  <TextInput 
+                    />
+                  </View>
+                  <View>
+                    <View>
+                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <Text>Modèle</Text>
+                    </View>
+                    <TextInput 
                     placeholder='Modèle'
                     style={styles.textInput}
-                    value={rollType}
-                    onChangeText={(value) => setRollType(value)}
+                    value={model}
+                    onChangeText={(value) => setModel(value)}
+                    />
+                  </View>
+                </View>
+
+                <View>
+                  <TouchableOpacity 
+                    style={styles.enregistrerButton} 
+                    activeOpacity={0.8}
+                    onPress={handlePressOnEnregistrer}
                   >
-                    <FontAwesome name='ghost' style={styles.textInputIcon} />
-                  </TextInput>
+                    <Text>ENREGISTRER</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -149,6 +254,28 @@ const styles = StyleSheet.create({
     textModalHeader: {
 
     },
+    textInputs1: {
 
+    },
+    textInputs2: {
 
+    },
+    textInputIcon: {
+
+    },
+    textInput: {
+      
+    },
+    enregistrerButton: {
+
+    },
+    rollContainer: {
+
+    },
+    rollName: {
+
+    },
+    rollInfos: {
+
+    }
 });
