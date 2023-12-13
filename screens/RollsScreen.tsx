@@ -86,7 +86,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   };
 
 
-  /// SUPPRIMER UNE PELLICULE - BDD -> STORE -> ECRAN ///
+  /// SUPPRIMER UNE PELLICULE - BDD -> STORE -> ECRAN /// !! POUR LE DEV, A METTRE PLUTOT DANS ROLLSCREEN
 
   function handlePressOnTrash(rollId: string) {
     fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollId}`, { 
@@ -104,17 +104,23 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
   /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
 
+  function handlePressOnRoll(roll: RollType): void {
+    navigation.navigate('Roll', { roll });
+  }
+
   const rollsList: JSX.Element[] = user.rolls.map((data: RollType, i: number) => {
     return (
       <View key={i} style={styles.rollContainer}>
-        <View>
-          <Text style={styles.rollName}>{data.name}</Text>
-          <View style={styles.rollInfos}>
-            <Text>{data.rollType}</Text>
-            <Text>.</Text>
-            <Text>{`${data.images}`}</Text>
+        <TouchableOpacity onPress={() => handlePressOnRoll(data)}>
+          <View>
+            <Text style={styles.rollName}>{data.name}</Text>
+            <View style={styles.rollInfos}>
+              <Text>{data.rollType}</Text>
+              <Text>.</Text>
+              <Text>{`${data.images}`}</Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
           <FontAwesome name='o-trash' />
         </TouchableOpacity>
