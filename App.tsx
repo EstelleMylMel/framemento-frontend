@@ -41,6 +41,8 @@ import SignupScreen from './screens/SignupScreen';
 import SigninScreen from './screens/SigninScreen';
 import RollsScreen from './screens/RollsScreen';
 import RollScreen from './screens/RollScreen';
+import MyAccountScreen from './screens/MyAccountScreen';
+import MyMaterialScreen from './screens/MyMaterialScreen';
 
 /// ICONS ///
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -51,73 +53,77 @@ const CommunityStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-// const DrawerNavigator = () => {
-//   return (
-//     <Drawer.Navigator initialRouteName="Welcome" screenOptions={{
-//       header: (props) => <Header {...props} />, // TROUVER COMMENT IMPORTER LE HEADER
-//       drawerActiveTintColor: '#655074',
-//       drawerType: 'back',
-//       }}>
-//       <Drawer.Screen name="Search" component={SearchScreen} />
-//       <Drawer.Screen name="My recipes" component={MyRecipesScreen} />
-//     </Drawer.Navigator>
-//   );
-// };
+/// COMPONENTS ///
+import Header from './components/Header';
 
-// const MyRollsStackNavigation = () => {
-//   /// navigation 
-//   return (
-//     <NavigationContainer>
-//      <MyRollsStack.Navigator screenOptions={{ headerShown: false }}>
-//       {/* Ecran qui présente toutes les pellicules */}
-//        <MyRollsStack.Screen name="Rolls" component={RollsScreen}/> 
-//        {/* Ecran ou MODALE ? ajouter / modifier une pellicule  */}
-//        {/* <MyRollsStack.Screen name="RollEdit" component={RollEditScreen}/> */}
-//        {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
-//        <MyRollsStack.Screen name="Roll" component={RollScreen}/>
-//        {/* Ecran ou MODALE ? ajouter / modifier / consulter une photo  */}
-//        {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
-//      </MyRollsStack.Navigator>
-//    </NavigationContainer>
-//   )
-// }
 
-// const CommunityStackNavigation = () => {
-//   /// navigation 
-//   return (
-//     <NavigationContainer>
-//      <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
-//        <CommunityStack.Screen name="Welcome" component={WelcomeScreen} />
-//        {/* + autres pages */}
-//      </CommunityStack.Navigator>
-//    </NavigationContainer>
-//   )
-// }
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator initialRouteName="Welcome" screenOptions={{
+      header: (props) => <Header {...props} />, // TROUVER COMMENT IMPORTER LE HEADER
+      drawerActiveTintColor: '#655074',
+      drawerType: 'back',
+      }}>
+      <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
+      <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
+    </Drawer.Navigator>
+  );
+};
 
-// const TabNavigator = () => {
-//   return (
-//     <Tab.Navigator screenOptions={({ route }) => ({
-//       tabBarIcon: ({ color, size }) => {
-//         let iconName = '';
+const MyRollsStackNavigation = () => {
+  /// navigation 
+  return (
+    <NavigationContainer>
+     <MyRollsStack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Ecran qui présente toutes les pellicules */}
+       <MyRollsStack.Screen name="Rolls" component={RollsScreen}/> 
+       {/* Ecran ou MODALE ? ajouter / modifier une pellicule  */}
+       {/* <MyRollsStack.Screen name="RollEdit" component={RollEditScreen}/> */}
+       {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+       <MyRollsStack.Screen name="Roll" component={RollScreen}/>
+       {/* Ecran ou MODALE ? ajouter / modifier / consulter une photo  */}
+       {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+     </MyRollsStack.Navigator>
+   </NavigationContainer>
+  )
+}
+
+const CommunityStackNavigation = () => {
+  /// navigation 
+  return (
+    <NavigationContainer>
+     <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
+       <CommunityStack.Screen name="Welcome" component={WelcomeScreen} />
+       {/* + autres pages */}
+     </CommunityStack.Navigator>
+   </NavigationContainer>
+  )
+}
+
+const TabNavigator = () => {
+  return (
+    <Tab.Navigator screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        let iconName = '';
  
-//         if (route.name === 'Home') {
-//           iconName = 'home';
-//         } else if (route.name === 'Profile') {
-//           iconName = 'user';
-//         }
+        if (route.name === 'Home') {
+          iconName = 'home';
+        } else if (route.name === 'Profile') {
+          iconName = 'user';
+        }
  
-//         return <FontAwesome name={iconName} size={size} color={color} />; // ATTENTION CHANGER LES ICONS
-//       },
-//       tabBarActiveTintColor: '#2196f3',
-//       tabBarInactiveTintColor: 'gray',
-//       headerShown: false,
-//     })}>
+        return <FontAwesome name={iconName} size={size} color={color} />; // ATTENTION CHANGER LES ICONS
+      },
+      tabBarActiveTintColor: '#2196f3',
+      tabBarInactiveTintColor: 'gray',
+      headerShown: false,
+    })}>
 
-//       <Tab.Screen name="Mes pellicules" component={MyRollsStackNavigation} />
-//       <Tab.Screen name="Communauté" component={CommunityStackNavigation} />
-//     </Tab.Navigator>
-//   );
-//  }
+      <Tab.Screen name="Mes pellicules" component={MyRollsStackNavigation} />
+      <Tab.Screen name="Communauté" component={CommunityStackNavigation} />
+    </Tab.Navigator>
+  );
+ }
 
 export default function App() {
   return (
