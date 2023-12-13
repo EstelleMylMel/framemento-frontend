@@ -23,8 +23,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
   const [ name, setName ] = useState<string>('');
   const [ rollType, setRollType ] = useState<string>('');
-  const [ images, setImages ] = useState<string>('');
-  const [ pushPull, setPushPull ] = useState<string>('');
+  const [ images, setImages ] = useState<number | null>(null);
+  const [ pushPull, setPushPull ] = useState<number>(0);
   const [ brand, setBrand ] = useState<string>('');
   const [ model, setModel ] = useState<string>('');
 
@@ -46,7 +46,47 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   }, []);
 
 
-  /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
+  /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
+
+  function handlePressOnPlus() {
+    setModalVisible(true)
+  };
+
+  function handlePressOnX() {
+    setModalVisible(false)
+  };
+
+
+  /// AJOUTER UNE PELLICULE - BDD ROLLS -> BDD USERPROFILE -> STORE -> ECRAN ///
+
+  function handlePressOnSaveRoll() {
+    fetch(`${BACKEND_LOCAL_ADRESS}/rolls`, {
+      method: 'POST',
+		  headers: { 'Content-Type': 'application/json' },
+		  body: JSON.stringify({ 
+        name: name, 
+        rollType: rollType, 
+        images: images, 
+        pushPull: pushPull,
+        brand: brand,
+        model: model,
+        userId: user._id 
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        data.result && dispatch(addPlace(data.newPlace));
+        setModalVisible(false);
+        setNewPlace('');
+    });
+    // fetch POST /rolls (enregistre dans la collection rolls)
+    // .then(data) -> fetch POST /users/rolls (body: username: user.username du store et _id: data._id id du roll enregistré)
+    // addRoll to store
+    setModalVisible(false)
+  };
+
+
+  /// SUPPRIMER UNE PELLICULE - BDD -> STORE -> ECRAN ///
 
   function handlePressOnTrash(rollId: string) {
     fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollId}`, { 
@@ -60,6 +100,9 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
         }
     });
   }
+
+
+  /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
 
   const rollsList: JSX.Element[] = user.rolls.map((data: RollType, i: number) => {
     return (
@@ -78,24 +121,6 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
       </View>
     )
   })
-
-
-  /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
-
-  function handlePressOnPlus() {
-    setModalVisible(true)
-  };
-
-  function handlePressOnX() {
-    setModalVisible(false)
-  };
-
-  function handlePressOnEnregistrer() {
-    // fetch POST /rolls (enregistre dans la collection rolls)
-    // .then(data) -> fetch POST /users/rolls (body: username: user.username du store et _id: data._id id du roll enregistré)
-    // addRoll to store
-    setModalVisible(false)
-  };
 
 
   return (
@@ -210,7 +235,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   <TouchableOpacity 
                     style={styles.enregistrerButton} 
                     activeOpacity={0.8}
-                    onPress={handlePressOnEnregistrer}
+                    onPress={handlePressOnSaveRoll}
                   >
                     <Text>ENREGISTRER</Text>
                   </TouchableOpacity>
