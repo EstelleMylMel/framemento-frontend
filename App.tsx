@@ -60,46 +60,29 @@ import Header from './components/Header';
   Welcome: undefined
 }*/
 
-const DrawerNavigator = () => {
-  return (
-    <Drawer.Navigator initialRouteName="Welcome" screenOptions={{
-      header: (props) => <Header {...props} />, // TROUVER COMMENT IMPORTER LE HEADER
-      drawerActiveTintColor: '#655074',
-      drawerType: 'back',
-      }}>
-      <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
-      <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
-    </Drawer.Navigator>
-  );
-};
-
 const MyRollsStackNavigation = () => {
   /// navigation 
   return (
-    <NavigationContainer>
-     <MyRollsStack.Navigator screenOptions={{ headerShown: false }}>
+    <MyRollsStack.Navigator screenOptions={{ headerShown: false }}>
       {/* Ecran qui présente toutes les pellicules */}
-       <MyRollsStack.Screen name="Rolls" component={RollsScreen}/> 
-       {/* Ecran ou MODALE ? ajouter / modifier une pellicule  */}
-       {/* <MyRollsStack.Screen name="RollEdit" component={RollEditScreen}/> */}
-       {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
-       <MyRollsStack.Screen name="Roll" component={RollScreen}/>
-       {/* Ecran ou MODALE ? ajouter / modifier / consulter une photo  */}
-       {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
-     </MyRollsStack.Navigator>
-   </NavigationContainer>
+      <MyRollsStack.Screen name="Rolls" component={RollsScreen}/> 
+      {/* Ecran ou MODALE ? ajouter / modifier une pellicule  */}
+      {/* <MyRollsStack.Screen name="RollEdit" component={RollEditScreen}/> */}
+      {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+      <MyRollsStack.Screen name="Roll" component={RollScreen}/>
+      {/* Ecran ou MODALE ? ajouter / modifier / consulter une photo  */}
+      {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+    </MyRollsStack.Navigator>
   )
 }
 
 const CommunityStackNavigation = () => {
   /// navigation 
   return (
-    <NavigationContainer>
-     <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
-       <CommunityStack.Screen name="Welcome" component={WelcomeScreen} />
-       {/* + autres pages */}
-     </CommunityStack.Navigator>
-   </NavigationContainer>
+    <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
+      <CommunityStack.Screen name="Welcome" component={WelcomeScreen} />
+      {/* + autres pages */}
+    </CommunityStack.Navigator>
   )
 }
 
@@ -128,6 +111,20 @@ const TabNavigator = () => {
   );
 }
 
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator initialRouteName="Signin" screenOptions={{
+      header: (props) => <Header {...props} />,
+      drawerActiveTintColor: '#655074',
+      drawerType: 'back',
+      }}>
+      <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
+      <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
+    </Drawer.Navigator>
+  );
+};
+
+
  export default function App() {
   return (
     <Provider store={store}>
@@ -136,8 +133,10 @@ const TabNavigator = () => {
           <AppStack.Screen name="Welcome" component={WelcomeScreen} />
           <AppStack.Screen name="Signup" component={SignupScreen} />
           <AppStack.Screen name="Signin" component={SigninScreen} />
-          <AppStack.Screen name="Rolls" component={RollsScreen} />
-          <AppStack.Screen name="Roll" component={RollScreen} />
+          <AppStack.Screen name="TabNavigator" component={TabNavigator} />
+          <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          {/* <AppStack.Screen name="Rolls" component={RollsScreen} />
+          <AppStack.Screen name="Roll" component={RollScreen} /> */}
           {/* ... d'autres écrans */}
         </AppStack.Navigator>
       </NavigationContainer>

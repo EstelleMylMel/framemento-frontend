@@ -40,7 +40,7 @@ type SigninScreenProps = {
             if ( data.result ) {
               const {_id, username, token, rolls } = data;
                 dispatch(updateUser({_id, username, token, rolls}));
-                navigation.navigate('Rolls');
+                navigation.navigate('TabNavigator');
             }
             else  {
               console.log(data);
