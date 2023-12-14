@@ -20,7 +20,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const user = useSelector((state: { user: UserState }) => state.user.value);
 
   const [ modalVisible, setModalVisible ] = useState<boolean>(false);
-  const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
+  // const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
   const [ name, setName ] = useState<string>('');
   const [ rollType, setRollType ] = useState<string>('');
   const [ images, setImages ] = useState<number | null>(null);
@@ -29,8 +29,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ model, setModel ] = useState<string>('');
 
 
-  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER  AU MONTAGE DU COMPOSANT ///
-  console.log(user.rolls)
+  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER AU MONTAGE DU COMPOSANT - INUTILE CAR IMPORTER AU SIGNIN///
+  // console.log(user.rolls)
   /*useEffect(() => {
     fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
     .then(response => response.json())
