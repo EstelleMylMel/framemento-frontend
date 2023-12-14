@@ -20,7 +20,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const user = useSelector((state: { user: UserState }) => state.user.value);
 
   const [ modalVisible, setModalVisible ] = useState<boolean>(false);
-  const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
+  // const [ noRoll, setNoRoll ] = useState<boolean>(true);  // pour savoir si il y a au moins une pellicule stockée en BDD
   const [ name, setName ] = useState<string>('');
   const [ rollType, setRollType ] = useState<string>('');
   const [ images, setImages ] = useState<number | null>(null);
@@ -29,10 +29,10 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ model, setModel ] = useState<string>('');
 
 
-  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER  AU MONTAGE DU COMPOSANT ///
-
-  useEffect(() => {
-    fetch(`${BACKEND_LOCAL_ADRESS}/rolls`)
+  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER AU MONTAGE DU COMPOSANT - INUTILE CAR IMPORTER AU SIGNIN///
+  // console.log(user.rolls)
+  /*useEffect(() => {
+    fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
     .then(response => response.json())
     .then(data => {
       if (!data.result) {
@@ -43,7 +43,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
         dispatch(importRolls(data.rolls));
       }
     })
-  }, []);
+  }, []);*/
 
 
   /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
@@ -81,6 +81,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
         setImages(null);
         setPushPull(0);
         setModalVisible(false);
+        console.log(user)
+        console.log(user.rolls)
     });
   };
 
@@ -107,7 +109,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     navigation.navigate('Roll', { roll });
   }
 
-  const rollsList: JSX.Element[] = user.rolls.map((data: RollType, i: number) => {
+  const rollsList: JSX.Element[] = user.rolls?.map((data: RollType, i: number) => {
     return (
       <View key={i} style={styles.rollContainer}>
         <TouchableOpacity onPress={() => handlePressOnRoll(data)}>
@@ -121,7 +123,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
-          <FontAwesome name='o-trash' />
+          <FontAwesome name='trash' />
         </TouchableOpacity>
       </View>
     )
@@ -130,7 +132,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
   return (
       <View style={styles.container}>
-          {noRoll && <Text>Ajoutez votre première pellicule</Text>}
+          {user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
           {rollsList}
           <TouchableOpacity 
             style={styles.button} 
@@ -173,7 +175,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   </View>
                   <View style={styles.textInputContainer}>
                     <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <FontAwesome name='tag' style={styles.textInputIcon} />
                       <Text style={styles.textTitle}>Type de film</Text>
                     </View>
                     <TextInput 
@@ -193,13 +195,13 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                     placeholder="-"
                     placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
-                    value={`${images}`}
-                    onChangeText={(value) => setImages(parseInt(value))}
+                    value={`${Number(images)}`}
+                    onChangeText={(value) => setImages(Number(value))}
                     />
                   </View>
                   <View style={styles.textInputBottomContainer}>
                     <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <FontAwesome name='tag' style={styles.textInputIcon} />
                       <Text style={styles.textTitle}>Push / Pull</Text>
                     </View>
                     <TextInput 
@@ -207,7 +209,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                     placeholderTextColor="#AAAAAA" 
                     style={styles.textInput}
                     value={`${pushPull}`}
-                    onChangeText={(value) => setPushPull(parseInt(value))}
+                    onChangeText={(value) => setPushPull(Number(value))}
                     />
                   </View>
                 </View>
@@ -216,7 +218,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   <Text style={styles.textCamera}>Appareil photo</Text>
                   <View style={styles.textInputTopContainer}>
                     <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <FontAwesome name='tag' style={styles.textInputIcon} />
                       <Text style={styles.textTitle}>Marque</Text>
                     </View>
                     <TextInput 
@@ -229,7 +231,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   </View>
                   <View style={styles.textInputBottomContainer}>
                     <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='ghost' style={styles.textInputIcon} />
+                      <FontAwesome name='tag' style={styles.textInputIcon} />
                       <Text style={styles.textTitle}>Modèle</Text>
                     </View>
                     <TextInput 
@@ -244,11 +246,11 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
                 <View>
                   <TouchableOpacity 
-                    style={styles.enregistrerButton} 
+                    style={styles.saveRollButton} 
                     activeOpacity={0.8}
                     onPress={handlePressOnSaveRoll}
                   >
-                    <Text>ENREGISTRER</Text>
+                    <Text style={styles.saveRollText}>ENREGISTRER</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -363,8 +365,16 @@ const styles = StyleSheet.create({
       marginBottom: 12,
       marginTop: 10
     },
-    enregistrerButton: {
-
+    saveRollButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 40,
+      width: 350,
+      backgroundColor: '#FFDE67',
+      marginTop: 170
+    },
+    saveRollText: {
+      color: '#050505'
     },
     rollContainer: {
 
