@@ -137,6 +137,7 @@ export default function App() {
               {/* POUR DEV */}
               <AppStack.Screen name="Rolls" component={RollsScreen} /> 
               <AppStack.Screen name="Roll" component={RollScreen} />
+              <AppStack.Screen name="MyMaterial" component={MyMaterialScreen} />
               {/* <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
             </AppStack.Navigator>
       </NavigationContainer>

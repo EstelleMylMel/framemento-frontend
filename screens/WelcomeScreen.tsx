@@ -37,6 +37,9 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             <TouchableOpacity onPress={()=> navigation.navigate('Roll')}>
               <Text>DEV : ROLL</Text> 
             </TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate('MyMaterial')}>
+              <Text>DEV : MATERIAL</Text> 
+            </TouchableOpacity>
         </View>
     )
 }
