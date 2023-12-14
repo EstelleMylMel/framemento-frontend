@@ -19,7 +19,7 @@ export type UserStatePayloadAction = {
    };
 
 const initialState: UserState = {
- value: { _id: null, username: null , token: null, rolls: []},
+ value: { _id: '657b05b6942ca755c320d5b3', username: 'a' , token: 'Bbw9o2oM4gkXqJE9V9z8TpsrELC_lOxj', rolls: []},
 };
 
 export const userSlice = createSlice({

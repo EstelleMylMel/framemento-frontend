@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import { RollType } from '../types/roll';
 import { UserState } from '../reducers/user';
 import { FrameType } from '../types/frame';
+import { RootStackParamList } from '../App';
 
 
 //IMPORTS COMPOSANTS CUSTOM //
@@ -24,11 +25,13 @@ const OWM_API_KEY = process.env.EXPO_PUBLIC_OWM_API_KEY;
 
 // Typage du contenu des paramètres de la route
 type RollScreenProps = {
-    navigation: NavigationProp<ParamListBase>,
-    route: RouteProp<{ params : { roll: RollType }}, 'params'>
+    navigation: NavigationProp<RootStackParamList>,
+    route: RouteProp<RootStackParamList, 'Roll'>
   };
 
- export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
+//  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
+  const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
+    const { roll } = route.params;
  
     // Récupération des informations de la pellicule
 
@@ -75,10 +78,9 @@ type RollScreenProps = {
     useEffect(()=>{
 
         /// Récuper le contenu de la pellicule
-        fetch(`${BACKEND_LOCAL_ADRESS}/rolls/roll._id`)
+        fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${roll._id}`)
         .then(response => response.json())
         .then(data => {
-          console.log(data)
             if (data.result) {
                 setRollData(data.roll);
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
@@ -90,10 +92,6 @@ type RollScreenProps = {
           });
 
     },[])
-
-    const handleAddButton = () :void  => {
-
-    }
 
     // si framesData ne vaut pas undefined, on map.
 
@@ -142,17 +140,22 @@ type RollScreenProps = {
         fetch(`https://api-adresse.data.gouv.fr/reverse/?lat=${latitude}&lon=${longitude}`)
         .then(response => response.json())
         .then((data)=> {
-          console.log('adresse : ',data.features);
-          setCurrentAdress(data.features.properties.label);
+          setCurrentAdress(data.features[0].properties.label);
         })
+        .catch(error => {
+          console.error('Erreur lors du fetch api data gouv :', error);
+        });
 
         /// Obtenir la météo actuelle
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}@lon=${longitude}&appid=${OWM_API_KEY}&lang=fr`)
+        fetch(`${BACKEND_LOCAL_ADRESS}/frames/weather/${latitude}/${longitude}`)
         .then(response => response.json())
 				.then(data => {
-          console.log('meteo : ',data);
-            setWeather(data.weather.description);
+          console.log('meteo : ',data.weather);
+            setWeather(data.weather);
         })
+        .catch(error => {
+          console.error('Erreur lors du fetch api weather app :', error);
+        });
 
     };
     
@@ -264,6 +267,7 @@ return (
 
 }
 
+export default RollScreen;
 
 
 const styles = StyleSheet.create({

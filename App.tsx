@@ -48,7 +48,7 @@ import MyMaterialScreen from './screens/MyMaterialScreen';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const AppStack = createNativeStackNavigator();
-const MyRollsStack = createNativeStackNavigator();
+const MyRollsStack = createNativeStackNavigator<RootStackParamList>();
 const CommunityStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -56,9 +56,15 @@ const Drawer = createDrawerNavigator();
 /// COMPONENTS ///
 import Header from './components/Header';
 
-/*export type RootStackParamList = {
-  Welcome: undefined
-}*/
+/// IMPORTS TYPES ///
+
+import { RollType } from './types/roll';
+
+export type RootStackParamList = {
+  Rolls: undefined; // Autres écrans si nécessaire
+  Roll: { roll: RollType };
+};
+
 
 const MyRollsStackNavigation = () => {
   /// navigation 
@@ -135,8 +141,6 @@ const DrawerNavigator = () => {
           <AppStack.Screen name="Signin" component={SigninScreen} />
           <AppStack.Screen name="TabNavigator" component={TabNavigator} />
           <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-          {/* <AppStack.Screen name="Rolls" component={RollsScreen} />
-          <AppStack.Screen name="Roll" component={RollScreen} /> */}
           {/* ... d'autres écrans */}
         </AppStack.Navigator>
       </NavigationContainer>

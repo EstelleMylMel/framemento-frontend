@@ -72,6 +72,10 @@ type SigninScreenProps = {
             <TouchableOpacity onPress={handleSubscription}>
               <Text>CONNEXION</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('TabNavigator')}>
+              {/* Faut il faire un composant pour les boutons ? */}
+              <Text>DEV : SKIP</Text>
+            </TouchableOpacity>
         </View>
     )
 }
