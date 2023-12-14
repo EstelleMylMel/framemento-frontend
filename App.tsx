@@ -56,6 +56,9 @@ const Drawer = createDrawerNavigator();
 /// COMPONENTS ///
 import Header from './components/Header';
 
+/*export type RootStackParamList = {
+  Welcome: undefined
+}*/
 
 const DrawerNavigator = () => {
   return (
@@ -123,27 +126,45 @@ const TabNavigator = () => {
       <Tab.Screen name="Communauté" component={CommunityStackNavigation} />
     </Tab.Navigator>
   );
- }
+}
 
-export default function App() {
+ export default function App() {
   return (
     <Provider store={store}>
-      {/* <PersistGate persistor={persistor}> */}
-          <NavigationContainer>
-            <AppStack.Navigator screenOptions={{ headerShown: false }}>
-              <AppStack.Screen name="Welcome" component={WelcomeScreen} />
-              <AppStack.Screen name="Signup" component={SignupScreen} />
-              <AppStack.Screen name="Signin" component={SigninScreen} />
-              {/* POUR DEV */}
-              <AppStack.Screen name="Rolls" component={RollsScreen} /> 
-              <AppStack.Screen name="Roll" component={RollScreen} />
-              {/* <AppStack.Screen name="TabNavigator" component={TabNavigator} /> */}
-            </AppStack.Navigator>
+      <NavigationContainer>
+        <AppStack.Navigator screenOptions={{ headerShown: false }}>
+          <AppStack.Screen name="Welcome" component={WelcomeScreen} />
+          <AppStack.Screen name="Signup" component={SignupScreen} />
+          <AppStack.Screen name="Signin" component={SigninScreen} />
+          <AppStack.Screen name="Rolls" component={RollsScreen} />
+          <AppStack.Screen name="Roll" component={RollScreen} />
+          {/* ... d'autres écrans */}
+        </AppStack.Navigator>
       </NavigationContainer>
-      {/* </PersistGate> */}
     </Provider>
   );
 }
+
+// export default function App() {
+//   return (
+//     <Provider store={store}>
+//       {/* <PersistGate persistor={persistor}> */}
+//           <NavigationContainer>
+//             <AppStack.Navigator screenOptions={{ headerShown: false }}>
+//               <AppStack.Screen name="Welcome" component={WelcomeScreen} />
+//               <AppStack.Screen name="Signup" component={SignupScreen} />
+//               <AppStack.Screen name="Signin" component={SigninScreen} />
+//               {/* POUR DEV */}
+//               <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+//               <AppStack.Screen name="Rolls" component={RollsScreen} /> 
+//               <AppStack.Screen name="Roll" component={RollScreen} />
+//               <AppStack.Screen name="TabNavigator" component={TabNavigator} />
+//             </AppStack.Navigator>
+//       </NavigationContainer>
+//       {/* </PersistGate> */}
+//     </Provider>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {
