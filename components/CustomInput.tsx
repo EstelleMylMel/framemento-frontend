@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 interface InputProps {
-  label?: string;
+  label: string;
   placeholder?: string;
   icon?: React.ReactNode;
   value: string;
@@ -19,17 +19,18 @@ interface InputProps {
 const CustomInput: React.FC<InputProps> = ({ label, placeholder, icon, value, onChange, style }) => {
   
   return (
-    <View style={[styles.container, style?.container]}>
-      {label && <Text style={[styles.label, style?.label]}>{label}</Text>}
-      <View style={[styles.inputContainer, style?.inputContainer]}>
-        {icon && <View style={[styles.iconContainer, style?.iconContainer]}>{icon}</View>}
-        <TextInput
-          placeholder={placeholder}
-          value={value}
-          onChangeText={onChange}
-          style={styles.input}
-        />
+    <View style={styles.container}>
+      <View style={styles.labelContainer}>
+        {icon && <View style={styles.iconContainer}>{icon}</View>}
+        <Text style={styles.label}>{label}</Text>
       </View>
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor='#777777'
+        value={value}
+        onChangeText={onChange}
+        style={styles.input}
+      />
     </View>
   );
 };
@@ -37,24 +38,41 @@ const CustomInput: React.FC<InputProps> = ({ label, placeholder, icon, value, on
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
     marginBottom: 20,
+    backgroundColor: '#101010',
+    height: 48,
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '30%',
+    alignItems: 'center',
   },
   label: {
     fontSize: 18,
-    marginBottom: 5,
+    color: '#EEEEEE',
+    alignItems: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconContainer: {
-    marginRight: 10,
+    
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 12,
+    paddingRight: 16,
+    alignContent: 'flex-end',
+    color: '#EEEEEE',
+    fontSize: 14,
+    width: '70%',
+    backgroundColor: '#101010'
   },
   icon: {
     fontSize: 20,
