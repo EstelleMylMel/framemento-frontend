@@ -197,6 +197,7 @@ type RollScreenProps = {
                 setLatitude(location.coords.latitude);
                 setLongitude(location.coords.longitude);
                 setDate(new Date(location.timestamp));
+                console.log(date)
               });
           }
         })();
@@ -349,16 +350,17 @@ type RollScreenProps = {
         numero: frameNumber,
         shutterSpeed: frameSpeed,
         aperture: frameAperture,
-        location: location.adress,
+        location: currentAdress,
         date,
         weather,
-        camera,
+        camera: camera?._id,
         brand : lensBrand,
         model : lensModel,
         title,
         comment: commentary,
         phonePhoto: urlPhotoFromPhone,
       }
+      console.log(newFrame)
 
       fetch(`${BACKEND_LOCAL_ADRESS}/frames`, {
         method: 'POST',
