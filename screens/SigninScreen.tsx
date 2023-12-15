@@ -40,7 +40,7 @@ type SigninScreenProps = {
             if ( data.result ) {
               const {_id, username, token, rolls } = data;
                 dispatch(updateUser({_id, username, token, rolls}));
-                navigation.navigate('TabNavigator');
+                navigation.navigate('DrawerNavigator');
             }
             else  {
               console.log(data);
@@ -72,7 +72,7 @@ type SigninScreenProps = {
             <TouchableOpacity onPress={handleSubscription}>
               <Text>CONNEXION</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('TabNavigator')}>
+            <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}>
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>DEV : SKIP</Text>
             </TouchableOpacity>
