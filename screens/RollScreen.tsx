@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 
 // IMPORTS TYPES //
 import { RollType } from '../types/roll';
+import { CameraType } from '../types/camera';
+import { LensType } from '../types/lens';
 import { UserState } from '../reducers/user';
 import { FrameType } from '../types/frame';
 import { RootStackParamList } from '../App';
@@ -19,9 +21,7 @@ import CustomInput from '../components/CustomInput';
 import { current } from '@reduxjs/toolkit';
 
 
-
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
-const OWM_API_KEY = process.env.EXPO_PUBLIC_OWM_API_KEY;
 
 // Typage du contenu des paramètres de la route
 type RollScreenProps = {
@@ -31,22 +31,26 @@ type RollScreenProps = {
 
 //  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
   const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
-    const { roll } = route.params;
- 
+    
     // Récupération des informations de la pellicule
+    const { roll } = route.params;
+    console.log('roll: ', roll._id);
 
-    const [ rollData, setRollData ] = useState<RollType | undefined>();
-    const [ framesData, setFramesData ] = useState<FrameType[] | undefined>();
-
+    /// ON/OFF MODALES ///
     const [ modalVisible, setModalVisible ] = useState<boolean>(false);
     const [ datepickerVisible, setDatepickerVisible ] = useState<boolean>(false);
+
+
+    /// ROLL AND FRAMES DATA ///
+    const [ rollData, setRollData ] = useState<RollType | undefined>();
+    const [ framesData, setFramesData ] = useState<FrameType[] | undefined>();
+    const [ previousFrame, setPreviousFrame ] = useState<FrameType | undefined>(framesData && framesData.length > 0 ? framesData[framesData?.length - 1] :  undefined);
 
     const [latitude, setLatitude] = useState<number>(0);
     const [longitude, setLongitude] = useState<number>(0);
     const [ currentAdress, setCurrentAdress ] = useState<string>('');
-    const [ title, setTitle ] = useState<string>('');
 
-    /// INPUTS ///
+    /// INPUTS VARIABLES & FONCTIONS ///
     const [location, setLocation] = useState({latitude: 0,
       longitude: 0,
       adress: currentAdress
@@ -73,23 +77,42 @@ type RollScreenProps = {
     const handleChangeWeather = (text: string): void => {
       setWeather(text);
     }
+    const [camera, setCamera] = useState<CameraType | undefined>();
+    const [ lens, setLens ] = useState<LensType| undefined>(previousFrame ? previousFrame.lens : undefined);
 
+    const [ title, setTitle ] = useState<string>('');
+    const [ commentary, setCommentary ] = useState<string>('');
 
     useEffect(()=>{
 
         /// Récuper le contenu de la pellicule
         fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${roll._id}`)
         .then(response => response.json())
-        .then(data => {
-            if (data.result) {
-                setRollData(data.roll);
+        .then(rollData => {
+          console.log('fetch : ', rollData.result);
+            if (rollData.result) {
+              
+                setRollData(rollData.roll);
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
-                console.log(data.roll) //
-            } else console.log('no data : ', data);
+                console.log('camera : ', rollData.roll.camera)
+
+              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/657b118d4445a231efb6532c`)  //${rollData.roll.camera} 
+              .then(response => response.json())
+              .then(cameraData => {
+                console.log(cameraData)
+                cameraData? setCamera(cameraData) : console.log('no data : ', cameraData)
+              })
+              .catch(error => {
+                console.error('Erreur lors du fetch camera :', error);
+              });
+
+            } else console.log('no data : ', rollData);
+
         })
         .catch(error => {
             console.error('Erreur lors du fetch :', error);
           });
+
 
     },[])
 
@@ -131,7 +154,6 @@ type RollScreenProps = {
                 setLatitude(location.coords.latitude);
                 setLongitude(location.coords.longitude);
                 setDate(new Date(location.timestamp));
-                console.log('latitude : ',location.coords.latitude);
               });
           }
         })();
@@ -163,23 +185,29 @@ type RollScreenProps = {
     setModalVisible(false)
     };
 
+    function handleChangeLens(): void {
+      //Afficher la liste des objectifs
+    }
+
     function handlePressOnSaveFrame(): void {
 
     }
 
     
+
+    
 return (
-    <View>
+    <View style={styles.body}>
         {/*<Header></Header>*/}
 
         { frames || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
 
-        {/* <Modal visible={modalVisible} animationType="fade" transparent> */}
-            {/* <View style={styles.centeredView}>
+        <Modal visible={modalVisible} animationType="fade" transparent>
+              <View style={styles.centeredView}>
               <View style={styles.modalView}>
 
                 {/* Modal Header */}
-                {/* <View style={styles.modalHeader}>
+                <View style={styles.modalHeader}>
                   <TouchableOpacity 
                     onPress={() => handlePressOnX()} 
                     style={styles.closeModalButton} 
@@ -188,8 +216,7 @@ return (
                     <FontAwesome name='times' style={styles.closeModalIcon} />
                   </TouchableOpacity>
                   <Text style={styles.textModalHeader}>Nouvelle photo</Text>
-                </View> */}
-              
+                </View>
 
                 {/* Modal Text Inputs */}
 
@@ -199,58 +226,118 @@ return (
 
                 {/* Slider ouverture */}
 
-                {/* Input lieu */}
+                <View style={styles.inputsGroup}>
 
-                <CustomInput
-                    label="Lieu"
-                    icon={<Text>👤</Text>}
-                    value={location.adress}
-                    onChange={handleChangeLocation}
-                    // style={{
-                    // container: { marginVertical: 10 },
-                    // label: { fontSize: 16, fontWeight: 'bold' },
-                    // inputContainer: { flexDirection: 'row', alignItems: 'center' },
-                    // iconContainer: { marginRight: 10 },
-                    // icon: { fontSize: 20 },
-                    // }}
-                />
+                    {/* Input lieu */}
 
-                {/* Input date */}
+                    <CustomInput
+                        label="Lieu"
+                        icon={<Text>👤</Text>}
+                        value={currentAdress}
+                        onChange={(value) => handleChangeLocation(value)}
+                        // style={{
+                        // container: { marginVertical: 10 },
+                        // label: { fontSize: 16, fontWeight: 'bold' },
+                        // inputContainer: { flexDirection: 'row', alignItems: 'center' },
+                        // iconContainer: { marginRight: 10 },
+                        // icon: { fontSize: 20 },
+                        // }}
+                    />
 
-                <TouchableOpacity onPress={handleChangeDate}>
-                  <Text>{date?.getDay()}/{date?.getMonth()}/{date?.getFullYear()}</Text>
-                </TouchableOpacity>
+                    {/* Input date */}
 
-                {datepickerVisible && (
-                  <DateTimePicker
-                  value={date}
-                  onValueChange={(pickedDate) => console.log(pickedDate)}
-                />
-                )}
+                    <TouchableOpacity onPress={handleChangeDate} style={styles.fakeInput}>
+                      <View style={styles.labelContainer}>
+                        {/* AJOUTER ICONE */}
+                        <Text style={styles.label}>Date</Text>
+                      </View>
+                      <Text style={styles.fakeInputText}>{date?.getDay()}/{date?.getMonth()}/{date?.getFullYear()}</Text>
+                    </TouchableOpacity>
 
-                {/* Input meteo */}
+                    {datepickerVisible && (
+                      <DateTimePicker
+                      value={date}
+                      onValueChange={(pickedDate) => console.log(pickedDate)}
+                    />
+                    )}
 
-                <CustomInput
-                    label="Météo"
-                    icon={<Text>👤</Text>}
-                    value={weather}
-                    onChange={handleChangeWeather}
-                    // style={{
-                    // container: { marginVertical: 10 },
-                    // label: { fontSize: 16, fontWeight: 'bold' },
-                    // inputContainer: { flexDirection: 'row', alignItems: 'center' },
-                    // iconContainer: { marginRight: 10 },
-                    // icon: { fontSize: 20 },
-                    // }}
-                />
+                    {/* Input meteo */}
 
+                    <CustomInput
+                        label="Météo"
+                        icon={<Text>👤</Text>}
+                        value={weather}
+                        onChange={(value) => handleChangeWeather(value)}
+                        // style={{
+                        // container: { marginVertical: 10 },
+                        // label: { fontSize: 16, fontWeight: 'bold' },
+                        // inputContainer: { flexDirection: 'row', alignItems: 'center' },
+                        // iconContainer: { marginRight: 10 },
+                        // icon: { fontSize: 20 },
+                        // }}
+                    />
+                </View>
+                <View style={styles.inputsGroup}>
                 {/* Input appareil */}
+
+                <View style={styles.fakeInput}>
+                  <View style={styles.labelContainer}>
+                      {/* AJOUTER ICONE */}
+                      <Text style={styles.label}>Appareil</Text>
+                  </View>
+                  <Text style={styles.fakeInputText}>{camera?.brand} - {camera?.model} coucou</Text>
+                </View>
+
+    
+                
 
                 {/* Input objectif */}
 
-                {/* Input Nom */}
+                <TouchableOpacity onPress={handleChangeLens} style={styles.fakeInput}>
+                <Text style={styles.label}>Objectif</Text>
+                 { lens? <Text style={styles.fakeInputText}>{lens.model}</Text> : <Text style={styles.fakeInputText}>-</Text>}
+                </TouchableOpacity>
 
-                {/* Input appareil */}
+                </View>
+                <View style={styles.inputsGroup}>
+                  {/* Input Nom */}
+                  <CustomInput
+                      label="Nom"
+                      icon={<Text>👤</Text>}
+                      value={title}
+                      onChange={(value) => setTitle(value)}
+                      // style={{
+                      // container: { marginVertical: 10 },
+                      // label: { fontSize: 16, fontWeight: 'bold' },
+                      // inputContainer: { flexDirection: 'row', alignItems: 'center' },
+                      // iconContainer: { marginRight: 10 },
+                      // icon: { fontSize: 20 },
+                      // }}
+                  />
+
+
+                  {/* Input commentaire */}
+                  <CustomInput
+                      label="Commentaire"
+                      placeholder='Ajoutez un commentaire'
+                      icon={<Text>👤</Text>}
+                      value={commentary}
+                      onChange={(value) => setCommentary(value)}
+                      // style={{
+                      // container: { marginVertical: 10 },
+                      // label: { fontSize: 16, fontWeight: 'bold' },
+                      // inputContainer: { flexDirection: 'row', alignItems: 'center' },
+                      // iconContainer: { marginRight: 10 },
+                      // icon: { fontSize: 20 },
+                      // }}
+                  />
+                </View>
+
+                {/* Ajouter des photos */}
+                  
+                  </View>
+                  </View>
+                </Modal>
 
                 
           {/* </Modal> */}
@@ -271,109 +358,102 @@ export default RollScreen;
 
 
 const styles = StyleSheet.create({
-    h2: {},
-    addButton:
-     {
-
+  body: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  } , 
+  h2: {},
+    addButton:{
+      height: 40,
+      width: 40,
+      backgroundColor: 'grey',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
-    frameTale: {},
-    frameNumberContainer: {},
-    frameNumber: {},
-    textContainer: {},
-    title: {},
-    infos: {},
-    centeredView: {
-        flex: 1,
-        backgroundColor: 'black',
-        alignItems: 'center'
-      },
-      modalView: {
-  
-      },
-      modalHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 52
-      },
-      closeModalButton: {
-        backgroundColor: '#101010',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 48,
-        width: 48,
-        marginLeft: 20,
-        borderRadius: 16
-      },
-      closeModalIcon: {
-        color: '#EEEEEE',
-        fontSize: 24,
-      },
-      textModalHeader: {
-        color: '#EEEEEE',
-        fontSize: 24,
-        marginLeft: 15
-      },
-      textInputs1: {
-        marginTop: 44,
-      },
-      textInputs2: {
-        marginTop: 24,
-      },
-      textInputTopContainer: {
-        backgroundColor: '#101010',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        height: 48,
-        width: 342,
-        marginBottom: 1,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16
-      },
-      textInputContainer: {
-        backgroundColor: '#101010',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        height: 48,
-        width: 342,
-        marginBottom: 1
-      },
-      textInputBottomContainer: {
-        backgroundColor: '#101010',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        height: 48,
-        width: 342,
-        marginBottom: 1,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 16
-      },
-      textInputSubContainer: {
-        flexDirection: `row`,
-        alignItems: 'center'
-      },
-      textTitle: {
-        color: '#AAAAAA',
-        fontSize: 14
-      },
-      textInputIcon: {
-        color: '#AAAAAA',
-        fontSize: 20,
-        marginLeft: 12,
-        marginRight: 12
-      },
-      textInput: {
-        color: '#AAAAAA',
-        fontSize: 14,
-        marginRight: 16
-      },
-      textCamera: {
-        color: '#AAAAAA',
-        textAlign: 'center',
-        fontSize: 16,
-        marginBottom: 12,
-        marginTop: 10
-      },
-      enregistrerButton: {
-  
-      },
+  frameTale: {},
+  frameNumberContainer: {},
+  frameNumber: {},
+  textContainer: {},
+  title: {},
+  infos: {},
+  centeredView: {
+      flex: 1,
+      backgroundColor: 'black',
+      alignItems: 'center',
+      padding: 24,
+  },
+  modalView: {
+    flex:1,
+    width: '100%',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 52
+  },
+  closeModalButton: {
+    backgroundColor: '#101010',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 48,
+    width: 48,
+    marginLeft: 20,
+    borderRadius: 16
+  },
+  closeModalIcon: {
+    color: '#EEEEEE',
+    fontSize: 24,
+  },
+  textModalHeader: {
+    color: '#EEEEEE',
+    fontSize: 24,
+    marginLeft: 15
+  },
+  inputsGroup: {
+    flex:1,
+    width: '100%',
+    height: 'auto',
+    borderRadius: 12,
+  },
+  fakeInput: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    backgroundColor: '#101010',
+    height: 48,
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '30%',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 18,
+    color: '#EEEEEE',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    
+  },
+  fakeInputText: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingRight: 16,
+    alignContent: 'flex-end',
+    color: '#EEEEEE',
+    fontSize: 14,
+    width: '70%',
+    backgroundColor: '#101010'
+  },
+  enregistrerButton: {},
 })
