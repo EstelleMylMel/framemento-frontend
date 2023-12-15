@@ -141,6 +141,7 @@ const DrawerNavigator = () => {
           <AppStack.Screen name="Signin" component={SigninScreen} />
           <AppStack.Screen name="TabNavigator" component={TabNavigator} />
           <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          <AppStack.Screen name="MyMaterial" component={MyMaterialScreen} />
           {/* ... d'autres écrans */}
         </AppStack.Navigator>
       </NavigationContainer>

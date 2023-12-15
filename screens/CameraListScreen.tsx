@@ -1,7 +1,7 @@
 // Importez les bibliothèques nécessaires de React
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MyMaterialScreen from './MyMaterialScreen';
@@ -17,44 +17,37 @@ type CameraListScreenProps = {
   (navigation: any) : NavigationProp<ParamListBase>;
 };
 
-
+// bouton add -> ouvrir la modale -> 2 inputs "brand" et "model" (2 usestate) -> 1 bouton enregistré (appareil photo) -> ferme la modale et envoie la route post(à modifier avec userPorfile) (body: brand et model) -> push le nouvel appareil photo dans le useState cameras
 function CameraListScreen() {
     
     const user = useSelector((state: { user: UserState }) => state.user.value);
 
-    const [allCameras, setAllCameras] = useState<CameraType[]>([]);
     const [userCameras, setUserCameras] = useState<CameraType[]>([]);
-
     const [cameras, setCameras] = useState<CameraType[]>([]);
+    const [ modalVisible, setModalVisible ] = useState<boolean>(false);
 
   // Effectuer une action après le rendu initial du composant
   useEffect(() => {
     // Requête à l'API pour récupérer la liste des objectifs
-    fetch(`${BACKEND_LOCAL_ADRESS}/camera`)
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${user._id}`)
       .then((response) => response.json()) 
       .then((data) => {
         if (data.result) {
           // Mettre à jour l'état local avec la liste des objectifs
-          setAllCameras(data.cameras);
-          console.log(cameras)
+          setUserCameras(data.cameras);
+        } else {
+          console.error('Error fetching user cameras:', data.message);
         }
       })
       .catch((error) => {
         // Gérer les erreurs en cas d'échec de la requête
         console.error('Error fetching cameras:', error);
       });
-  }, []); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
+  }, [user._id]); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
 
-
-  useEffect(() => {
-    if (user.username) {
-      const filteredCameras = allCameras.filter((camera) => camera._id === user.username);
-      setUserCameras(filteredCameras);
-    }
-  }, [user.username, allCameras]);
 
   const handleDeleteCamera = (cameraId: string) => {
-    fetch(`${BACKEND_LOCAL_ADRESS}/camera/${cameraId}`, {
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${cameraId}`, {
       method: 'DELETE',
     })
       .then((response) => response.json())
@@ -71,21 +64,32 @@ function CameraListScreen() {
       setUserCameras((prevCameras) => prevCameras.filter((camera) => camera._id !== cameraId));
   }
 
+  function handlePressAdd () {
+      setModalVisible(true)
+  };
+  
+  function handlePressClose () {
+    setModalVisible(false)
+  };
+
+
   return (
     <View>
-      <Text>List of cameras:</Text>
+      <Text>Liste des caméras:</Text>
       {userCameras.map((camera) => (
         <View key={camera._id}>
           <Text>{camera.brand}</Text>
           <Text>{camera.model}</Text>
+          <TouchableOpacity onPress={() => handlePressAdd()}>
+            <Text>Ajouter un appareil</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDeleteCamera(camera._id)}>
             <FontAwesome name="trash" size={20} color="red" style={styles.deleteIcon} />
           </TouchableOpacity>
         </View>
       ))}
     </View>
-  );
-}
+  )};
 
 
 export default CameraListScreen;
@@ -101,5 +105,8 @@ const styles = StyleSheet.create({
     },
     deleteIcon: {
       marginLeft: 10,
+    },
+    container: {
+
     },
   });

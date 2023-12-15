@@ -20,7 +20,7 @@ type LensListScreenProps = {
 function LensListScreen({ navigation }: LensListScreenProps) {
  
   const user = useSelector((state: { user: UserState }) => state.user.value);
-  const [allLenses, setAllLenses] = useState<LensType[]>([]);
+  
   const [userLenses, setUserLenses] = useState<LensType[]>([]);
 
   const [lenses, setLenses] = useState<LensType[]>([]);
@@ -28,30 +28,23 @@ function LensListScreen({ navigation }: LensListScreenProps) {
   // Effectuer une action après le rendu initial du composant
   useEffect(() => {
     // Requête à l'API pour récupérer la liste des objectifs
-    fetch(`${BACKEND_LOCAL_ADRESS}/lens`)
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/lens/${user._id}`)
       .then((response) => response.json()) 
       .then((data) => {
         if (data.result) {
           // Mettre à jour l'état local avec la liste des objectifs
-          setAllLenses(data.lenses);
+          setUserLenses(data.lenses);
         }
       })
       .catch((error) => {
         // Gérer les erreurs en cas d'échec de la requête
         console.error('Error fetching lenses:', error);
       });
-  }, []); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
+  }, [user._id]); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
 
-  useEffect(() => {
-    // Filter lenses based on the user's username
-    if (user.username) {
-      const filteredLenses = allLenses.filter((lens) => lens._id === user.username);
-      setUserLenses(filteredLenses);
-    }
-  }, [user.username, allLenses]);
-
+  
   const handleDeleteLens = (lensId: string) => {
-    fetch(`${BACKEND_LOCAL_ADRESS}/lens/${lensId}`, {
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/lens/${lensId}`, {
       method: 'DELETE',
     })
       .then((response) => response.json())
@@ -67,12 +60,11 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       });
 
       setUserLenses((prevLenses) => prevLenses.filter((lens) => lens._id !== lensId));
-
   }
 
   return (
     <View>
-      <Text>List of Lenses:</Text>
+      <Text>Liste des objectifs:</Text>
       {userLenses.map((lens) => (
         <View key={lens._id}>
           <Text>{lens.brand}</Text>

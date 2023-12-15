@@ -1,12 +1,14 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 
 import CameraListScreen from './CameraListScreen';
 import LensListScreen from './LensListScreen';
 
+
+
 const Tab = createMaterialTopTabNavigator();
+
 
 const MyMaterialScreen = () => {
   return (
