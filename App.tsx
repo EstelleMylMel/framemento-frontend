@@ -124,6 +124,7 @@ const DrawerNavigator = () => {
       drawerActiveTintColor: '#655074',
       drawerType: 'back',
       }}>
+      <Drawer.Screen name="<- Retour" component={TabNavigator} />
       <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
       <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
     </Drawer.Navigator>
@@ -139,7 +140,7 @@ const DrawerNavigator = () => {
           <AppStack.Screen name="Welcome" component={WelcomeScreen} />
           <AppStack.Screen name="Signup" component={SignupScreen} />
           <AppStack.Screen name="Signin" component={SigninScreen} />
-          <AppStack.Screen name="TabNavigator" component={TabNavigator} />
+          
           <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
           {/* ... d'autres écrans */}
         </AppStack.Navigator>
