@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 interface InputProps {

@@ -10,8 +10,6 @@ type WelcomeScreenProps = {
 
 export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
 
-  console.log('coucou')
-
     const user = useSelector((state: { user: UserState }) => state.user.value)
 
     /// Redirection sur la page rolls si l'utilisateur est déjà connecté

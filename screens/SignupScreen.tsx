@@ -46,7 +46,6 @@ type SignupScreenProps = {
               navigation.navigate('DrawerNavigator');
             }
             else  {
-              console.log('coucou');
               console.log(data);
               //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
             } 
