@@ -135,10 +135,10 @@ type RollScreenProps = {
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
                 console.log('camera : ', rollData.roll.camera)
 
-              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/657ad4751064f8bc6a5c3a3e`)  //${rollData.roll.camera} 
+              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
               .then(response => response.json())
               .then(cameraData => {
-                console.log(cameraData)
+                console.log('cameraData :', cameraData)
                 cameraData? setCamera(cameraData.camera) : console.log('no data : ', cameraData)
               })
               .catch(error => {
@@ -159,29 +159,17 @@ type RollScreenProps = {
       console.log('etat : ', camera?.brand)
     },[camera])
 
-    // si framesData ne vaut pas undefined, on map.
 
-    const frames = framesData?.map((frame: FrameType)=> {
-            
-            let title: string;
-            frame.title !== undefined ? title = frame.title : title = 'Trouver quoi mettre'; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
+    // Remplir framesData des frames existantes dans la roll en cours
 
-            let imageURI: string | undefined;
-            frame.argenticPhoto ? imageURI = frame.argenticPhoto : imageURI = frame.phonePhoto;
+    useEffect(() => {
+      fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${roll._id}`)
+      .then(response => response.json())
+      .then(data => {
+        data.result && (setFramesData(data.frames), setPreviousFrame(data.frames ? data.frames[data.frames.length -1] : {}))
+      })
+    }, []);
 
-            return (
-            <View style={styles.frameTale}>
-                <Image source={{ uri: imageURI}}/>
-                <View style={styles.frameNumberContainer}>
-                    <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
-                </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.infos}>{`${frame.date.getDate()}/${frame.date.getMonth()}/${frame.date.getFullYear()} . ${frame.shutterSpeed} . ${frame.aperture}`}</Text>
-                </View>
-            </View>
-            )
-        })
 
     function handlePressOnPlus(): void {
 
@@ -241,7 +229,12 @@ type RollScreenProps = {
 
     let firstNum: number = previousFrame?.numero ? previousFrame.numero + 1 : 1;
     
-    const numeros = listOfNums(firstNum, roll.images);
+    const numeros = listOfNums(firstNum, roll.images); 	   
+
+    console.log("previous frame: ", previousFrame)
+    console.log("previous numero: ", previousFrame?.numero)
+    console.log("roll images: ", roll.images)
+
 
     /* GERER LE SCROLL */
   
@@ -371,12 +364,40 @@ type RollScreenProps = {
       .then((data) => {
         console.log('fetch ajout frame: ', data.result)
         setUrlPhotoFromPhone(data.url);
+        setFramesData(framesData ? [...framesData, data.newFrame] : [])
+        setModalVisible(false);
         //dispatch(addPhoto(data.url));
       })
       .catch(error => {
         console.error('Erreur lors du post photo :', error);
       });
     }
+
+    // si framesData ne vaut pas undefined, on map.
+
+    const frames = framesData?.map((frame: FrameType, i: number)=> {
+            
+      let title: string;
+      frame.title !== undefined ? title = frame.title : title = 'Trouver quoi mettre'; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
+
+      let imageURI: string | undefined;
+      frame.argenticPhoto ? imageURI = frame.argenticPhoto : imageURI = frame.phonePhoto;
+
+      const date = new Date(frame.date); // conversion en Date de frame.data pour appliquer les get...() dessus
+
+      return (
+      <View key={i} style={styles.frameTale}>
+          <Image source={{ uri: imageURI}}/>
+          <View style={styles.frameNumberContainer}>
+              <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
+          </View>
+          <View style={styles.textContainer}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} . ${frame.shutterSpeed} . ${frame.aperture}`}</Text>
+          </View>
+      </View>
+      )
+    })
 
     
     
@@ -421,7 +442,7 @@ return (
                       offset: 50 * index, // Calcul de l'espacement entre les éléments
                       index,
                     })}
-                    initialScrollIndex={frameNumber ? frameNumber + 1 : 1} // Scroll initial à l'élément sélectionné
+                    initialScrollIndex={previousFrame?.numero ? previousFrame.numero + 1 : 1} // Scroll initial à l'élément sélectionné
                   />
                   <Text style={{ textAlign: 'center', fontSize: 20, marginVertical: 20, color: 'white', /*marginLeft: -150*/ }}>
                     Nombre sélectionné : {frameNumber}
@@ -640,8 +661,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
-  frameTale: {},
-  frameNumberContainer: {},
+  frameTale: {
+    flex: 1
+  },
+  frameNumberContainer: {
+    flex: 1
+  },
   frameNumber: {},
   textContainer: {},
   title: {},
