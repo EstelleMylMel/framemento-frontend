@@ -442,7 +442,7 @@ return (
                       offset: 50 * index, // Calcul de l'espacement entre les éléments
                       index,
                     })}
-                    initialScrollIndex={previousFrame?.numero ? previousFrame.numero + 1 : 1} // Scroll initial à l'élément sélectionné
+                    initialScrollIndex={0} // Scroll initial à l'élément sélectionné
                   />
                   <Text style={{ textAlign: 'center', fontSize: 20, marginVertical: 20, color: 'white', /*marginLeft: -150*/ }}>
                     Nombre sélectionné : {frameNumber}
