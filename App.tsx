@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 
 /// REDUX PERSIST ///
 import { persistStore, persistReducer } from 'redux-persist';
@@ -34,6 +34,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 /// ECRANS ///
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -43,13 +44,14 @@ import RollsScreen from './screens/RollsScreen';
 import RollScreen from './screens/RollScreen';
 import MyAccountScreen from './screens/MyAccountScreen';
 import MyMaterialScreen from './screens/MyMaterialScreen';
+import CommunityProfileScreen from './screens/CommunityProfileScreen';
 
 /// ICONS ///
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const AppStack = createNativeStackNavigator();
 const MyRollsStack = createNativeStackNavigator<RootStackParamList>();
-const CommunityStack = createNativeStackNavigator();
+const CommunityTopTab = createMaterialTopTabNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -59,6 +61,7 @@ import Header from './components/Header';
 /// IMPORTS TYPES ///
 
 import { RollType } from './types/roll';
+import CommunitySearchScreen from './screens/CommunitySearchScreen';
 
 export type RootStackParamList = {
   Rolls: undefined; // Autres écrans si nécessaire
@@ -82,13 +85,27 @@ const MyRollsStackNavigation = () => {
   )
 }
 
-const CommunityStackNavigation = () => {
+const CommunityTopTabNavigation = () => {
   /// navigation 
   return (
-    <CommunityStack.Navigator screenOptions={{ headerShown: false }}>
-      <CommunityStack.Screen name="Welcome" component={WelcomeScreen} />
-      {/* + autres pages */}
-    </CommunityStack.Navigator>
+      <CommunityTopTab.Navigator
+        screenOptions={{
+          tabBarLabelStyle: { fontSize: 16 },
+          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.3 }, // Style de la barre d'onglets
+          tabBarIndicatorStyle: { backgroundColor: '#007BFF' }, // Style de l'indicateur
+        }}
+      >
+        <CommunityTopTab.Screen
+          name="Profile"
+          component={CommunityProfileScreen}
+          options={{ tabBarLabel: 'Profile' }} // Options spécifiques à l'onglet
+        />
+        <CommunityTopTab.Screen
+          name="Search"
+          component={CommunitySearchScreen}
+          options={{ tabBarLabel: 'Search' }} // Options spécifiques à l'onglet
+        />
+      </CommunityTopTab.Navigator>
   )
 }
 
@@ -112,7 +129,7 @@ const TabNavigator = () => {
     })}>
 
       <Tab.Screen name="Mes pellicules" component={MyRollsStackNavigation} />
-      <Tab.Screen name="Communauté" component={CommunityStackNavigation} />
+      <Tab.Screen name="Communauté" component={CommunityTopTabNavigation} />
     </Tab.Navigator>
   );
 }
@@ -123,7 +140,14 @@ const DrawerNavigator = () => {
       header: (props) => <Header {...props} />,
       drawerActiveTintColor: '#655074',
       drawerType: 'back',
-      }}>
+      headerStyle: {
+        backgroundColor: 'black',
+      },
+      headerTintColor: 'black',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    }}>
       <Drawer.Screen name="<- Retour" component={TabNavigator} />
       <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
       <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
