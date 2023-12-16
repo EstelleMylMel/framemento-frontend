@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, Text
 import { useSelector } from 'react-redux';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MyMaterialScreen from './MyMaterialScreen';
 import { UserState } from '../reducers/user';
 
 // IMPORTS TYPES //
@@ -33,6 +32,8 @@ function LensListScreen({ navigation }: LensListScreenProps) {
   const handleModelChange = (text: string) => {
     setModel(text);
   };
+
+  
 
   // Effectuer une action après le rendu initial du composant
   useEffect(() => {
@@ -70,6 +71,14 @@ function LensListScreen({ navigation }: LensListScreenProps) {
 
       setUserLenses((prevLenses) => prevLenses.filter((lens) => lens._id !== lensId));
   }
+
+  const handleSaveLens = () => {
+    // Vos actions pour réinitialiser les états
+    setBrand('');
+    setModel('');
+    
+    // ... (autres actions à effectuer lors de la sauvegarde d'un objectif)
+  };
 
   return (
     <View style={styles.lensContainer}>
@@ -111,7 +120,10 @@ function LensListScreen({ navigation }: LensListScreenProps) {
             />
             <Pressable
               style={styles.buttonEnregistrer}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={() => {
+                handleSaveLens(); // Appeler la fonction pour sauvegarder l'objectif
+                setModalVisible(!modalVisible); // Cacher la modal
+              }}
             >
               <Text style={styles.textButtonSave}>Enregistrer un objectif</Text>
             </Pressable>

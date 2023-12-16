@@ -16,9 +16,9 @@ const MyMaterialScreen = () => {
       <Text style={styles.header}>Mon Matériel</Text>
       <Tab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 16 },
-          tabBarStyle: { backgroundColor: '#fff' }, // Style de la barre d'onglets
-          tabBarIndicatorStyle: { backgroundColor: '#007BFF' }, // Style de l'indicateur
+          tabBarLabelStyle: { fontSize: 16, color: 'white' },
+          tabBarStyle: { backgroundColor: '#0000' }, // Style de la barre d'onglets
+          tabBarIndicatorStyle: { backgroundColor: '#FFFF5B', width: 100, marginLeft: 55 }, // Style de l'indicateur
         }}
       >
         <Tab.Screen
@@ -40,13 +40,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    
-  },
+    },
   header: {
     color: 'white',
     fontSize: 24,
-    justifyContent: 'center',
-    alignItems: 'center',  }
+    fontWeight: 'bold',
+    textAlign: 'center', 
+    marginTop: 20,
+    marginBottom: 20,
+  }
 });
 
 export default MyMaterialScreen;
