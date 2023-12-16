@@ -85,6 +85,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
             </View>
           ))}
       <Modal
+        style={styles.modal}
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -95,6 +96,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <Text style={styles.textAdd}>Nom de l'objectif</Text>
             <TextInput
               style={styles.input}
               placeholder="Marque"
@@ -113,6 +115,12 @@ function LensListScreen({ navigation }: LensListScreenProps) {
             >
               <Text style={styles.textButtonSave}>Enregistrer un objectif</Text>
             </Pressable>
+            <Pressable
+              style={styles.buttonAnnuler}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textButtonAnnuler}>Annuler</Text>
+      </Pressable>
           </View>
         </View>
       </Modal>
@@ -132,10 +140,8 @@ export default LensListScreen;
 const styles = StyleSheet.create({
   lensContainer: {
     flex: 1,
-    marginBottom: 10,
     borderWidth: 1,
     padding: 10,
-    borderRadius: 5,
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'black',
@@ -162,6 +168,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: 'white',
   },
+  modal: {
+    
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -169,18 +178,30 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: 350,
-    height: 260,
+    height: 270,
     padding: 32,
     backgroundColor: '#000000',
     borderRadius: 16,
-    border: '0.50px white solid',
+    borderColor: 'white', // Couleur du contour
+    borderWidth: 0.5, // Largeur du contour
     flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 32,
   },
+  textAdd: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+  },
   input: {
-    // Vos styles pour les TextInput
+    backgroundColor: '#1B1B1B',
+    width: 320,
+    height: 40,
+    paddingLeft: 10,
+    marginTop: -20,
+    color: 'white',
   },
   modalText: {
     // Vos styles pour le texte modal
@@ -189,6 +210,31 @@ const styles = StyleSheet.create({
     // Vos styles pour les boutons
   },
   buttonEnregistrer: {
+    backgroundColor: '#FFFF5B',
+    width: 320,
+    height: 40,
+    paddingLeft: 4, 
+    paddingRight: 4, 
+    paddingTop: 6, 
+    paddingBottom: 6,
+    borderRadius: 12, 
+    overflow: 'hidden', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+  },
+  buttonAnnuler: {
+    backgroundColor: '#1B1B1B',
+    width: 320,
+    height: 40,
+    paddingLeft: 4, 
+    paddingRight: 4, 
+    paddingTop: 6, 
+    paddingBottom: 6,
+    borderRadius: 12, 
+    overflow: 'hidden', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginTop: -20,
   },
   textStyle: {
     color: 'white',  
@@ -220,7 +266,20 @@ const styles = StyleSheet.create({
     letterSpacing: 0.15,
   },
   textButtonSave: {
-
+    color: '#1B1B1B',
+    fontSize: 14,
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    lineHeight: 28,
+    letterSpacing: 0.15,
+  },
+  textButtonAnnuler: {
+    color: '#FFFF5B',
+    fontSize: 14,
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    lineHeight: 28,
+    letterSpacing: 0.15,
   },
   footer: {
     color: 'white', 

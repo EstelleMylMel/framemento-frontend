@@ -29,7 +29,7 @@ const MyMaterialScreen = () => {
         <Tab.Screen
           name="Lenses"
           component={LensListScreen}
-          options={{ tabBarLabel: 'Objectifs' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Objectif' }} // Options spécifiques à l'onglet
         />
       </Tab.Navigator>
     </SafeAreaView>
@@ -39,7 +39,8 @@ const MyMaterialScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    
   },
   header: {
     color: 'white',
