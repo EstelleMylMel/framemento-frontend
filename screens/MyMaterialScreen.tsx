@@ -13,6 +13,7 @@ const Tab = createMaterialTopTabNavigator();
 const MyMaterialScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Mon Matériel</Text>
       <Tab.Navigator
         screenOptions={{
           tabBarLabelStyle: { fontSize: 16 },
@@ -23,12 +24,12 @@ const MyMaterialScreen = () => {
         <Tab.Screen
           name="Cameras"
           component={CameraListScreen}
-          options={{ tabBarLabel: 'Cameras' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Appareils' }} // Options spécifiques à l'onglet
         />
         <Tab.Screen
           name="Lenses"
           component={LensListScreen}
-          options={{ tabBarLabel: 'Lenses' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Objectifs' }} // Options spécifiques à l'onglet
         />
       </Tab.Navigator>
     </SafeAreaView>
@@ -38,7 +39,13 @@ const MyMaterialScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black'
   },
+  header: {
+    color: 'white',
+    fontSize: 24,
+    justifyContent: 'center',
+    alignItems: 'center',  }
 });
 
 export default MyMaterialScreen;
