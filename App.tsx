@@ -90,20 +90,20 @@ const CommunityTopTabNavigation = () => {
   return (
       <CommunityTopTab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 16 },
-          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.3 }, // Style de la barre d'onglets
+          tabBarLabelStyle: { fontSize: 14 },
+          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.28 }, // Style de la barre d'onglets
           tabBarIndicatorStyle: { backgroundColor: '#007BFF' }, // Style de l'indicateur
         }}
       >
         <CommunityTopTab.Screen
           name="Profile"
           component={CommunityProfileScreen}
-          options={{ tabBarLabel: 'Profile' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Profil' }} // Options spécifiques à l'onglet
         />
         <CommunityTopTab.Screen
           name="Search"
           component={CommunitySearchScreen}
-          options={{ tabBarLabel: 'Search' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Rechercher' }} // Options spécifiques à l'onglet
         />
       </CommunityTopTab.Navigator>
   )
