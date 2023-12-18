@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { FrameType } from '../types/frame';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { UserState } from '../reducers/user';
+import { Picker } from '@react-native-picker/picker';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { CategoryType } from '../types/category';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 
-export default function CommunitySearchScreen() {
+export default function CommunitySearchScreen({ navigation }: { navigation: any }) {
 
   const user = useSelector((state: { user: UserState }) => state.user.value);
 
@@ -107,27 +109,27 @@ export default function CommunitySearchScreen() {
 
   /* RECHERCHE PAR USERNAME */
 
-  const route: any = useRoute();
-  const tag = route.params?.tag;
-  const navigation: any = useNavigation();
-
-  useEffect(() => {
-    fetch(`http://localhost:3000/users/search/${tag}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.result) {
-                setFramesFromUserSearched(data.framesShared);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching tweets:', error);
-        });
-  }, [tag]);
+  /*useEffect(() => {
+    if (tag) {
+      console.log(route.params)
+      console.log(`http://localhost:3000/users/search/${tag}`)
+      fetch(`http://localhost:3000/users/search/${tag}`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.result) {
+                  setFramesFromUserSearched(data.framesShared);
+              }
+          })
+          .catch(error => {
+              console.error(`Error fetching frames shared from ${tag}:`, error);
+          });
+    }
+  }, [tag]);*/
 
 
   function handleSearchKeyPress() {
     if (searchText.trim() !== '') {
-      navigation.navigate('CommunitySearchScreen', { tag: searchText });
+      navigation.navigate('CommunitySearchUsername', {searchText})
     }
   };
 
@@ -161,6 +163,31 @@ export default function CommunitySearchScreen() {
   })
 
 
+  const [categoriesPickable, setCategoriesPickable] = useState<string[]>([]);
+
+  useEffect(() => {
+      fetch(`${BACKEND_LOCAL_ADRESS}/categories`)
+      .then(response => response.json())
+      .then((data): void => {
+          if (data.result) {
+              const allCategories = data.categories.map((category: CategoryType) => category.name);
+              const allCategoriesSorted = allCategories.sort()
+              setCategoriesPickable(allCategoriesSorted);
+          } else {
+              console.log("fetch for categories went wrong")
+          }
+      })
+  }, [])
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoriesPickable[0])
+
+  function handlePressOnLens() {
+    if (selectedCategory) {
+      navigation.navigate('CommunitySearchCategory', {selectedCategory})
+    }
+  }
+
+
   return (
       <View style={styles.container}>
 
@@ -170,18 +197,36 @@ export default function CommunitySearchScreen() {
             style={styles.searchInput} 
             placeholder='Votre recherche..' 
             onChangeText={(value) => setSearchText(value)} 
-            onKeyPress={handleSearchKeyPress}
+            keyboardType="default"
+            onEndEditing={handleSearchKeyPress}
             value={searchText}
           />
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedCategory(itemValue)
+            }
+            style={styles.picker}
+          >
+            <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
+            {categoriesPickable.map((category: string) => (
+                <Picker.Item key={category} label={category} value={category} style={styles.pickerItem} />
+            ))}
+          </Picker>
+          <TouchableOpacity onPress={handlePressOnLens}>
+            <Text>Loupe</Text>
+          </TouchableOpacity>
 
 
           {/* All frames shared */}
+          <ScrollView>
           {
             allFramesShared.length > 0 
               && framesFromUserSearched.length === 0 
                 && framesFromCategorySearched.length === 0 
                   && allFramesSharedList
           }
+          </ScrollView>
 
           {/* All frames shared */}
           {
@@ -204,6 +249,22 @@ const styles = StyleSheet.create({
   },
   searchInput: {
 
+  },
+  picker: {
+    height: 50,
+    width: 300,
+    backgroundColor: '#f8f8f8',
+    borderColor: '#cccccc',
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  pickerItemTitle: {
+    color: 'black',
+    fontSize: 12,
+  },
+  pickerItem: {
+    color: 'black',
+    fontSize: 12,
   },
   frameSharedContainer: {
 
