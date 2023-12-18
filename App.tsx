@@ -58,6 +58,7 @@ const MyRollsStack = createNativeStackNavigator<RootStackParamList>();
 const CommunityTopTab = createMaterialTopTabNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+const CommunitySearchStack = createNativeStackNavigator();
 
 /// COMPONENTS ///
 import Header from './components/Header';
@@ -66,6 +67,8 @@ import Header from './components/Header';
 
 import { RollType } from './types/roll';
 import CommunitySearchScreen from './screens/CommunitySearchScreen';
+import CommunitySearchUsernameScreen from './screens/CommunitySearchUsernameScreen';
+import CommunitySearchCategoryScreen from './screens/CommunitySearchCategoryScreen';
 
 export type RootStackParamList = {
   Rolls: undefined; // Autres écrans si nécessaire
@@ -89,26 +92,42 @@ const MyRollsStackNavigation = () => {
   )
 }
 
+const CommunitySearchStackNavigation = () => {
+  return (
+    <CommunitySearchStack.Navigator screenOptions={{ headerShown: false }}>
+      <CommunitySearchStack.Screen name="CommunitySearch" component={CommunitySearchScreen}/>
+      <CommunitySearchStack.Screen name="CommunitySearchUsername" component={CommunitySearchUsernameScreen}/>
+      <CommunitySearchStack.Screen name="CommunitySearchCategory" component={CommunitySearchCategoryScreen}/>
+    </CommunitySearchStack.Navigator>
+  )
+}
+
 const CommunityTopTabNavigation = () => {
   /// navigation 
   return (
       <CommunityTopTab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 16 },
-          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.3 }, // Style de la barre d'onglets
+          tabBarLabelStyle: { fontSize: 14 },
+          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.28 }, // Style de la barre d'onglets
           tabBarIndicatorStyle: { backgroundColor: '#007BFF' }, // Style de l'indicateur
         }}
       >
         <CommunityTopTab.Screen
           name="Profile"
           component={CommunityProfileScreen}
-          options={{ tabBarLabel: 'Profile' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Profil' }}
         />
         <CommunityTopTab.Screen
           name="Search"
-          component={CommunitySearchScreen}
-          options={{ tabBarLabel: 'Search' }} // Options spécifiques à l'onglet
+          component={CommunitySearchStackNavigation}
+          options={{ tabBarLabel: 'Rechercher' }}
         />
+        {/* <CommunityTopTab.Screen
+          name="Search"
+          component={CommunitySearchScreen}
+          initialParams={{ tag: '' }}
+          options={{ tabBarLabel: 'Rechercher' }} // Options spécifiques à l'onglet
+        /> */}
       </CommunityTopTab.Navigator>
   )
 }
