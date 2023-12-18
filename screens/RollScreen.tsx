@@ -31,6 +31,9 @@ import { current } from '@reduxjs/toolkit';
 import CustomField from '../components/CustomField';
 import { faAlignJustify } from '@fortawesome/free-solid-svg-icons';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import Header from '../components/Header';
+import { isLoading } from 'expo-font';
+import ContextMenu from '../components/ContextMenu';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -43,6 +46,12 @@ type RollScreenProps = {
 
 //  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
   const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
+
+    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+
+    useEffect(()=> {
+      setTimeout(()=> setIsLoading(false), 5000);
+    },[])
     
     const user = useSelector((state: { user: UserState }) => state.user.value);
     const dispatch = useDispatch();
@@ -66,6 +75,9 @@ type RollScreenProps = {
     const [ modalTakePictureVisible, setModalTakePictureVisible ] = useState<boolean>(false);
     const [ requestCamera, setRequestCamera ] = useState<boolean>(false);
 
+    const [ contextMenuVisible, setContextualMenuVisible ] = useState<boolean>(false);
+
+    // const [ modalTest, setModalTest ] = useState<boolean>(true)
 
     /// ROLL AND FRAMES DATA ///
     const [ rollData, setRollData ] = useState<RollType | undefined>();
@@ -143,7 +155,6 @@ type RollScreenProps = {
               
                 setRollData(rollData.roll);
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
-                console.log('camera : ', rollData.roll.camera)
 
               fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
               .then(response => response.json())
@@ -183,7 +194,7 @@ type RollScreenProps = {
 
     function handlePressOnPlus(): void {
 
-        setModalAddFrameVisible(true);
+        setTimeout(()=> setModalAddFrameVisible(true), 2000);
 
         /// geoloc & date actuelles ///
         (async () => {
@@ -408,7 +419,7 @@ type RollScreenProps = {
     const frames = framesData?.map((frame: FrameType, i: number)=> {
             
       let title: string;
-      frame.title !== undefined ? title = frame.title : title = 'Trouver quoi mettre'; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
+      frame.title !== undefined ? title = frame.title : title = frame.location; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
 
       // AFFICHER L'IMAGE S'iL Y EN A UNE
       const imageURI: string | undefined = frame.argenticPhoto ? frame.argenticPhoto : undefined;
@@ -475,7 +486,6 @@ type RollScreenProps = {
           })
           .then((response) => response.json())
           .then((data) => {
-            console.log('fetch put frameToDisplay succeeded')
           })
           .catch(error => {
             console.error('Erreur lors du put frameToDisplay :', error);
@@ -564,10 +574,12 @@ type RollScreenProps = {
           .then((response) => response.json())
           .then((data) => {
             console.log('fetch put frameToDisplay succeeded')
+
           })
           .catch(error => {
             console.error('Erreur lors du put frameToDisplay :', error);
           });
+
 
           // et l'icone passe en jaune
         } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT */}
@@ -577,38 +589,32 @@ type RollScreenProps = {
     }
 
     
-    
+if (!isLoading) {    
 return (
-    <View style={styles.body}>
-        {/*<Header></Header>*/}
 
+    <View style={styles.body}>
+      
+        <Header navigation={navigation} iconLeft='arrow-back' title='R' iconRight='more-vert' onPressRightButton={() => setContextualMenuVisible(true)}/>
+       
         { <ScrollView style={styles.framesContainer}>{frames}</ScrollView> || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
-        
+       
 
         <TouchableOpacity 
             style={styles.addFrameButton} 
             activeOpacity={0.8}
             onPress={handlePressOnPlus}
           >
-          <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
+          <MaterialIcons name="add" size={40} color="#050505"/>
         </TouchableOpacity>
-
+      
         <Modal visible={modalAddFrameVisible} transparent>
+          <SafeAreaProvider>
               <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 
 
                 {/* Modal Header */}
-                <View style={styles.modalHeader}>
-                  <TouchableOpacity 
-                    onPress={() => setModalAddFrameVisible(false)} 
-                    style={styles.closeModalButton} 
-                    activeOpacity={0.8}
-                  >
-                    <FontAwesome name='times' style={styles.closeModalIcon} />
-                  </TouchableOpacity>
-                  <Text style={styles.textModalHeader}>Nouvelle photo</Text>
-                </View>
+                <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalAddFrameVisible(false)} title='Nouvelle photo'/>
 
                 <ScrollView style={styles.scrollView}>
                 {/* Modal Text Inputs */}
@@ -801,7 +807,7 @@ return (
 
                   </View>
                   </View>
-                
+            </SafeAreaProvider>
                 
         </Modal>
 
@@ -814,7 +820,14 @@ return (
 
               {/* Modal Header */}
               <SafeAreaView style={styles.modalHeader}>
-                <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
+                      {frameToDisplay?.shared?
+                      
+                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalViewFrameVisible(false)} title='Remplacer' iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)}/>
+                      :
+                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalViewFrameVisible(false)} title='Remplacer' iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)}/>
+                    }
+              
+                {/* <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
                   <MaterialIcons name="close" size={24} color="#EEEEEE" />
                 </TouchableOpacity>
                 <Text style={styles.title}>TO CHANGE !!!</Text>
@@ -827,9 +840,9 @@ return (
 
                     <MaterialIcons name='visibility' size={24} color="#FFDE67"/> 
                     :
-                    <MaterialIcons name='visibility-off' size={24} color="#AAAAAA"/> }
+                    <MaterialIcons name='visibility-off' size={24} color="#AAAAAA"/> } */}
 
-                  </TouchableOpacity>
+                  {/* </TouchableOpacity> */}
               </SafeAreaView>
         
 
@@ -896,6 +909,7 @@ return (
               </View>
         </SafeAreaProvider>
         </Modal>
+
         
         { hasPermission &&
         <Modal visible={modalTakePictureVisible} transparent>
@@ -930,10 +944,20 @@ return (
         </View>
         </Modal>
         }
+
+        <ContextMenu visible={contextMenuVisible} onClose={() => console.log('coucou')} options={[
+          { text: 'Option 1', onPress: () => console.log('Option 1 selected') },
+          { text: 'Option 2', onPress: () => console.log('Option 2 selected') },
+          // Ajoutez d'autres options ici
+        ]}/>
                 
     </View>
     
-);
+)} else return (
+  <View style={styles.body}>
+    <Text>CHARGEMENT</Text>
+  </View>
+)
 
 }
 
@@ -946,11 +970,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#050505',
+    width: '100%',
   },
   scrollView: {
     width: '100%',
+    paddingTop: 88,
     padding: 24,
     gap: 24,
+    zIndex: -1,
+
   }, 
   h2: {},
   addFrameButton: {

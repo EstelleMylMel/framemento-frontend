@@ -8,6 +8,7 @@ import { UserState } from '../reducers/user';
 import { addRoll, importRolls, removeRoll } from '../reducers/user';
 import { RollType } from '../types/roll';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Header from '../components/Header';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -93,7 +94,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
 
   function handlePressOnRoll(roll: RollType): void {
-    setTimeout(() => navigation.navigate('Roll', { roll }), 1000);
+    navigation.navigate('Roll', { roll })
   }
 
   const rollsList: JSX.Element[] = user.rolls?.map((data: RollType, i: number) => {
@@ -119,6 +120,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
   return (
       <View style={styles.body}>
+          <Header navigation={navigation} iconLeft='menu' title='Framemento'/>
           {user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
           
           { rollsList && <View style={styles.rollsContainer}>{rollsList}</View>}
@@ -254,7 +256,8 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#050505',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
+      width: '100%',
     },
     rollsContainer: {
       padding: 24,

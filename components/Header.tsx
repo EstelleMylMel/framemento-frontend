@@ -7,10 +7,15 @@ import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 
 type HeaderProps = {
-  navigation: any; // ou DrawerNavigationProp selon votre type de navigation
+  navigation: any,// ou DrawerNavigationProp selon votre type de navigation
+  iconLeft: string,
+  onPressLeftButton?: any,
+  title: string,
+  iconRight?: string,
+  onPressRightButton?: any 
 };
 
-export default function Header({ navigation }: HeaderProps) {
+export default function Header({ navigation, iconLeft, onPressLeftButton, title, iconRight, onPressRightButton }: HeaderProps) {
 
   
   const { top } = useSafeAreaInsets();
@@ -18,15 +23,84 @@ export default function Header({ navigation }: HeaderProps) {
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
+  
+  const goBack = () => {
+    navigation.goBack();
+  }
+
+  const openMoreOptions = (onPressRightButton: any) => {
+    // notamment supprimer une pellicule
+
+  }
+
+  console.log(onPressLeftButton);
 
   return (
     <SafeAreaView>
-    <View style={{ ...styles.container, top }}>
-      <TouchableOpacity onPress={openDrawer} style={styles.buttonLeft}>
-      <MaterialIcons name="menu" size={24} color="#EEEEEE" />
-       
-      </TouchableOpacity>
-      <Text style={styles.title}>Framemento</Text>
+    {/* <View style={{ ...styles.container, top }}> */}
+      <View style={styles.container}>
+
+      {/* menu drawer */}
+      {iconLeft === 'menu' && (
+        <>
+          <TouchableOpacity onPress={openDrawer} style={styles.button}>
+            <MaterialIcons name='menu' size={24} color="#EEEEEE" />
+          </TouchableOpacity>
+
+          <Text style={styles.title}>{title}</Text>
+        </>)
+      }
+
+      {/* back */}
+      {iconLeft === 'arrow-back' && (
+        <>
+        <TouchableOpacity onPress={goBack} style={styles.button}>
+          <MaterialIcons name='arrow-back' size={24} color="#EEEEEE" />
+        </TouchableOpacity>
+          <Text style={styles.title}>{title}</Text>
+        </>)
+      }
+
+      {/* close */}
+      {iconLeft === 'close' && (
+        <>
+        <TouchableOpacity onPress={onPressLeftButton} style={styles.button}>
+          <MaterialIcons name='close' size={24} color="#EEEEEE" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{title}</Text>
+        </>)
+      }
+
+      
+
+      {/* more options*/}
+      {iconRight && iconRight === 'more-vert' && (
+        <>
+        <TouchableOpacity onPress={() => openMoreOptions(onPressRightButton)} style={styles.button}>
+          <MaterialIcons name='more-vert' size={24} color="#EEEEEE" />
+        </TouchableOpacity> 
+        <Text style={styles.title}>{title}</Text>
+        </>)
+      }
+
+      {/* share */}
+      {iconRight && iconRight === 'visibility' && (
+        <>
+        <TouchableOpacity onPress={onPressRightButton} style={styles.button}>
+          <MaterialIcons name={iconRight? iconRight : ''} size={24} color="#FFDE67" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{title}</Text>
+        </>)}
+
+      {/* share */}
+      {iconRight && iconRight === 'visibility-off' && (
+        <>
+        <TouchableOpacity onPress={onPressRightButton} style={styles.button}>
+          <MaterialIcons name={iconRight? iconRight : ''} size={24} color="#EEEEEE" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{title}</Text>
+        </>)}
+
     </View>
     </SafeAreaView>
   );
@@ -34,17 +108,21 @@ export default function Header({ navigation }: HeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'row',
     position: 'absolute',
+    zIndex: 1,
     backgroundColor: '#050505',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     paddingVertical: 20,
     paddingRight: 24,
     paddingLeft: 20,
+    gap: 16,
+    height: 88,
   },
-  buttonLeft: {
+  button: {
     height: 48,
     width: 48,
     justifyContent: 'center',

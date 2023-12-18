@@ -116,19 +116,46 @@ const CommunityTopTabNavigation = () => {
 const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
+      tabBarIcon: ({ focused, color }) => {
         let iconName = '';
  
-        if (route.name === 'Home') {
-          iconName = 'home';
-        } else if (route.name === 'Profile') {
-          iconName = 'user';
+        if (route.name === 'Mes pellicules') {
+          iconName = 'camera-roll';
+        } else if (route.name === 'Communauté') {
+          iconName = 'group-work';
         }
  
-        return <FontAwesome name={iconName} size={size} color={color} />; // ATTENTION CHANGER LES ICONS
+        const iconColor = focused ? '#EEEEEE' : '#777777';
+        return <MaterialIcons name={iconName} size={24} color={iconColor}/>; // ATTENTION CHANGER LES ICONS
       },
-      tabBarActiveTintColor: '#2196f3',
-      tabBarInactiveTintColor: 'gray',
+      tabBarActiveTintColor: '#EEEEEE',
+      tabBarInactiveTintColor: '#777777',
+      tabBarStyle: {
+        backgroundColor: '#101010',
+        borderTopWidth: 0,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        shadowColor: '#000000',
+        borderRadius: 16, 
+        paddingHorizontal: 8, 
+        position: 'absolute', 
+        bottom: 10, 
+        left: 10,
+        right: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
+      },
+      tabBarLabel: ({ focused, color }) => (
+        <Text style={{ 
+          color : focused ?  '#EEEEEE' : '#777777',
+          fontFamily: focused ? 'Poppins-Medium' : 'Poppins-Light',
+          fontSize: 12,
+        }}>
+          {route.name}
+        </Text>
+      ),
       headerShown: false,
     })}>
 
@@ -141,8 +168,8 @@ const TabNavigator = () => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Signin" screenOptions={{
-      //headerShown: false,
-      header: (props) => <Header {...props} />,
+      headerShown: false,
+      //header: (props) => <Header {...props} />,
       drawerActiveTintColor: '#EEEEEE',
       drawerActiveBackgroundColor: '#050505',
       drawerInactiveTintColor: '#EEEEEE',
@@ -246,36 +273,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-
-/*
-
-import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
-
-import { createDrawerNavigator } from '@react-navigation/drawer';
-
-const Drawer = createDrawerNavigator();
-
-const DrawerNavigator = () => {
-  return (
-    <Drawer.Navigator initialRouteName="Home" screenOptions={{
-      header: (props) => <Header {...props} />,
-      drawerActiveTintColor: '#655074',
-      drawerType: 'back',
-      }}>
-      <Drawer.Screen name="Search" component={SearchScreen} />
-      <Drawer.Screen name="My recipes" component={MyRecipesScreen} />
-    </Drawer.Navigator>
-  );
-};
-
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Recipe" component={RecipeScreen} />
-          <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-        </Stack.Navigator>
-      </NavigationContainer>
-
-*/
 
