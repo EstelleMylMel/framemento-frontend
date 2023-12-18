@@ -16,7 +16,7 @@ const MyMaterialScreen = () => {
       <Text style={styles.header}>Mon Matériel</Text>
       <Tab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 16, color: 'white' },
+          tabBarLabelStyle: { fontSize: 16, color: 'white' }, // Style du titre des deux onglets (appareils et objectifs)
           tabBarStyle: { backgroundColor: '#0000' }, // Style de la barre d'onglets
           tabBarIndicatorStyle: { backgroundColor: '#FFFF5B', width: 100, marginLeft: 55 }, // Style de l'indicateur
         }}
@@ -29,7 +29,7 @@ const MyMaterialScreen = () => {
         <Tab.Screen
           name="Lenses"
           component={LensListScreen}
-          options={{ tabBarLabel: 'Objectif' }} // Options spécifiques à l'onglet
+          options={{ tabBarLabel: 'Objectifs' }} // Options spécifiques à l'onglet
         />
       </Tab.Navigator>
     </SafeAreaView>

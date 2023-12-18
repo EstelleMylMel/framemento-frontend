@@ -68,16 +68,16 @@ type SignupScreenProps = {
         <View style={styles.container}>
           {/* header ? */}
             <Text>Email</Text>
-            <TextInput style={styles.input} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
+            <TextInput style={styles.inputEmail} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
             
             <Text>Pseudo</Text>
-            <TextInput style={styles.input} placeholder={'john'} onChangeText={(value) => setUsername(value)} value={username}/>
+            <TextInput style={styles.inputPseudo} placeholder={'john'} onChangeText={(value) => setUsername(value)} value={username}/>
             
             <Text>Mot de passe</Text>
-            <TextInput style={styles.input} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
+            <TextInput style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
             
-            <TouchableOpacity onPress={handleSubscription}>
-              <Text>INSCRIPTION</Text>
+            <TouchableOpacity style={styles.buttonInscription} onPress={handleSubscription}>
+              <Text style={styles.textInscription}>INSCRIPTION</Text>
             </TouchableOpacity>
         </View>
     )
@@ -86,11 +86,60 @@ type SignupScreenProps = {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: 'black',
       alignItems: 'center',
       justifyContent: 'center',
     },
-    input: {},
-    
-
+    inputEmail: {
+      backgroundColor: 'grey',
+      width: 320,
+      height: 40,
+      paddingLeft: 10,
+      marginTop: -20,
+      color: 'white',
+      borderRadius: 12,
+      bottom: 75,
+    },
+    inputPseudo: {
+      backgroundColor: 'grey',
+      width: 320,
+      height: 40,
+      paddingLeft: 10,
+      marginTop: -20,
+      color: 'white',
+      borderRadius: 12,
+      bottom: 70,
+    }, 
+    inputPassword: {
+      backgroundColor: 'grey',
+      width: 320,
+      height: 40,
+      paddingLeft: 10,
+      marginTop: -20,
+      color: 'white',
+      borderRadius: 12,
+      bottom: 50,
+    },
+    buttonInscription: {
+      backgroundColor: '#FFFF5B',
+      width: 320,
+      height: 40,
+      paddingLeft: 4, 
+      paddingRight: 4, 
+      paddingTop: 6, 
+      paddingBottom: 6,
+      borderRadius: 12, 
+      overflow: 'hidden', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      bottom: 10,
+    },
+    textInscription: {
+      color: 'black',
+      fontSize: 14,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      lineHeight: 28,
+      letterSpacing: 0.15,
+    },
   });

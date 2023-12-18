@@ -9,6 +9,7 @@ import { UserState } from '../reducers/user';
 // IMPORTS TYPES //
 import { CameraType } from '../types/camera';
 
+
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 type CameraListScreenProps = {
@@ -25,6 +26,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
 
+  // fonctions permettant d'ajouter du texte dans les inputs
   const handleBrandChange = (text: string) => {
     setBrand(text);
   };
@@ -34,7 +36,6 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
   };
 
   
-
   // Effectuer une action après le rendu initial du composant
   useEffect(() => {
     // Requête à l'API pour récupérer la liste des appareils
@@ -52,7 +53,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
       });
   }, [user._id]); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
 
-  
+  /// supprimer une caméra ///
   const handleDeleteCamera = (cameraId: string) => {
     fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${cameraId}`, {
       method: 'DELETE',
@@ -72,13 +73,37 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
       setUserCameras((prevCameras) => prevCameras.filter((camera) => camera._id !== cameraId));
   }
 
+  // fonction permettant d'ajouter et enregistrer brand et model
   const handleSaveCamera = () => {
-    // Vos actions pour réinitialiser les états
+    // actions pour réinitialiser les états
     setBrand('');
     setModel('');
-    
-    // ... (autres actions à effectuer lors de la sauvegarde d'un appareil)
-  };
+  
+    // requête pour sauvegarder la caméra dans la collection camera
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${user._id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ brand, model }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          // Mettre à jour l'état local des caméras avec la nouvelle caméra
+          setCameras((prevCameras) => [...prevCameras, data.newCamera]);
+        
+            // Mettre à jour l'état local du UserProfile avec la nouvelle liste de caméras
+            setUserCameras((prevUserCameras) => [...prevUserCameras, data.newCamera]); 
+        } else {
+         console.error('Error saving camera', data.error);
+        }
+      })
+      .catch((error) => {
+        console.error('Error saving camera:', error);
+      });
+    };
+  
 
   return (
     <View style={styles.cameraContainer}>

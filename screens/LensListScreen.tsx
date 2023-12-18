@@ -25,6 +25,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
 
+  // fonctions permettant d'ajouter du texte dans les inputs
   const handleBrandChange = (text: string) => {
     setBrand(text);
   };
@@ -33,7 +34,6 @@ function LensListScreen({ navigation }: LensListScreenProps) {
     setModel(text);
   };
 
-  
 
   // Effectuer une action après le rendu initial du composant
   useEffect(() => {
@@ -72,12 +72,36 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       setUserLenses((prevLenses) => prevLenses.filter((lens) => lens._id !== lensId));
   }
 
+
+  // fonction permettant d'ajouter et enregistrer brand et model
   const handleSaveLens = () => {
-    // Vos actions pour réinitialiser les états
+    // actions pour réinitialiser les états
     setBrand('');
     setModel('');
-    
-    // ... (autres actions à effectuer lors de la sauvegarde d'un objectif)
+
+    // requête pour sauvegarder l'objectif
+  fetch(`${BACKEND_LOCAL_ADRESS}/material/lens/${user._id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ brand, model }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.result) {
+        // Mettre à jour l'état local des objectifs avec le nouvel objectif
+        setLenses((prevLenses) => [...prevLenses, data.newLens]);
+
+        // Mettre à jour l'état local du UserProfile avec la nouvelle liste de objectifs
+        setUserLenses((prevUserLenses) => [...prevUserLenses, data.newLens]);
+      } else {
+        console.error('Error saving lens:', data.error);
+      }
+    })
+    .catch((error) => {
+      console.error('Error saving lens:', error);
+    });
   };
 
   return (

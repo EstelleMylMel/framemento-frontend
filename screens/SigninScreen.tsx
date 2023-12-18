@@ -64,13 +64,13 @@ type SigninScreenProps = {
         <View style={styles.container}>
           {/* header ? */}
             <Text>Email</Text>
-            <TextInput style={styles.input} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
+            <TextInput style={styles.inputEmail} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
             
             <Text>Mot de passe</Text>
-            <TextInput style={styles.input} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
+            <TextInput style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
             
-            <TouchableOpacity onPress={handleSubscription}>
-              <Text>CONNEXION</Text>
+            <TouchableOpacity style={styles.buttonConnexion} onPress={handleSubscription}>
+              <Text style={styles.textConnexion}>CONNEXION</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('TabNavigator')}>
               {/* Faut il faire un composant pour les boutons ? */}
@@ -83,10 +83,50 @@ type SigninScreenProps = {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: 'black',
       alignItems: 'center',
       justifyContent: 'center',
     },
-    input: {},
-
+    inputEmail: {
+      backgroundColor: 'grey',
+      width: 320,
+      height: 40,
+      paddingLeft: 10,
+      marginTop: -20,
+      color: 'white',
+      borderRadius: 12,
+      bottom: 150,
+    },
+    inputPassword: {
+      backgroundColor: 'grey',
+      width: 320,
+      height: 40,
+      paddingLeft: 10,
+      marginTop: -20,
+      color: 'white',
+      borderRadius: 12,
+      bottom: 145,
+    },
+    buttonConnexion: {
+      backgroundColor: '#FFFF5B',
+      width: 320,
+      height: 40,
+      paddingLeft: 4, 
+      paddingRight: 4, 
+      paddingTop: 6, 
+      paddingBottom: 6,
+      borderRadius: 12, 
+      overflow: 'hidden', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      bottom: 90,
+    },
+    textConnexion: {
+      color: 'black',
+      fontSize: 14,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      lineHeight: 28,
+      letterSpacing: 0.15,
+    },
   });

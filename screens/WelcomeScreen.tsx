@@ -22,13 +22,13 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.h1}>Framemento</Text>
-            <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
+            <TouchableOpacity style={styles.buttonSignin} onPress={()=> navigation.navigate('Signup')}>
               {/* Faut il faire un composant pour les boutons ? */}
-              <Text>S'INSCRIRE</Text>
+              <Text style={styles.textSignin}>S'INSCRIRE</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=> navigation.navigate('Signin')}>
+            <TouchableOpacity style={styles.buttonSignup} onPress={()=> navigation.navigate('Signin')}>
               {/* Faut il faire un composant pour les boutons ? */}
-              <Text>SE CONNECTER</Text>
+              <Text style={styles.textSignup}>SE CONNECTER</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=> navigation.navigate('MyMaterial')}>
               <Text>DEV : MATERIAL</Text> 
@@ -40,10 +40,52 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: 'black',
       alignItems: 'center',
       justifyContent: 'center',
     },
-    h1: {},
-
+    h1: {
+      color: '#FFFF5B',
+      fontSize: 40,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      bottom: 200,
+    },
+    buttonSignin: {
+      backgroundColor: '#FFFF5B',
+      width: 300,
+      height: 45,
+      borderRadius: 12,
+      overflow: 'hidden',
+      justifyContent: 'center', 
+      alignItems: 'center',
+      top: 150,
+    },
+    textSignin: {
+      color: 'black',
+      fontSize: 18,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      lineHeight: 28,
+      letterSpacing: 0.15,
+    },
+    buttonSignup: {
+      backgroundColor: '#FFFF5B',
+      width: 300,
+      height: 45,
+      borderRadius: 12,
+      overflow: 'hidden',
+      justifyContent: 'center', 
+      alignItems: 'center',
+      top: 165,
+      marginHorizontal: 20,
+    },
+    textSignup: {
+      color: 'black',
+      fontSize: 18,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      lineHeight: 28,
+      letterSpacing: 0.15,
+    },
   });
