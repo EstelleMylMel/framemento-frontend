@@ -7,6 +7,9 @@ import type { Dispatch } from '@reduxjs/toolkit';
 import { UserState } from '../reducers/user';
 import { addRoll, importRolls, removeRoll } from '../reducers/user';
 import { RollType } from '../types/roll';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useFonts } from 'expo-font';
+
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -15,6 +18,16 @@ type RollsScreenProps = {
   };
 
 export default function RollsScreen({ navigation }: RollsScreenProps) {
+
+  // Chargement des fonts ///
+  const [fontsLoaded] = useFonts({
+    'Poppins-Medium': require('../assets/fonts/poppins/Poppins-Medium.ttf'),
+    'Poppins-Light': require('../assets/fonts/poppins/Poppins-Light.ttf')
+  });
+
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   const dispatch = useDispatch<Dispatch>();
   const user = useSelector((state: { user: UserState }) => state.user.value);
@@ -115,31 +128,32 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
         <TouchableOpacity onPress={() => handlePressOnRoll(data)}>
           <View>
             <Text style={styles.rollName}>{data.name}</Text>
-            <View style={styles.rollInfos}>
-              <Text>{data.rollType}</Text>
-              <Text>.</Text>
-              <Text>{`${data.images}`}</Text>
+            <View style={styles.rollInfosContainer}>
+              <Text style={styles.rollInfos} >{data.rollType}</Text>
+              <Text style={styles.rollInfos}> • </Text>
+              <Text style={styles.rollInfos}>{`${data.images}`}</Text>
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
+        {/* <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
           <FontAwesome name='trash' />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     )
   })
 
 
   return (
-      <View style={styles.container}>
+      <View style={styles.body}>
           {user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
-          {rollsList}
+          
+          { rollsList && <View style={styles.rollsContainer}>{rollsList}</View>}
           <TouchableOpacity 
-            style={styles.button} 
+            style={styles.addRollButton} 
             activeOpacity={0.8}
             onPress={handlePressOnPlus}
           >
-            <Text>+</Text>
+            <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
           </TouchableOpacity>
 
           <Modal visible={modalVisible} animationType="fade" transparent>
@@ -262,17 +276,28 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    body: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#050505',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'space-between',
     },
+    rollsContainer: {
+      padding: 24,
+      width: '100%',
+      gap: 16,
+    },
+
     h1: {
       
     },
-    button: {
-      
+    addRollButton: {
+      height: 80,
+      width: 80,
+      backgroundColor: '#FFDE67',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 100,
     },
     centeredView: {
       flex: 1,
@@ -377,12 +402,30 @@ const styles = StyleSheet.create({
       color: '#050505'
     },
     rollContainer: {
-
+      backgroundColor: '#101010',
+      width: '100%',
+      height: 80,
+      padding: 16,
+      borderRadius: 12,
+      
     },
     rollName: {
-
+      color: '#EEEEEE',
+      fontSize: 14,
+      fontStyle: 'normal',
+      fontWeight: '500',
+      lineHeight: 24,
+      fontFamily: 'Poppins-Medium'
+    },
+    rollInfosContainer:{
+      flexDirection: 'row',
     },
     rollInfos: {
-
+      color: '#AAAAAA',
+      fontSize: 12,
+      fontStyle: 'normal',
+      fontWeight: '300',
+      lineHeight: 24,
+      fontFamily: 'Poppins-Light'
     }
 });

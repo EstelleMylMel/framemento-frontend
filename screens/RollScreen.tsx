@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
+import { useFonts } from 'expo-font';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // IMPORTS TYPES //
 import { RollType } from '../types/roll';
@@ -24,6 +26,7 @@ import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import { current } from '@reduxjs/toolkit';
 import CustomField from '../components/CustomField';
+import { faAlignJustify } from '@fortawesome/free-solid-svg-icons';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -36,6 +39,12 @@ type RollScreenProps = {
 
 //  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
   const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
+
+    // Chargement des fonts ///
+    const [fontsLoaded] = useFonts({
+      'Poppins-Medium': require('../assets/fonts/poppins/Poppins-Medium.ttf'),
+      'Poppins-Light': require('../assets/fonts/poppins/Poppins-Light.ttf')
+    });
     
     const user = useSelector((state: { user: UserState }) => state.user.value);
 
@@ -431,11 +440,11 @@ type RollScreenProps = {
       const date = new Date(frame.date); // conversion en Date de frame.data pour appliquer les get...() dessus
 
       return (
-      <TouchableOpacity key={i} style={styles.frameTale} onPress={() => {
+      <TouchableOpacity key={i} style={styles.frameContainer} onPress={() => {
         setModalViewFrameVisible(true)
         hundlePressOnFrame(frame);
         }}>
-          <Image source={{ uri: imageURI}}/>
+          {imageURI ? (imageURI.length > 0 && <Image source={{ uri: imageURI}} style={styles.imgStyle}/>) : undefined}
           <View style={styles.frameNumberContainer}>
               <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
           </View>
@@ -553,7 +562,16 @@ return (
     <View style={styles.body}>
         {/*<Header></Header>*/}
 
-        { <ScrollView>{frames}</ScrollView> || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
+        { <ScrollView style={styles.framesContainer}>{frames}</ScrollView> || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
+        
+
+        <TouchableOpacity 
+            style={styles.addFrameButton} 
+            activeOpacity={0.8}
+            onPress={handlePressOnPlus}
+          >
+          <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
+        </TouchableOpacity>
 
         <Modal visible={modalAddFrameVisible} animationType="fade" transparent>
               <View style={styles.centeredView}>
@@ -851,11 +869,6 @@ return (
 
               </View>
         </Modal>
-                      
-        
-        <TouchableOpacity style={styles.addButton} onPress={()=> handlePressOnPlus()}>
-            <Text>+</Text>
-        </TouchableOpacity>
         
             
                   
@@ -873,25 +886,72 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#050505',
   } , 
   h2: {},
-    addButton:{
-      height: 40,
-      width: 40,
-      backgroundColor: 'grey',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  frameTale: {
-    flex: 1
+  addFrameButton: {
+    height: 80,
+    width: 80,
+    backgroundColor: '#FFDE67',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+  },
+  framesContainer: {
+    padding: 24,
+    width: '100%',
+    gap: 16,
+  },
+  frameContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#101010',
+    width: '100%',
+    height: 80,
+    padding: 16,
+    borderRadius: 12,
+    gap:16,
+  },
+  imgStyle: {
+    height: 228,
+    widht: '100%',
   },
   frameNumberContainer: {
-    flex: 1
+    heigh: 48,
+    width: 48,
+    borderRadius: 100,
+    backgroundColor: '#222222',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  frameNumber: {},
-  textContainer: {},
-  title: {},
-  infos: {},
+  frameNumber: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 20,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 32,
+    color: '#EEEEEE',
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
+    color: '#EEEEEE',
+      fontSize: 14,
+      fontStyle: 'normal',
+      fontWeight: '500',
+      lineHeight: 24,
+      fontFamily: 'Poppins-Medium'
+  },
+  infos: {
+    flexDirection: 'row',
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Light'
+  },
+
   centeredView: {
       flex: 1,
       backgroundColor: 'black',

@@ -1217,6 +1217,11 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
+"@expo-google-fonts/poppins@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/poppins/-/poppins-0.2.3.tgz#807fc1bf58948c32ddfb9c67f7329ff16cc78d14"
+  integrity sha512-PXkur1ZY/puy1PwVFYPJx8qiI3dtBzC2ig1bo53swCt7/sI7krCGYRO6hLBNp15M0kcNh2J4cCR9ZQyFxsving==
+
 "@expo/bunyan@4.0.0", "@expo/bunyan@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@expo/bunyan/-/bunyan-4.0.0.tgz#be0c1de943c7987a9fbd309ea0b1acd605890c7b"
@@ -5636,10 +5641,10 @@ react-native-ui-datepicker@^1.0.11:
   dependencies:
     uninstall "^0.0.0"
 
-react-native-vector-icons@^10.0.2:
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-10.0.2.tgz#44724e0787fb13899efce3510698d1ff69aceefb"
-  integrity sha512-ZwhUkJhIMkGL3cW7IT4sEEHu2AOzerqsRQ73UzXsB+ecBpVK5bRmp0XswiQleZKZalZfs/WIfWLXLfTQHcQo6A==
+react-native-vector-icons@^10.0.3:
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-10.0.3.tgz#369824a3b17994b2cd65edbaa32dbf9540d49678"
+  integrity sha512-ZgVlV5AdQgnPHHvBEihGf2xwyziT1acpXV1U+WfCgCv3lcEeCRsmwAsBU+kUSNsU+8TcWVsX04kdI6qUaS8D7w==
   dependencies:
     prop-types "^15.7.2"
     yargs "^16.1.1"

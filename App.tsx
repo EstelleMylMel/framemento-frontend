@@ -8,7 +8,11 @@ import storage from 'redux-persist/lib/storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import user from './reducers/user'; 
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { useFonts } from 'expo-font';
+
 
 
 /// PERSITOR A FAIRE A LA FIN DU PROJET ? ///
@@ -138,25 +142,69 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Signin" screenOptions={{
       header: (props) => <Header {...props} />,
-      drawerActiveTintColor: '#655074',
-      drawerType: 'back',
-      headerStyle: {
-        backgroundColor: 'black',
+      drawerActiveTintColor: '#EEEEEE',
+      drawerActiveBackgroundColor: '#050505',
+      drawerInactiveTintColor: '#EEEEEE',
+      drawerType: 'front',
+      // headerStyle: {
+      //   backgroundColor: 'black',
+      // },
+      drawerStyle: {
+        backgroundColor: '#050505',
+        width: 240,
       },
-      headerTintColor: 'black',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+      // headerTintColor: 'black',
+      // headerTitleStyle: {
+      //   fontWeight: 'bold',
+      // },
     }}>
-      <Drawer.Screen name="<- Retour" component={TabNavigator} />
-      <Drawer.Screen name="Mon compte" component={MyAccountScreen} />
-      <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} />
+      {/* <Drawer.Screen name="<- Retour" component={TabNavigator} /> */}
+      <Drawer.Screen name="Main" component={TabNavigator} options={{
+          drawerIcon: () => (
+            <MaterialIcons name="account-circle" color='#EEEEEE' size={24} />
+          ),
+          drawerLabel: () => (
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
+              Main
+            </Text>
+          )
+        }}/>
+      <Drawer.Screen name="Mon compte" component={MyAccountScreen} options={{
+          drawerIcon: () => (
+            <MaterialIcons name="account-circle" color='#EEEEEE' size={24} />
+          ),
+          drawerLabel: () => (
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
+              Mon compte
+            </Text>
+          )
+        }}/>
+      <Drawer.Screen name="Mes appareils" component={MyMaterialScreen} options={{
+          drawerIcon: () => (
+            <MaterialIcons name="photo-camera" color='#EEEEEE' size={24} />
+          ),
+          drawerLabel: () => (
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
+              Mes appareils
+            </Text>
+          )
+        }}/>
     </Drawer.Navigator>
   );
 };
 
 
  export default function App() {
+
+  // Chargement des fonts ///
+  const [fontsLoaded] = useFonts({
+    'Poppins-Medium': require('./assets/fonts/poppins/Poppins-Medium.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <Provider store={store}>
       <NavigationContainer>
