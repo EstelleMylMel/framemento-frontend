@@ -1,4 +1,5 @@
 import { View, Text, TextInput, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface FieldProps {
   label: string;
@@ -14,14 +15,16 @@ interface FieldProps {
 }
 
 const CustomField: React.FC<FieldProps> = ({ label, icon, value, style }) => {
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
-        {icon && <View style={styles.iconContainer}>{icon}</View>}
+        {icon && <View style={styles.iconContainer}>
+                    <MaterialIcons name={`${icon}`} size={20} color="#AAAAAA"/>
+                </View>}
         <Text style={styles.label}>{label}</Text>
       </View>
-      <Text>{value}</Text>
+      <Text style={styles.value}>{value}</Text>
     </View>
   );
 };
@@ -30,12 +33,14 @@ const CustomField: React.FC<FieldProps> = ({ label, icon, value, style }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: 20,
-    backgroundColor: '#101010',
+    backgroundColor: '#050505',
     height: 48,
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 12,
+    // borderColor: '#AAAAAA',
+    // borderWidth: 0.5,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -44,19 +49,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 18,
-    color: '#EEEEEE',
-    alignItems: 'center',
+    fontFamily: 'Poppins-Light',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    color: '#AAAAAA',
   },
   iconContainer: {
-    
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-
-  icon: {
-    fontSize: 20,
-  },
+  value: {
+    fontFamily: 'Poppins-Light',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    color: '#EEEEEE',
+    textAlign: 'right',
+  }
 });
 
 
 export default CustomField;
-
