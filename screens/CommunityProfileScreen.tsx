@@ -150,6 +150,25 @@ export default function CommunityProfileScreen() {
 
     /// AFFICHE LES FRAMES PARTAGÉES DU USER ///
 
+    const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
+    const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
+
+    function handlePressOnFrame(frame: FrameType): void {
+        fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
+            .then(response => response.json())
+            .then(data => {
+                setFrameToDisplay(data.frame);
+                if (data.frame.categories) {
+                    setSelectedCategories(data.frame.categories)
+                }
+                console.log(frameToDisplay)
+            })
+            .catch(error => {
+              console.error('Erreur lors du fetch frame cliquée :', error);
+            });
+        setModalViewFrameVisible(true)
+    }
+
     const framesSharedList = framesShared.map((frame: FrameType, i: number) => {
 
         // STYLE LIKE
@@ -161,30 +180,20 @@ export default function CommunityProfileScreen() {
 
         return (
             <View key={i} style={styles.frameSharedContainer}>
-                <TouchableOpacity onPress={() => setModalViewFrameVisible(true)}>
+                <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
                     <Image source={require("../assets/favicon.png")} style={styles.argenticPhoto} />
                 </TouchableOpacity>
                 <Text>{frame.location}</Text>
 
-                <Picker
-                    selectedValue={selectedCategoriesList}
-                    onValueChange={(itemValue: any) => handleCategorySelection(itemValue, frame._id)}
-                    style={styles.picker}
-                >
-                    <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
-                    {categoriesPickable.map((category: string) => (
-                        <Picker.Item key={category} label={category} value={category} style={styles.pickerItem} />
-                    ))}
-                </Picker>
-                <View>{selectedCategoriesList}</View>
-
                 <View style={styles.iconsContainer}>
+                    { /* Likes */ }
                     <TouchableOpacity onPress={() => handlePressOnHeart(frame)} >
-                        <FontAwesome name='tag' color={`${heartColor}`} style={styles.heartIcon} />
+                        <MaterialIcons name='favorite' color={`${heartColor}`} style={styles.heartIcon} />
                     </TouchableOpacity>
                     <Text style={styles.likeCount}>{frame.likes?.length}</Text>
-                    <FontAwesome name='tag' style={styles.commentaryIcon} />
-                    <Text style={styles.commentaryCount}>{frame.commentaries?.length}</Text>
+                    { /* Commentaries */ }
+                    {/* <FontAwesome name='tag' style={styles.commentaryIcon} />
+                    <Text style={styles.commentaryCount}>{frame.commentaries?.length}</Text> */}
                 </View>
 
             </View>
@@ -192,23 +201,8 @@ export default function CommunityProfileScreen() {
     })
 
 
-    /// VOIR LES DÉTAILS D'UNE FRAME EN CLIQUANT DESSUS ///
+    /// UNSHARE UNE FRAME ///
 
-    const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
-    const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
-
-
-    function hundlePressOnFrame(frame: FrameType): void {
-        fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
-            .then(response => response.json())
-            .then(data => {
-                setFrameToDisplay(frame);
-                console.log(frameToDisplay)
-            })
-            .catch(error => {
-              console.error('Erreur lors du fetch frame cliquée :', error);
-            });
-    }
 
     function handlePressOnShareButton(displayedFrame: FrameType | undefined) {
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/${displayedFrame?._id}`, {
@@ -248,7 +242,7 @@ export default function CommunityProfileScreen() {
 
                 {/* Modal Header */}
                 <SafeAreaView style={styles.modalHeader}>
-                    <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
+                    <TouchableOpacity onPress={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} style={styles.headerButton} activeOpacity={0.8}>
                         <MaterialIcons name="close" size={24} color="#EEEEEE" />
                     </TouchableOpacity>
                     <Text style={styles.title}>TO CHANGE !!!</Text>
@@ -270,6 +264,35 @@ export default function CommunityProfileScreen() {
                     <ScrollView style={styles.scrollView}>
                     {/* Image de l'argentique */}
                         <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={{ width: 200, height: 200 }} />
+
+                    { /* Choisir la/les catégorie.s de la photo */}
+                    <Picker
+                    selectedValue={selectedCategoriesList}
+                    onValueChange={(itemValue: any) => handleCategorySelection(itemValue, frameToDisplay._id)}
+                    style={styles.picker}
+                    dropdownIconColor='#EEEEEE'
+                    >
+                        <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
+                        {categoriesPickable.map((category: string) => (
+                            <Picker.Item 
+                                key={category} 
+                                label={category} 
+                                value={category} 
+                                style={
+                                    selectedCategories.includes(category)
+                                        ? { backgroundColor: 'black', color: "#FFDE67", fontWeight: 'bold', fontSize: 14 }
+                                        : { backgroundColor: 'black', color: '#EEEEEE', fontWeight: 'normal', fontSize: 12 }
+                                } 
+                            />
+                        ))}
+                    </Picker>
+                    <View style={styles.categories}>
+                        {
+                            selectedCategories.map((category: string, i: number) => {
+                                return <Text key={i} style={styles.category}>{category}</Text>
+                            })
+                        }
+                    </View>
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -336,25 +359,34 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: 300,
-    backgroundColor: '#f8f8f8',
+    width: 200,
+    backgroundColor: 'black',
     borderColor: '#cccccc',
     borderWidth: 1,
     borderRadius: 5,
   },
   pickerItemTitle: {
-    color: 'black',
+    color: '#EEEEEE',
     fontSize: 12,
   },
   pickerItem: {
     color: 'black',
     fontSize: 12,
   },
+  selectedPickerItem: {
+
+  },
+  categories: {
+ 
+  },
+  category: {
+    color: '#EEEEEE'
+  },
   scrollView: {
 
   },
   fieldsGroup: {
-    width: '100%',
+    width: 370,
     height: 'auto',
     borderRadius: 12,
     gap: -1,
