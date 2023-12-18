@@ -75,6 +75,17 @@ export default function CommunityProfileScreen() {
                 });
             }
         }
+        // updateLikesInFramesShared(updatedFrame)
+    }
+
+    function updateLikesInFramesShared(updatedFrame: FrameType) {
+        const updatedFramesShared = framesShared.map(frame => {
+            if (frame._id === updatedFrame._id) {
+                return updatedFrame;
+            }
+            return frame;
+        });
+        setFramesShared(updatedFramesShared);
     }
     
 
@@ -161,7 +172,6 @@ export default function CommunityProfileScreen() {
                 if (data.frame.categories) {
                     setSelectedCategories(data.frame.categories)
                 }
-                console.log(frameToDisplay)
             })
             .catch(error => {
               console.error('Erreur lors du fetch frame cliquée :', error);
@@ -187,15 +197,14 @@ export default function CommunityProfileScreen() {
 
                 <View style={styles.iconsContainer}>
                     { /* Likes */ }
-                    <TouchableOpacity onPress={() => handlePressOnHeart(frame)} >
+                    { /* <TouchableOpacity onPress={() => handlePressOnHeart(frame)} >
                         <MaterialIcons name='favorite' color={`${heartColor}`} style={styles.heartIcon} />
                     </TouchableOpacity>
-                    <Text style={styles.likeCount}>{frame.likes?.length}</Text>
+                    <Text style={styles.likeCount}>{frame.likes?.length}</Text> */}
                     { /* Commentaries */ }
                     {/* <FontAwesome name='tag' style={styles.commentaryIcon} />
                     <Text style={styles.commentaryCount}>{frame.commentaries?.length}</Text> */}
                 </View>
-
             </View>
         )
     })
@@ -268,7 +277,7 @@ export default function CommunityProfileScreen() {
                     { /* Choisir la/les catégorie.s de la photo */}
                     <Picker
                     selectedValue={selectedCategoriesList}
-                    onValueChange={(itemValue: any) => handleCategorySelection(itemValue, frameToDisplay._id)}
+                    onValueChange={(itemValue: any) => {if (frameToDisplay) handleCategorySelection(itemValue, frameToDisplay._id)}}
                     style={styles.picker}
                     dropdownIconColor='#EEEEEE'
                     >
@@ -312,6 +321,14 @@ export default function CommunityProfileScreen() {
 
                         {/* objectif */}
                         <CustomField label='Objectif' icon='circle' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
+                    </View>
+
+                    <View style={styles.fieldsGroup}>
+                        {/* ouverture */}
+                        <CustomField label='Ouverture' icon='photo-camera' value={frameToDisplay?.aperture}></CustomField>
+
+                        {/* vitesse d'obturation */}
+                        <CustomField label="Vitesse d'obturation" icon='circle' value={frameToDisplay?.shutterSpeed}></CustomField>
                     </View>
 
                     <View style={styles.fieldsGroup}>
@@ -421,7 +438,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
     alignItems: 'center',
-    },
+  },
   modalView: {
     flex:1,
     width: '100%',
@@ -432,7 +449,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    //marginTop: 52,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     width: '100%',
   },
   headerButton: {
@@ -452,8 +470,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginLeft: 15
   },
-  title:{
-
+  title: {
+    color: '#EEEEEE'
   }
 });
 
