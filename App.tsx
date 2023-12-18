@@ -141,24 +141,17 @@ const TabNavigator = () => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Signin" screenOptions={{
+      //headerShown: false,
       header: (props) => <Header {...props} />,
       drawerActiveTintColor: '#EEEEEE',
       drawerActiveBackgroundColor: '#050505',
       drawerInactiveTintColor: '#EEEEEE',
       drawerType: 'front',
-      // headerStyle: {
-      //   backgroundColor: 'black',
-      // },
       drawerStyle: {
         backgroundColor: '#050505',
         width: 240,
       },
-      // headerTintColor: 'black',
-      // headerTitleStyle: {
-      //   fontWeight: 'bold',
-      // },
     }}>
-      {/* <Drawer.Screen name="<- Retour" component={TabNavigator} /> */}
       <Drawer.Screen name="Main" component={TabNavigator} options={{
           drawerIcon: () => (
             <MaterialIcons name="account-circle" color='#EEEEEE' size={24} />
@@ -199,6 +192,9 @@ const DrawerNavigator = () => {
   // Chargement des fonts ///
   const [fontsLoaded] = useFonts({
     'Poppins-Medium': require('./assets/fonts/poppins/Poppins-Medium.ttf'),
+    'Poppins-Light': require('./assets/fonts/poppins/Poppins-Light.ttf'),
+    'Poppins-Regular': require('./assets/fonts/poppins/Poppins-Regular.ttf'),
+    'Poppins-SemiBold': require('./assets/fonts/poppins/Poppins-SemiBold.ttf'),
   });
 
   if (!fontsLoaded) {

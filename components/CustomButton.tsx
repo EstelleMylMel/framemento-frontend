@@ -24,25 +24,41 @@ const CustomButton: React.FC<CustomButtonProps> = ({ title, onPress, type }) => 
 // Styles
 const styles = StyleSheet.create({
     primaryButton: {
-        backgroundColor: '#007bff',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#FFDE67',
+        borderRadius: 8,
+        justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
+        height: 40,
         // Autres styles pour le bouton primaire
     },
     secondaryButton: {
-        backgroundColor: '#6c757d',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#050505',
+        borderRadius: 8,
+        justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
+        height: 40,
         // Autres styles pour le bouton secondaire
     },
     primaryText: {
-        color: '#fff',
+        color: '#050505',
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 14,
+        fontStyle: 'normal',
+        fontWeight: '600',
+        lineHeight: 24,
+        textTransform: 'uppercase',
         // Autres styles pour le texte du bouton primaire
     },
     secondaryText: {
-        color: '#fff',
+        color: '#FFDE67',
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 14,
+        fontStyle: 'normal',
+        fontWeight: '600',
+        lineHeight: 24,
+        textTransform: 'uppercase',
         // Autres styles pour le texte du bouton secondaire
     },
 });

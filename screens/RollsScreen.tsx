@@ -8,7 +8,6 @@ import { UserState } from '../reducers/user';
 import { addRoll, importRolls, removeRoll } from '../reducers/user';
 import { RollType } from '../types/roll';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useFonts } from 'expo-font';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -19,15 +18,6 @@ type RollsScreenProps = {
 
 export default function RollsScreen({ navigation }: RollsScreenProps) {
 
-  // Chargement des fonts ///
-  const [fontsLoaded] = useFonts({
-    'Poppins-Medium': require('../assets/fonts/poppins/Poppins-Medium.ttf'),
-    'Poppins-Light': require('../assets/fonts/poppins/Poppins-Light.ttf')
-  });
-
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
 
   const dispatch = useDispatch<Dispatch>();
   const user = useSelector((state: { user: UserState }) => state.user.value);
@@ -100,26 +90,10 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   };
 
 
-  /// SUPPRIMER UNE PELLICULE - BDD -> STORE -> ECRAN /// !! POUR LE DEV, A METTRE PLUTOT DANS ROLLSCREEN
-
-  function handlePressOnTrash(rollId: string) {
-    fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${rollId}`, { 
-        method: 'DELETE',
-        headers: { "Content-Type": "application/json" }, 
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.result) {
-          dispatch(removeRoll(rollId))
-        }
-    });
-  }
-
-
   /// AFFICHER LES PELLICULES DU USER SUR L'ECRAN ///
 
   function handlePressOnRoll(roll: RollType): void {
-    navigation.navigate('Roll', { roll });
+    setTimeout(() => navigation.navigate('Roll', { roll }), 1000);
   }
 
   const rollsList: JSX.Element[] = user.rolls?.map((data: RollType, i: number) => {

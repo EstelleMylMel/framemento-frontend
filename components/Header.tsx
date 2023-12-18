@@ -4,7 +4,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 
 
 type HeaderProps = {
@@ -13,14 +12,6 @@ type HeaderProps = {
 
 export default function Header({ navigation }: HeaderProps) {
 
-  // Chargement des fonts ///
-  const [fontsLoaded] = useFonts({
-    'Poppins-SemiBold': require('../assets/fonts/poppins/Poppins-SemiBold.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
   
   const { top } = useSafeAreaInsets();
 

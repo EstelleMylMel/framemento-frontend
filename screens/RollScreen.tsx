@@ -9,8 +9,11 @@ import dayjs from 'dayjs';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
-import { useFonts } from 'expo-font';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+
+import { useDispatch } from 'react-redux';
+import { removeRoll } from '../reducers/user';
 
 // IMPORTS TYPES //
 import { RollType } from '../types/roll';
@@ -27,6 +30,7 @@ import CustomButton from '../components/CustomButton';
 import { current } from '@reduxjs/toolkit';
 import CustomField from '../components/CustomField';
 import { faAlignJustify } from '@fortawesome/free-solid-svg-icons';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -39,14 +43,9 @@ type RollScreenProps = {
 
 //  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
   const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
-
-    // Chargement des fonts ///
-    const [fontsLoaded] = useFonts({
-      'Poppins-Medium': require('../assets/fonts/poppins/Poppins-Medium.ttf'),
-      'Poppins-Light': require('../assets/fonts/poppins/Poppins-Light.ttf')
-    });
     
     const user = useSelector((state: { user: UserState }) => state.user.value);
+    const dispatch = useDispatch();
 
     // Récupération des informations de la pellicule
     const { roll } = route.params;
@@ -65,7 +64,7 @@ type RollScreenProps = {
     const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
 
     const [ modalTakePictureVisible, setModalTakePictureVisible ] = useState<boolean>(false);
-    
+    const [ requestCamera, setRequestCamera ] = useState<boolean>(false);
 
 
     /// ROLL AND FRAMES DATA ///
@@ -149,7 +148,6 @@ type RollScreenProps = {
               fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
               .then(response => response.json())
               .then(cameraData => {
-                console.log('cameraData :', cameraData)
                 cameraData? setCamera(cameraData.camera) : console.log('no data : ', cameraData)
               })
               .catch(error => {
@@ -174,7 +172,7 @@ type RollScreenProps = {
       .then(data => {
         data.result && (setFramesData(data.frames), setPreviousFrame(data.frames ? data.frames[data.frames.length -1] : {}))
 
-      /// INITIALISER LES SLIDERS A LA BONNE POSITION
+      /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
 
       // setLastFrameSpeedValue(shutterSpeeds.findIndex((speed)=> speed == 1/Number(frameSpeed)));
       // setLastFrameApertureValue(apertures.findIndex((aperture)=> `f/${aperture}` == frameAperture));
@@ -197,7 +195,7 @@ type RollScreenProps = {
                 setLatitude(location.coords.latitude);
                 setLongitude(location.coords.longitude);
                 setDate(new Date(location.timestamp));
-                console.log(date)
+                console.log('date :',date)
               });
           }
         })();
@@ -291,54 +289,24 @@ type RollScreenProps = {
 
     /// PRISE DE PHOTO AVEC SON TELEPHONE ///
 
-    function handlePressOnAddPhotoFromPhone() { 
-
-      setModalAddFrameVisible(false);
-      setModalTakePictureVisible(true);
+    useEffect(()=> {
 
       (async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
 
-      if (!hasPermission) {
-        return <View></View>;
-      }
+    },[requestCamera])
 
-      return (
-        <Modal visible={modalTakePictureVisible} animationType="fade" transparent>
-          <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+    async function handlePressOnAddPhotoFromPhone() { 
 
-          <Camera type={type} flashMode={flashMode} ref={(ref: any) => cameraRef = ref} style={styles.camera}>
-            <View style={styles.photoButtonsContainer}>
-              <TouchableOpacity
-                onPress={() => setType(type === CameraType.back ? CameraType.front : CameraType.back)}
-                style={styles.photoButton}
-              >
-                <FontAwesome name='rotate-right' size={25} color='#ffffff' />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setFlashMode(flashMode === FlashMode.off ? FlashMode.torch : FlashMode.off)}
-                style={styles.photoButton}
-              >
-                <FontAwesome name='flash' size={25} color={flashMode === FlashMode.off ? '#ffffff' : '#e8be4b'} />
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.snapContainer}>
-              <TouchableOpacity onPress={() => cameraRef && (takePicture(), setModalTakePictureVisible(false), setModalAddFrameVisible(true))}>
-                <FontAwesome name='circle-thin' size={95} color='#ffffff' />
-              </TouchableOpacity>
-            </View>
-          </Camera>
-        </View>
-        </View>
-        </Modal>
-      );
+      if (!hasPermission) { setRequestCamera(true) }
+      setModalTakePictureVisible(true);
+      setModalAddFrameVisible(false);
 
     }
+
+    // Prendre une photo //
 
     const takePicture = async () => {
       const photo = await cameraRef.takePictureAsync({ quality: 0.3 });
@@ -363,15 +331,22 @@ type RollScreenProps = {
         .then((data) => {
           console.log('fetch ', data.result)
           setUrlPhotoFromPhone(data.url);
-          //dispatch(addPhoto(data.url));
+
+          setModalTakePictureVisible(false)
+          setModalAddFrameVisible(true)
+
         })
         .catch(error => {
           console.error('Erreur lors du fetch upload photo :', error);
         });
+
+
       
     }
 
     function handlePressOnSaveFrame(): void {
+
+      console.log('url photo from phone', urlPhotoFromPhone);
 
       const newFrame = {
         userProfileID: user._id, 
@@ -389,7 +364,7 @@ type RollScreenProps = {
         comment: commentary,
         phonePhoto: urlPhotoFromPhone,
       }
-      console.log(newFrame)
+      console.log('new frame : ' , newFrame)
 
       fetch(`${BACKEND_LOCAL_ADRESS}/frames`, {
         method: 'POST',
@@ -418,6 +393,7 @@ type RollScreenProps = {
           .then(data => {
 
             setFrameToDisplay(frame);
+            console.log(frame.argenticPhoto);
 
           })
           .catch(error => {
@@ -427,15 +403,15 @@ type RollScreenProps = {
 
     }
 
-    // si framesData ne vaut pas undefined, on map.
+    // création des éléments JSX
 
     const frames = framesData?.map((frame: FrameType, i: number)=> {
             
       let title: string;
       frame.title !== undefined ? title = frame.title : title = 'Trouver quoi mettre'; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
 
-      let imageURI: string | undefined;
-      frame.argenticPhoto ? imageURI = frame.argenticPhoto : imageURI = frame.phonePhoto;
+      // AFFICHER L'IMAGE S'iL Y EN A UNE
+      const imageURI: string | undefined = frame.argenticPhoto ? frame.argenticPhoto : undefined;
 
       const date = new Date(frame.date); // conversion en Date de frame.data pour appliquer les get...() dessus
 
@@ -444,13 +420,16 @@ type RollScreenProps = {
         setModalViewFrameVisible(true)
         hundlePressOnFrame(frame);
         }}>
+          
           {imageURI ? (imageURI.length > 0 && <Image source={{ uri: imageURI}} style={styles.imgStyle}/>) : undefined}
+          <View style={styles.frameInfos}>
           <View style={styles.frameNumberContainer}>
               <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
           </View>
           <View style={styles.textContainer}>
               <Text style={styles.title}>{title}</Text>
-              <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} . ${frame.shutterSpeed} . ${frame.aperture}`}</Text>
+              <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
+          </View>
           </View>
       </TouchableOpacity>
       )
@@ -489,18 +468,18 @@ type RollScreenProps = {
         })
         .then((response) => response.json())
         .then((data) => {
-          // fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frameToDisplay?._id}`, {
-          //   method: 'PUT',
-          //   headers: { 'Content-Type' : 'application/json'},
-          //   body: JSON.stringify({argenticPhoto: data.url}),
-          // })
-          // .then((response) => response.json())
-          // .then((data) => {
-          //   console.log('fetch put frameToDisplay succeeded')
-          // })
-          // .catch(error => {
-          //   console.error('Erreur lors du put frameToDisplay :', error);
-          // });
+          fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frameToDisplay?._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type' : 'application/json'},
+            body: JSON.stringify({argenticPhoto: data.url}),
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('fetch put frameToDisplay succeeded')
+          })
+          .catch(error => {
+            console.error('Erreur lors du put frameToDisplay :', error);
+          });
         })
         .catch(error => {
           console.error('Erreur lors du fetch upload argentic photo :', error);
@@ -525,21 +504,62 @@ type RollScreenProps = {
       }
     };
 
+    /// SUPPRIMER UNE PELICULE ///
+
+    function handlePressOnDeleteRollButton() {
+
+      fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${user._id}/${roll._id}`, { 
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result) {
+          dispatch(removeRoll(roll._id))
+        }
+    })
+    .catch(error => {
+      console.error('Erreur lors du delete roll :', error);
+    });
+  }
 
     /// MODIFIER LA FRAME AFFICHÉE ///
 
     function handlePressOnModifyFrameButton() {
 
+      // GERER LA MODIFICATION, DONC LE PASSAGE EN MODE EDITION
+
     }
 
-    function handleShareButton() {
+    /// SUPPRIMER UNE FRAME ///
+
+    function handlePressOnDeleteFrameButton() {
+
+      fetch(`${BACKEND_LOCAL_ADRESS}/frames/${user._id}/${roll._id}/${frameToDisplay?._id}`, { 
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" }, 
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.result) {
+          console.log('result detch delete frame', data.result);
+          setModalViewFrameVisible(false);
+          }
+      })
+      .catch(error => {
+        console.error('Erreur lors du delete frame :', error);
+      });
+
+    }
+
+    function handlePressOnShareButton(displayedFrame: FrameType | undefined) {
 
       if (frameToDisplay) {
         if (frameToDisplay.argenticPhoto) {
-          fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frameToDisplay?._id}`, {
+          fetch(`${BACKEND_LOCAL_ADRESS}/frames/${displayedFrame?._id}`, {
             method: 'PUT',
             headers: { 'Content-Type' : 'application/json'},
-            body: JSON.stringify({shared: true}),
+            body: JSON.stringify({shared: !displayedFrame?.shared}),
           })
           .then((response) => response.json())
           .then((data) => {
@@ -573,7 +593,7 @@ return (
           <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
         </TouchableOpacity>
 
-        <Modal visible={modalAddFrameVisible} animationType="fade" transparent>
+        <Modal visible={modalAddFrameVisible} transparent>
               <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 
@@ -590,7 +610,7 @@ return (
                   <Text style={styles.textModalHeader}>Nouvelle photo</Text>
                 </View>
 
-                <ScrollView>
+                <ScrollView style={styles.scrollView}>
                 {/* Modal Text Inputs */}
 
                 {/* Selecteur du numéro de la photo */}
@@ -610,7 +630,7 @@ return (
                     })}
                     initialScrollIndex={0} // Scroll initial à l'élément sélectionné
                   />
-                  <Text style={{ textAlign: 'center', fontSize: 20, marginVertical: 20, color: 'white', /*marginLeft: -150*/ }}>
+                  <Text style={{ textAlign: 'center', fontSize: 20, marginVertical: 20, color: 'white' }}>
                     Nombre sélectionné : {frameNumber}
                   </Text>
                 </View>
@@ -619,7 +639,7 @@ return (
 
                 <Text style={styles.paramsText}>{frameSpeed}</Text>
                 <Slider
-                  style={{width: 200, height: 40}}
+                  style={{width: '100%', height: 40}}
                   minimumValue={0}
                   maximumValue={shutterSpeeds.length -1 } // dernier index du tableau de valeurs shutterSpeeds
                   step={1}
@@ -635,7 +655,7 @@ return (
 
                 <Text style={styles.paramsText}>{frameAperture}</Text>
                 <Slider
-                  style={{width: 200, height: 40}}
+                  style={{width: '100%', height: 40}}
                   minimumValue={0}
                   maximumValue={apertures.length -1 } // dernier index du tableau de valeurs shutterSpeeds
                   step={1}
@@ -648,22 +668,15 @@ return (
                 <Text style={styles.maxText}>{apertures[shutterSpeeds.length -1]}</Text>
                 
 
-                <View style={styles.inputsGroup}>
+                <View style={styles.inputsGroup1}>
 
                     {/* Input lieu */}
 
                     <CustomInput
                         label="Lieu"
-                        icon={<Text>👤</Text>}
+                        icon='location-on'
                         value={currentAdress}
                         onChange={(value) => handleChangeLocation(value)}
-                        // style={{
-                        // container: { marginVertical: 10 },
-                        // label: { fontSize: 16, fontWeight: 'bold' },
-                        // inputContainer: { flexDirection: 'row', alignItems: 'center' },
-                        // iconContainer: { marginRight: 10 },
-                        // icon: { fontSize: 20 },
-                        // }}
                     />
 
                     {/* Input date */}
@@ -687,19 +700,12 @@ return (
 
                     <CustomInput
                         label="Météo"
-                        icon={<Text>👤</Text>}
+                        icon='cloud'
                         value={weather}
                         onChange={(value) => handleChangeWeather(value)}
-                        // style={{
-                        // container: { marginVertical: 10 },
-                        // label: { fontSize: 16, fontWeight: 'bold' },
-                        // inputContainer: { flexDirection: 'row', alignItems: 'center' },
-                        // iconContainer: { marginRight: 10 },
-                        // icon: { fontSize: 20 },
-                        // }}
                     />
                 </View>
-                <View style={styles.inputsGroup}>
+                <View style={styles.inputsGroup1}>
 
                 {/* Input appareil */}
 
@@ -719,7 +725,7 @@ return (
 
                 <CustomInput
                       label="Brand"
-                      icon={<Text>👤</Text>}
+                      icon='circle'
                       value={lensBrand? lensBrand : ''}
                       onChange={(value) => setLensBrand(value)}
                       // style={{
@@ -733,7 +739,7 @@ return (
 
                 <CustomInput
                       label="Model"
-                      icon={<Text>👤</Text>}
+                      icon='circle'
                       value={lensModel? lensModel : ''}
                       onChange={(value) => setLensModel(value)}
                       // style={{
@@ -746,11 +752,11 @@ return (
                   />
 
                 </View>
-                <View style={styles.inputsGroup}>
+                <View style={styles.inputsGroup1}>
                   {/* Input Nom */}
                   <CustomInput
                       label="Nom"
-                      icon={<Text>👤</Text>}
+                      icon='local-offer'
                       value={title}
                       onChange={(value) => setTitle(value)}
                       // style={{
@@ -767,7 +773,7 @@ return (
                   <CustomInput
                       label="Commentaire"
                       placeholder='Ajoutez un commentaire'
-                      icon={<Text>👤</Text>}
+                      icon='notes'
                       value={commentary}
                       onChange={(value) => setCommentary(value)}
                       // style={{
@@ -801,77 +807,130 @@ return (
 
 
         <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
+        <SafeAreaProvider>
               <View style={styles.centeredView}>
               <View style={styles.modalView}>
 
 
               {/* Modal Header */}
-                <View style={styles.modalHeader}>
-                  <TouchableOpacity 
-                    onPress={() => setModalViewFrameVisible(false)} 
-                    style={styles.closeModalButton} 
+              <SafeAreaView style={styles.modalHeader}>
+                <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
+                  <MaterialIcons name="close" size={24} color="#EEEEEE" />
+                </TouchableOpacity>
+                <Text style={styles.title}>TO CHANGE !!!</Text>
+                <TouchableOpacity 
+                    onPress={() => handlePressOnShareButton(frameToDisplay)} 
+                    style={styles.headerButton} 
                     activeOpacity={0.8}
                   >
-                    <FontAwesome name='times' style={styles.closeModalIcon} />
-                  </TouchableOpacity>
-                  <Text style={styles.textModalHeader}>Nouvelle photo</Text>
-                  {/* bouton partager */}
-                  <TouchableOpacity 
-                    onPress={() => handleShareButton()} 
-                    style={styles.closeModalButton} 
-                    activeOpacity={0.8}
-                  >
-                    <FontAwesome name='eye' style={styles.shareIcon} />
-                  </TouchableOpacity>
-                </View>
+                    { frameToDisplay?.shared? 
 
-                <ScrollView>
+                    <MaterialIcons name='visibility' size={24} color="#FFDE67"/> 
+                    :
+                    <MaterialIcons name='visibility-off' size={24} color="#AAAAAA"/> }
+
+                  </TouchableOpacity>
+              </SafeAreaView>
+        
+
+                <ScrollView style={styles.scrollView}>
                 {/* Image? de l'argentique */}
 
                 <TouchableOpacity onPress={pickImage} style={styles.addPhotoContainer}>
                     {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-                    {!image && <Text>Ajouter la photo numérisée</Text>}
+                    {!image && (
+                      <View style={styles.addPhotoContent}>
+                        <MaterialIcons name='add-photo-alternate' size={40} color="#AAAAAA"/>
+                      <Text style={styles.addPhotoText}>Ajouter la photo numérisée</Text>
+                    </View>
+                    )}
                 </TouchableOpacity>
                 
 
                 {/* numero photo / vitesse / ouverture */}
 
-                {/* lieu */}
-                <CustomField label='Lieu' icon='' value={frameToDisplay?.location}></CustomField>
+                <View style={styles.inputsGroup2}>
+                  {/* lieu */}
+                  <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
-                {/* date */}
-                <CustomField label='Date' icon='' value={String(frameToDisplay?.date)}></CustomField>
+                  {/* date */}
+                  <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
 
-                {/* meteo */}
-                <CustomField label='Weather' icon='' value={frameToDisplay?.weather}></CustomField>
+                  {/* meteo */}
+                  <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
+                </View>
+                <View style={styles.inputsGroup2}>
+                  {/* appareil */}
+                  <CustomField label='Appareil' icon='photo-camera' value={`${rollData?.camera.brand} - ${rollData?.camera.model}`}></CustomField>
 
-                {/* appareil */}
-                <CustomField label='Appareil' icon='' value={`${rollData?.camera.brand} - ${rollData?.camera.model}`}></CustomField>
-
-                {/* objectif */}
-                <CustomField label='Objectif' icon='' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
+                  {/* objectif */}
+                  <CustomField label='Objectif' icon='circle' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
                 
-                {/* nom */}
-                <CustomField label='Nom' icon='' value={frameToDisplay?.title}></CustomField>
+                </View>
+                <View style={styles.inputsGroup2}>
+                  {/* nom */}
+                  <CustomField label='Nom' icon='local-offer' value={frameToDisplay?.title}></CustomField>
 
-                {/* commentaire */}
-                <CustomField label='Commentaire' icon='' value={frameToDisplay?.comment}></CustomField>
+                  {/* commentaire */}
+                  <CustomField label='Commentaire' icon='notes' value={frameToDisplay?.comment}></CustomField>
+                </View>
+                {/* photo du téléphone */}
+                <TouchableOpacity onPress={handlePressOnAddPhotoFromPhone} style={styles.addPhotoContainer}>
+                      <Text>Ajouter une photo avec mon téléphone</Text>
+                      <Image source={{ uri: frameToDisplay?.phonePhoto }} style={styles.photo} />
+                  </TouchableOpacity>
 
                 </ScrollView>
                 {/* bouton modifier */}
-                
-                <CustomButton title='' type='primary' onPress={()=> handlePressOnModifyFrameButton()}></CustomButton>
+                <View style={styles.bottomButtonContainer}>
+                  <CustomButton title='MODIFIER' type='primary' onPress={()=> handlePressOnModifyFrameButton()}></CustomButton>
 
-                {/* bouton supprimer */}
+                  {/* bouton supprimer */}
 
-
+                  <TouchableOpacity onPress={handlePressOnDeleteFrameButton} style={styles.trashButtonContainer}>
+                    <MaterialIcons name="delete" size={24} color="#FFDE67"/>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               </View>
+        </SafeAreaProvider>
         </Modal>
         
+        { hasPermission &&
+        <Modal visible={modalTakePictureVisible} transparent>
+          <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+    
+          <Camera type={type} flashMode={flashMode} ref={(ref: any) => cameraRef = ref} style={styles.camera}>
+            <View style={styles.photoButtonsContainer}>
+              <TouchableOpacity
+                onPress={() => setType(type === CameraType.back ? CameraType.front : CameraType.back)}
+                style={styles.photoButton}
+              >
+                <FontAwesome name='rotate-right' size={25} color='#ffffff' />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setFlashMode(flashMode === FlashMode.off ? FlashMode.torch : FlashMode.off)}
+                style={styles.photoButton}
+              >
+                <FontAwesome name='flash' size={25} color={flashMode === FlashMode.off ? '#ffffff' : '#e8be4b'} />
+              </TouchableOpacity>
+            </View>
             
-                  
+            <View style={styles.snapContainer}>
+              <TouchableOpacity onPress={() => cameraRef && takePicture()}>
+                <FontAwesome name='circle-thin' size={95} color='#ffffff' />
+              </TouchableOpacity>
+            </View>
+          </Camera>
+          
+        </View>
+        </View>
+        </Modal>
+        }
+                
     </View>
     
 );
@@ -887,7 +946,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#050505',
-  } , 
+  },
+  scrollView: {
+    width: '100%',
+    padding: 24,
+    gap: 24,
+  }, 
   h2: {},
   addFrameButton: {
     height: 80,
@@ -903,17 +967,19 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   frameContainer: {
+    borderRadius: 12,
+  },
+  frameInfos: {
     flexDirection: 'row',
     backgroundColor: '#101010',
     width: '100%',
     height: 80,
     padding: 16,
-    borderRadius: 12,
     gap:16,
   },
   imgStyle: {
     height: 228,
-    widht: '100%',
+    width: '100%',
   },
   frameNumberContainer: {
     heigh: 48,
@@ -956,27 +1022,28 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: 'black',
       alignItems: 'center',
-      padding: 24,
   },
   modalView: {
     flex:1,
     width: '100%',
     alignItems: 'center',
-    padding: 24,
+    gap: 24,
   },
   modalHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 52
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    width: '100%',
   },
-  closeModalButton: {
-    backgroundColor: '#101010',
-    justifyContent: 'center',
-    alignItems: 'center',
+  headerButton: {
     height: 48,
     width: 48,
-    marginLeft: 20,
-    borderRadius: 16
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#101010',
+    borderRadius: 16,
   },
   closeModalIcon: {
     color: '#EEEEEE',
@@ -999,11 +1066,22 @@ const styles = StyleSheet.create({
     color: '#EEEEEE',
     fontSize: 12,
   },
-  inputsGroup: {
-    flex:1,
+  inputsGroup1: {
     width: '100%',
     height: 'auto',
     borderRadius: 12,
+    gap: -1,
+    borderColor: '#050505',
+    borderWidth: 0.5,
+    backgroundColor: 'red',
+  },
+  inputsGroup2: {
+    width: '100%',
+    height: 'auto',
+    borderRadius: 12,
+    gap: -1,
+    borderColor: '#222222',
+    borderWidth: 0.5,
   },
   fakeInput: {
     flexDirection: 'row',
@@ -1044,17 +1122,26 @@ const styles = StyleSheet.create({
   },
   addPhotoContainer: {
     borderRadius: 8,
-    boderColor: '#AAAAAA',
+    boderColor: 'white',
     borderWidth: 1,
     borderStyle: 'dashed',
     width: '100%',
     height: 104,
-    backgroundColor: 'white'
+    backgroundColor: '#050505',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addPhotoContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   camera: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+
   },
   photoButtonsContainer: {
     flex: 0.1,
@@ -1079,5 +1166,27 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingBottom: 25,
   },
-  enregistrerButton: {},
+  photo: {
+    margin: 10,
+    width: 150,
+    height: 150,
+  },
+  addPhotoText: {
+    fontFamily: 'Poppins-Light',
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    color: '#AAAAAA',
+  },
+  bottomButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    width: '100%',
+  },
+  trashButtonContainer: {
+    width: 80,
+  }
 })
