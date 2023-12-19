@@ -65,6 +65,7 @@ type RollScreenProps = {
 
     const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
     const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
+    const [ dateToDisplay, setDateToDisplay ] = useState<string>('');
 
     const [ modalTakePictureVisible, setModalTakePictureVisible ] = useState<boolean>(false);
     const [ requestCamera, setRequestCamera ] = useState<boolean>(false);
@@ -425,6 +426,15 @@ type RollScreenProps = {
       selectedFrame.title = !selectedFrame.title? selectedFrame.location : selectedFrame.title;
 
       setFrameToDisplay(selectedFrame);
+      const date = new Date(selectedFrame.date);
+
+      const formDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+
+      setModalViewFrameVisible(true)
+
+      console.log('frameToDisplay', frameToDisplay);
+
+      console.log('selectedFrame : ',selectedFrame);
 
     }
 
@@ -433,7 +443,7 @@ type RollScreenProps = {
     const frames = framesData?.map((frame: FrameType, i: number)=> {
             
       //AFFICHER LA LOCALISATION EN CAS D'ABSENCE DE TITRE
-      const thisTitle: string = frame.title ? frame.title : frame.location; 
+      const thisTitle: string = frame.title? frame.title : frame.location; 
 
       // AFFICHER L'IMAGE S'iL Y EN A UNE
       const imageURI: string | undefined = frame.argenticPhoto ? frame.argenticPhoto : undefined;
@@ -441,10 +451,7 @@ type RollScreenProps = {
       const date = new Date(frame.date); // conversion en Date de frame.data pour appliquer les get...() dessus
 
       return (
-      <TouchableOpacity key={i} style={styles.frameContainer} onPress={() => {
-        setModalViewFrameVisible(true)
-        hundlePressOnFrame(frame);
-        }}>
+      <TouchableOpacity key={i} style={styles.frameContainer} onPress={() => {hundlePressOnFrame(frame)}}>
           
           {imageURI ? (imageURI.length > 0 && <Image source={{ uri: imageURI}} style={styles.imgStyle}/>) : undefined}
           <View style={styles.frameInfos}>
@@ -592,7 +599,17 @@ type RollScreenProps = {
         } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT */}
       }
 
+      useEffect(()=> {
+        console.log('frameToDisplay',frameToDisplay?.date);
+      },[frameToDisplay])
+      
+    }
 
+    function handlePressOnCloseButton(): void {
+
+      setImage('');
+
+      setModalViewFrameVisible(false)
     }
     
 if (!isLoading) {    
@@ -850,76 +867,97 @@ return (
         </View>
 
 
-        <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
-        <SafeAreaProvider>
-          <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+        <View style={styles.centeredView}>
+          <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
+            {/* <SafeAreaView> */}
+              <View style={styles.modalView}>
 
 
               {/* Modal Header */}
               
-              <View style={styles.modalHeader}>
+              {/* <View style={styles.modalHeader}> */}
                       {
                       frameToDisplay?.shared?
                       
-                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalViewFrameVisible(false)} title='Remplacer' iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)}/>
+                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)} marginTop={20}/>
                       :
-                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalViewFrameVisible(false)} title='Remplacer' iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)}/>
+                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)} marginTop={20}/>
                     }
           
-              </View>
+              {/* </View> */}
         
               {/* Modal Content */}
 
-              <ScrollView style={styles.scrollView}>
-              {/* Image? de l'argentique */}
+              <View style={styles.mainContent}>
 
-              <TouchableOpacity onPress={pickImage} style={styles.addPhotoContainer}>
-                  {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-                  {!image && (
-                    <View style={styles.addPhotoContent}>
-                      <MaterialIcons name='add-photo-alternate' size={40} color="#AAAAAA"/>
-                      <Text style={styles.addPhotoText}>Ajouter la photo numérisée</Text>
-                    </View>
-                  )}
-              </TouchableOpacity>
-              
+                <ScrollView style={styles.scrollView}>
 
-              {/* numero photo / vitesse / ouverture */}
+                  {/* Image? de l'argentique */}
 
-              <View style={styles.inputsGroup2}>
-                {/* lieu */}
-                <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
+                  <TouchableOpacity onPress={pickImage} style={styles.addPhotoContainer}>
+                      {frameToDisplay?.argenticPhoto && <Image source={{ uri: frameToDisplay.argenticPhoto }} style={styles.photo} resizeMode='cover'/>}
+                      {!frameToDisplay?.argenticPhoto && (
+                        <View style={styles.addPhotoContent}>
+                          <MaterialIcons name='add-photo-alternate' size={40} color="#AAAAAA"/>
+                          <Text style={styles.addPhotoText}>Ajouter la photo numérisée</Text>
+                        </View>
+                      )}
+                  </TouchableOpacity>
+                  
 
-                {/* date */}
-                <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
+                  {/* numero photo / vitesse / ouverture */}
 
-                {/* meteo */}
-                <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
+                  <View style={styles.settingsContainer}>
+                        <View style={styles.settingContainer}>
+                            <Text style={styles.label2}>Photo</Text>
+                            <Text style={styles.setting}>{`${frameToDisplay?.numero}/${roll.images}`}</Text>
+                        </View>
+                        <View style={styles.settingContainer}>
+                            <Text style={styles.label2}>Vitesse</Text>
+                            <Text style={styles.setting}>{frameToDisplay?.shutterSpeed}</Text>
+                        </View>
+                        <View style={styles.settingContainer}>
+                            <Text style={styles.label2}>Ouverture</Text>
+                            <Text style={styles.setting}>{frameToDisplay?.aperture}</Text>
+                        </View>
+                  </View>
+
+                  <View style={styles.inputsGroup2}>
+                    {/* lieu */}
+                    <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
+
+                    {/* date */}
+                    <CustomField label='Date' icon='date-range' value={dateToDisplay}
+                    // {frameToDisplay?.date? `${frameToDisplay.date.getDate()}/${frameToDisplay.date.getMonth() + 1}/${frameToDisplay.date.getFullYear()}` 
+                    //                                                   : ''}
+                    />
+
+                    {/* meteo */}
+                    <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
+                  </View>
+                  <View style={styles.inputsGroup2}>
+                    {/* appareil */}
+                    <CustomField label='Appareil' icon='photo-camera' value={`${rollData?.camera.brand} - ${rollData?.camera.model}`}></CustomField>
+
+                    {/* objectif */}
+                    <CustomField label='Objectif' icon='circle' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
+                  
+                  </View>
+                  <View style={styles.inputsGroup2}>
+                    {/* nom */}
+                    <CustomField label='Nom' icon='local-offer' value={frameToDisplay?.title}></CustomField>
+
+                    {/* commentaire */}
+                    <CustomField label='Commentaire' icon='notes' value={frameToDisplay?.comment}></CustomField>
+                  </View>
+                  {/* photo du téléphone */}
+                  <TouchableOpacity onPress={handlePressOnAddPhotoFromPhone} style={styles.addPhotoContainer}>
+                        <Text>Ajouter une photo avec mon téléphone</Text>
+                        <Image source={{ uri: frameToDisplay?.phonePhoto }} style={styles.photo} />
+                    </TouchableOpacity>
+
+                </ScrollView>
               </View>
-              <View style={styles.inputsGroup2}>
-                {/* appareil */}
-                <CustomField label='Appareil' icon='photo-camera' value={`${rollData?.camera.brand} - ${rollData?.camera.model}`}></CustomField>
-
-                {/* objectif */}
-                <CustomField label='Objectif' icon='circle' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
-              
-              </View>
-              <View style={styles.inputsGroup2}>
-                {/* nom */}
-                <CustomField label='Nom' icon='local-offer' value={frameToDisplay?.title}></CustomField>
-
-                {/* commentaire */}
-                <CustomField label='Commentaire' icon='notes' value={frameToDisplay?.comment}></CustomField>
-              </View>
-              {/* photo du téléphone */}
-              <TouchableOpacity onPress={handlePressOnAddPhotoFromPhone} style={styles.addPhotoContainer}>
-                    <Text>Ajouter une photo avec mon téléphone</Text>
-                    <Image source={{ uri: frameToDisplay?.phonePhoto }} style={styles.photo} />
-                </TouchableOpacity>
-
-              </ScrollView>
-
               <View style={styles.bottomButtonContainer}>
 
                 {/* bouton modifier */}
@@ -932,10 +970,10 @@ return (
                 </TouchableOpacity>
               
               </View>
-          </View>
-          </View>
-        </SafeAreaProvider>
-        </Modal>
+              </View>
+            {/* </SafeAreaView> */}
+          </Modal>
+        </View>
 
         
         { hasPermission &&
@@ -1038,10 +1076,14 @@ const styles = StyleSheet.create({
     height: 80,
     padding: 16,
     gap:16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   imgStyle: {
     height: 228,
     width: '100%',
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12
   },
   frameNumberContainer: {
     heigh: 48,
@@ -1192,6 +1234,7 @@ const styles = StyleSheet.create({
     gap: -1,
     borderColor: '#222222',
     borderWidth: 0.5,
+    marginBottom: 24,
   },
   fakeInput: {
     marginBottom: 20,
@@ -1214,6 +1257,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Light',
     fontSize: 14,
   },
+  label2: {
+    color: '#AAAAAA',
+    textAlign: 'center',
+    fontFamily: 'Poppins-Light',
+    fontSize: 14,
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1229,16 +1278,10 @@ const styles = StyleSheet.create({
   },
   addPhotoContainer: {
     borderRadius: 8,
-    // boderColor: 'white',
-    // borderWidth: 1,
-    // borderStyle: 'dashed',
-    // width: '100%',
-    // height: 104,
-    // backgroundColor: '#050505',
     backgroundColor: '#050505',
-    height: 144,
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    height: 228,
+    marginBottom: 24,
+    width: '100%',
   },
   addPhotoContent: {
     borderRadius: 8,
@@ -1248,7 +1291,8 @@ const styles = StyleSheet.create({
     borderColor: '#222222',
     borderWidth: 1,
     borderStyle: 'dashed',
-    height: 144,
+    height: '100%',
+    width: '100%',
   },
   camera: {
     flex: 1,
@@ -1282,9 +1326,10 @@ const styles = StyleSheet.create({
     paddingBottom: 25,
   },
   photo: {
-    margin: 10,
-    width: 150,
-    height: 150,
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
   },
   addPhotoText: {
     fontFamily: 'Poppins-Light',
@@ -1300,8 +1345,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     width: '100%',
+    backgroundColor: '#050505'
   },
   trashButtonContainer: {
     width: 80,
-  }
+  },
+  settingsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  settingContainer: {
+    borderWidth: 1,
+    borderColor: "#222222",
+    borderStyle: 'solid',
+    height: 96,
+    width: 103,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  setting: {
+    color: '#AAAAAA',
+    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold' 
+  },
 })
