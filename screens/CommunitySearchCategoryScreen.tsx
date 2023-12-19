@@ -8,18 +8,19 @@ import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import CustomField from '../components/CustomField';
+import Header from '../components/Header';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 
-export default function CommunitySearchCategoryScreen({ route }: { route: any }) {
+export default function CommunitySearchCategoryScreen({ navigation, route }: { navigation: any, route: any }) {
 
   const user = useSelector((state: { user: UserState }) => state.user.value);
 
   const [framesFromCategorySearched, setFramesFromCategorySearched] = useState<FrameType[]>([]);
 
-  const navigation: any = useNavigation();
+  // const navigation: any = useNavigation();
 
 
   /// GÉRER LE LIKE - UNLIKE ///
@@ -104,12 +105,17 @@ export default function CommunitySearchCategoryScreen({ route }: { route: any })
     }
     let heartColor = isLikedByUserConnected ? "yellow" : "black";
 
+    const date = new Date(frame.date);
+
     return (
       <View key={i} style={styles.frameSharedContainer}>
         <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
-            <Image source={require("../assets/favicon.png")} style={styles.argenticPhoto} />
+            <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
-        <Text>{frame.location}</Text>
+        <View style={styles.textContainer}>
+            <Text style={styles.titleFrame}>{frame.location}</Text>
+            <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
+        </View>
 
         <View style={styles.iconsContainer}>
             { /* Likes */ }
@@ -130,34 +136,36 @@ export default function CommunitySearchCategoryScreen({ route }: { route: any })
       <View style={styles.container}>
 
         {/* Header */}
-        <TouchableOpacity style={styles.header}>
-        <Text style={styles.headerText} onPress={() => navigation.goBack()}>Retour</Text>
-        </TouchableOpacity>
+        <View style={styles.topContainer}>
+          <View style={styles.subTopContainer}>
+            <Text style={styles.profileText}>{route.params.selectedCategory}</Text>
+          </View>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="arrow-back" size={30} color="#EEEEEE" style={{ marginLeft: 15 }} />
+          </TouchableOpacity>
+        </View>
 
         {/* All frames shared */}
-        <ScrollView>
+        <ScrollView style={styles.scrollView}>
         { framesFromCategorySearchedList }
+        { framesFromCategorySearched.length > 0 && framesFromCategorySearchedList }
+        { framesFromCategorySearched.length === 0 && <Text style={{ color: '#EEEEEE', textAlign: 'center', marginTop: 200 }}>Aucune photo partagée dans cette catégorie.</Text>}
         </ScrollView>
 
+        <View style={styles.centeredView}>
         <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
-                <View style={styles.centeredView}>
                 <View style={styles.modalView}>
 
 
                 {/* Modal Header */}
-                <SafeAreaView style={styles.modalHeader}>
-                    <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
-                        <MaterialIcons name="close" size={24} color="#EEEEEE" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>TO CHANGE !!!</Text>
-                    <Text style={styles.title}>{route.params.selectedCategory}</Text>
-                </SafeAreaView>
-            
 
-                    <ScrollView style={styles.scrollView}>
+                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' onPressLeftButton={() => setModalViewFrameVisible(false)} />
+
+            
+                    <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
-                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={{ width: 200, height: 200 }} />
+                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -203,9 +211,9 @@ export default function CommunitySearchCategoryScreen({ route }: { route: any })
 
                 </View>
 
-                </View>
             </SafeAreaProvider>
         </Modal>
+        </View>
 
       </View>
   );
@@ -213,26 +221,97 @@ export default function CommunitySearchCategoryScreen({ route }: { route: any })
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 70,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#050505',
   },
-  header: {
-    backgroundColor: 'black'
+  topContainer: {
+    flexDirection: 'row',
+    marginTop: 25,
+    width: '88%',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  headerText: {
-    color: 'white'
+  subTopContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  searchText: {
-    fontSize: 14,
-    color: 'black'
+  topContainerProfile: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Poppins-Medium',
+    marginBottom: 20,
   },
-  searchInput: {
+  topContainerText: {
+    fontSize: 15,
+    color: '#EEEEEE',
+    fontFamily: 'Poppins-Medium',
+  },
+  profilePicture: {
+    height: 50,
+    width: 50,
+    borderRadius: 10,
+    marginRight: 15,
+  },
+  profileText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#EEEEEE'
+  },
+  noFrameText: {
+    color: '#EEEEEE'
+  },
+  pickerContainer: {
+    marginTop: 25,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  picker: {
+    height: 50,
+    width: 200,
+    backgroundColor: 'black',
+    borderColor: '#cccccc',
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  pickerItemTitle: {
+    backgroundColor: 'black',
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontFamily: 'Poppins-Light'
+  },
+  pickerItem: {
+    color: 'black',
+    fontSize: 12,
+  },
+  categories: {
 
+  },
+  category: {
+    color: '#EEEEEE',
+    fontSize: 12,
+    fontFamily: 'Poppins-Light'
   },
   scrollView: {
-
-  },
+    width: '100%',
+    paddingBottom: 24,
+    paddingLeft: 24,
+    paddingRight: 24,
+    gap: 24,
+    marginTop: 10
+  }, 
+  scrollViewModal: {
+    width: '100%',
+    padding: 10,
+    gap: 24,
+    marginTop: 80,
+    backgroundColor: '#050505'
+  }, 
   fieldsGroup: {
     width: 370,
     height: 'auto',
@@ -245,10 +324,36 @@ const styles = StyleSheet.create({
 
   },
   frameSharedContainer: {
-
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: 15
   },
   argenticPhoto: {
-
+    height: 228,
+    width: '100%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12
+  },
+  textContainer: {
+    flex: 1,
+    marginTop: 7
+  },
+  titleFrame: {
+    color: '#EEEEEE',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Medium'
+  },
+  infos: {
+    flexDirection: 'row',
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Light'
   },
   iconsContainer: {
 
@@ -271,10 +376,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    flex:1,
     width: '100%',
-    alignItems: 'center',
-    gap: 24,
+    height: '100%',
+    justifyContent: 'flex-start',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -302,6 +406,6 @@ const styles = StyleSheet.create({
     marginLeft: 15
   },
   title: {
-    color: '#EEEEEE'
-  }
+    color: '#EEEEEE',
+  },
 });

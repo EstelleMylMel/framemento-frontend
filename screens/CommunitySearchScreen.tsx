@@ -5,17 +5,25 @@ import { FrameType } from '../types/frame';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { UserState } from '../reducers/user';
 import { Picker } from '@react-native-picker/picker';
-import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { CategoryType } from '../types/category';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import CustomField from '../components/CustomField';
+import Header from '../components/Header';
+import { RootStackParamList } from '../App';
+import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
 
+
+
+// Typage du contenu des paramètres de la route
+type CommunitySearchScreenProps = {
+  navigation: NavigationProp<RootStackParamList>,
+};
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 
-export default function CommunitySearchScreen({ navigation }: { navigation: any }) {
+const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
 
   const user = useSelector((state: { user: UserState }) => state.user.value);
 
@@ -103,12 +111,17 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
     }
     let heartColor = isLikedByUserConnected ? "yellow" : "black";
 
+    const date = new Date(frame.date);
+    
     return (
       <View key={i} style={styles.frameSharedContainer}>
         <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
-            <Image source={require("../assets/favicon.png")} style={styles.argenticPhoto} />
+            <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
-        <Text>{frame.location}</Text>
+        <View style={styles.textContainer}>
+            <Text style={styles.titleFrame}>{frame.location}</Text>
+            <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
+        </View>
 
         <View style={styles.iconsContainer}>
           { /* Likes */ }
@@ -124,6 +137,12 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
     )
   })
 
+
+  function handlePressOnLensUser() {
+    if (searchText) {
+      navigation.navigate('CommunitySearchUsername', {searchText})
+    }
+  }
 
   function handleSearchKeyPress() {
     if (searchText.trim() !== '') {
@@ -150,7 +169,7 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
 
   const [selectedCategory, setSelectedCategory] = useState<string>(categoriesPickable[0])
 
-  function handlePressOnLens() {
+  function handlePressOnLensCategory() {
     if (selectedCategory) {
       navigation.navigate('CommunitySearchCategory', {selectedCategory})
     }
@@ -162,16 +181,20 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
 
           {/* Header */}
           <View style={styles.topContainer}>
+            <Text style={styles.inspirationText}>En quête d'inspiration ?</Text>
             <View style={styles.topContainerSub1}>
-              <Text style={styles.searchText}>En quête d'inspiration ?</Text>
               <TextInput 
                 style={styles.searchInput} 
-                placeholder='Votre recherche..' 
+                placeholder="Entrer un nom d'utilisateur" 
+                placeholderTextColor='#AAAAAA'
                 onChangeText={(value) => setSearchText(value)} 
                 keyboardType="default"
                 onEndEditing={handleSearchKeyPress}
                 value={searchText}
               />
+              <TouchableOpacity onPress={handlePressOnLensUser}>
+                <MaterialIcons name='search' size={30} color={searchText ? "#FFDE67" : "#AAAAAA"} style={{ marginRight: 5 }}/> 
+              </TouchableOpacity>
             </View>
             <View style={styles.topContainerSub2}>
               <Picker
@@ -196,35 +219,29 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
                     />
                 ))}
               </Picker>
-              <TouchableOpacity onPress={handlePressOnLens}>
-                <MaterialIcons name='search' size={30} color={selectedCategory ? "#FFDE67" : "#AAAAAA"} style={{ marginLeft: 10 }}/> 
+              <TouchableOpacity onPress={handlePressOnLensCategory}>
+                <MaterialIcons name='search' size={30} color={selectedCategory ? "#FFDE67" : "#AAAAAA"} style={{ marginRight: 6 }}/> 
               </TouchableOpacity>
             </View>
           </View>
 
           {/* All frames shared */}
-          <ScrollView>
+          <ScrollView style={styles.scrollView}>
           { allFramesShared.length > 0  && allFramesSharedList }
           </ScrollView>
 
+          <View style={styles.centeredView}>
           <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
-                <View style={styles.centeredView}>
                 <View style={styles.modalView}>
 
 
                 {/* Modal Header */}
-                <SafeAreaView style={styles.modalHeader}>
-                    <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
-                        <MaterialIcons name="close" size={24} color="#EEEEEE" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>TO CHANGE !!!</Text>
-                </SafeAreaView>
-            
+                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' onPressLeftButton={() => setModalViewFrameVisible(false)} />
 
-                    <ScrollView style={styles.scrollView}>
+                    <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
-                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={{ width: 200, height: 200 }} />
+                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -270,50 +287,76 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
 
                 </View>
 
-                </View>
+                
             </SafeAreaProvider>
         </Modal>
+        </View>
 
       </View>
   );
 };
 
+export default CommunitySearchScreen;
+
 const styles = StyleSheet.create({
   container: {
-    marginTop: 70,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    //backgroundColor: '#050505',
+    backgroundColor: '#050505',
   },
   topContainer: {
     marginTop: 25,
+    width: '88%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'flex-start',
   },
   topContainerSub1: {
+    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     fontFamily: 'Poppins-Medium',
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 10,
+    borderLeftColor: '#EEEEEE',
+    borderLeftWidth: 1
   },
   topContainerSub2: {
+    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     fontFamily: 'Poppins-Medium',
     marginBottom: 20,
+    borderLeftColor: '#EEEEEE',
+    borderLeftWidth: 1
   },
-  searchText: {
-    fontSize: 14,
-    color: 'black'
+  inspirationText: {
+    fontSize: 16,
+    color: '#AAAAAA',
+    marginBottom: 20,
+    marginTop: 10
   },
   searchInput: {
-
+    color: '#EEEEEE',
+    marginLeft: 17
   },
   scrollView: {
-
-  },
+    width: '100%',
+    paddingBottom: 24,
+    paddingLeft: 24,
+    paddingRight: 24,
+    gap: 24,
+    marginTop: 10
+  }, 
+  scrollViewModal: {
+    width: '100%',
+    padding: 10,
+    gap: 24,
+    marginTop: 80,
+    backgroundColor: '#050505'
+  }, 
   fieldsGroup: {
     width: 370,
     height: 'auto',
@@ -327,7 +370,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: 200,
+    width: 230,
     backgroundColor: 'black',
     borderColor: '#cccccc',
     borderWidth: 1,
@@ -336,7 +379,7 @@ const styles = StyleSheet.create({
   pickerItemTitle: {
     backgroundColor: 'black',
     color: '#AAAAAA',
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Poppins-Light'
   },
   pickerItem: {
@@ -349,10 +392,36 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Light'
   },
   frameSharedContainer: {
-
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: 15
   },
   argenticPhoto: {
-
+    height: 228,
+    width: '100%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12
+  },
+  textContainer: {
+    flex: 1,
+    marginTop: 7
+  },
+  titleFrame: {
+    color: '#EEEEEE',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Medium'
+  },
+  infos: {
+    flexDirection: 'row',
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Light'
   },
   iconsContainer: {
 
@@ -375,10 +444,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    flex:1,
     width: '100%',
-    alignItems: 'center',
-    gap: 24,
+    height: '100%',
+    justifyContent: 'flex-start',
   },
   modalHeader: {
     flexDirection: 'row',
