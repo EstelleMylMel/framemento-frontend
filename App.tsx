@@ -33,7 +33,7 @@ const store = configureStore({
 //const persistor = persistStore(store);
 
 /// NAVIGATION ///
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -69,6 +69,7 @@ import { RollType } from './types/roll';
 import CommunitySearchScreen from './screens/CommunitySearchScreen';
 import CommunitySearchUsernameScreen from './screens/CommunitySearchUsernameScreen';
 import CommunitySearchCategoryScreen from './screens/CommunitySearchCategoryScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
   Rolls: undefined; // Autres écrans si nécessaire
@@ -102,14 +103,22 @@ const CommunitySearchStackNavigation = () => {
   )
 }
 
-const CommunityTopTabNavigation = () => {
+// Typage du contenu des paramètres de la route
+type TopTabNavigationProps = {
+  navigation: NavigationProp<RootStackParamList>,
+};
+
+const CommunityTopTabNavigation: React.FC<TopTabNavigationProps> = ({navigation}) => {
   /// navigation 
   return (
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+      <Header navigation={navigation} iconLeft='menu' title='Framemento' marginTop={35} />
       <CommunityTopTab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 14 },
-          tabBarStyle: { backgroundColor: '#fff', justifyContent: 'flex-end', flex: 0.28 }, // Style de la barre d'onglets
-          tabBarIndicatorStyle: { backgroundColor: '#007BFF' }, // Style de l'indicateur
+          tabBarLabelStyle: { fontSize: 14, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', fontWeight: '600' },
+          tabBarStyle: { backgroundColor: '#050505', justifyContent: 'flex-end', flex: 0.10, marginTop: 85 }, // Style de la barre d'onglets
+          tabBarIndicatorStyle: { backgroundColor: '#FFDE67' }, // Style de l'indicateur
         }}
       >
         <CommunityTopTab.Screen
@@ -129,6 +138,8 @@ const CommunityTopTabNavigation = () => {
           options={{ tabBarLabel: 'Rechercher' }} // Options spécifiques à l'onglet
         /> */}
       </CommunityTopTab.Navigator>
+      </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 
@@ -145,7 +156,7 @@ const TabNavigator = () => {
         }
  
         const iconColor = focused ? '#EEEEEE' : '#777777';
-        return <MaterialIcons name={iconName} size={24} color={iconColor}/>; // ATTENTION CHANGER LES ICONS
+        return <MaterialIcons name={iconName} size={24} color={iconColor} style={{ marginBottom: -10 }}/>; // ATTENTION CHANGER LES ICONS
       },
       tabBarActiveTintColor: '#EEEEEE',
       tabBarInactiveTintColor: '#777777',
@@ -156,14 +167,14 @@ const TabNavigator = () => {
         shadowOpacity: 0.3,
         shadowRadius: 20,
         shadowColor: '#000000',
-        borderRadius: 16, 
-        paddingHorizontal: 8, 
+        // borderRadius: 16, 
+        // paddingHorizontal: 8, 
         position: 'absolute', 
         zIndex: 0, 
-        bottom: 10, 
-        left: 10,
-        right: 10,
-        justifyContent: 'center',
+        // bottom: 10, 
+        // left: 10,
+        // right: 10,
+        justifyContent: 'space-around',
         alignItems: 'center',
         height: 80,
       },
@@ -172,6 +183,7 @@ const TabNavigator = () => {
           color : focused ?  '#EEEEEE' : '#777777',
           fontFamily: focused ? 'Poppins-Medium' : 'Poppins-Light',
           fontSize: 12,
+          marginBottom: 10
         }}>
           {route.name}
         </Text>

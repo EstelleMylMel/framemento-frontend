@@ -12,10 +12,11 @@ type HeaderProps = {
   onPressLeftButton?: any,
   title: string,
   iconRight?: string,
-  onPressRightButton?: any 
+  onPressRightButton?: any,
+  marginTop?: number 
 };
 
-export default function Header({ navigation, iconLeft, onPressLeftButton, title, iconRight, onPressRightButton }: HeaderProps) {
+export default function Header({ navigation, iconLeft, onPressLeftButton, title, iconRight, onPressRightButton, marginTop }: HeaderProps) {
 
   
   const { top } = useSafeAreaInsets();
@@ -38,7 +39,7 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
   return (
     <SafeAreaView>
     {/* <View style={{ ...styles.container, top }}> */}
-      <View style={styles.container}>
+      <View style={{...styles.container, marginTop}}>
 
       {/* menu drawer */}
       {iconLeft === 'menu' && (

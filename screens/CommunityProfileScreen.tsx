@@ -12,12 +12,20 @@ import CustomField from '../components/CustomField';
 import CustomButton from '../components/CustomButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import Header from '../components/Header';
+import { RootStackParamList } from '../App';
+import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
 
 
+
+// Typage du contenu des paramètres de la route
+type CommunityProfileScreenProps = {
+    navigation: NavigationProp<RootStackParamList>,
+};
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
-export default function CommunityProfileScreen() {
+const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigation }) => {
 
     const user = useSelector((state: { user: UserState }) => state.user.value);
 
@@ -243,7 +251,7 @@ export default function CommunityProfileScreen() {
     return (
         <View style={styles.container}>
 
-            {/* Header */}
+            {/* Sous Header */}
             <View style={styles.topContainer}>
                 <View style={styles.topContainerProfile}>
                     <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
@@ -257,31 +265,16 @@ export default function CommunityProfileScreen() {
                 {framesShared.length > 0 && framesSharedList}
             </ScrollView>
 
+            <View style={styles.centeredView}>
             <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
-                <View style={styles.centeredView}>
+                
                 <View style={styles.modalView}>
 
 
                 {/* Modal Header */}
-                <SafeAreaView style={styles.modalHeader}>
-                    <TouchableOpacity onPress={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} style={styles.headerButton} activeOpacity={0.8}>
-                        <MaterialIcons name="close" size={24} color="#EEEEEE" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>TO CHANGE !!!</Text>
-                    <TouchableOpacity 
-                        onPress={() => handlePressOnShareButton(frameToDisplay)} 
-                        style={styles.headerButton} 
-                        activeOpacity={0.8}
-                    >
-                        { frameToDisplay?.shared? 
 
-                        <MaterialIcons name='visibility' size={24} color="#FFDE67"/> 
-                        :
-                        <MaterialIcons name='visibility-off' size={24} color="#AAAAAA"/> }
-
-                    </TouchableOpacity>
-                </SafeAreaView>
+                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' iconRight='visibility' onPressLeftButton={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} onPressRightButton={() => handlePressOnShareButton(frameToDisplay)} />
             
 
                     <ScrollView style={styles.scrollViewModal}>
@@ -363,13 +356,16 @@ export default function CommunityProfileScreen() {
 
                 </View>
 
-                </View>
+                
             </SafeAreaProvider>
             </Modal>
+            </View>
 
         </View>
     );
 };
+
+export default CommunityProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -454,6 +450,8 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     gap: 24,
+    marginTop: 80,
+    backgroundColor: '#050505'
   }, 
   fieldsGroup: {
     width: 370,
@@ -517,10 +515,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    flex:1,
     width: '100%',
-    alignItems: 'center',
-    gap: 24,
+    height: '100%',
+    justifyContent: 'flex-start',
   },
   modalHeader: {
     flexDirection: 'row',
