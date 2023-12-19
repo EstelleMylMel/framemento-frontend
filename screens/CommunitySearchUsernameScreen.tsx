@@ -130,12 +130,18 @@ export default function CommunitySearchUsernameScreen({ route }: { route: any })
       <View style={styles.container}>
 
         {/* Header */}
-        <TouchableOpacity style={styles.header}>
-            <Text style={styles.headerText} onPress={() => navigation.goBack()}>Retour</Text>
-        </TouchableOpacity>
+        <View style={styles.header}>
+            <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
+            <Text style={styles.profileText}>{route.params.searchText}</Text>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={styles.headerText}>Retour</Text>
+            </TouchableOpacity>
+        </View>
 
         {/* All frames shared */}
+        <ScrollView>
         { framesFromUserSearchedList }
+        </ScrollView>
 
         <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
@@ -216,10 +222,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    backgroundColor: 'black'
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  profilePicture: {
+    height: 60,
+    width: 60
+  },
+  profileText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   headerText: {
-    color: 'white'
+
   },
   searchText: {
     fontSize: 14,

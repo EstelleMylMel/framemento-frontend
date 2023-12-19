@@ -161,31 +161,46 @@ export default function CommunitySearchScreen({ navigation }: { navigation: any 
       <View style={styles.container}>
 
           {/* Header */}
-          <Text style={styles.searchText}>En quête d'inspiration ?</Text>
-          <TextInput 
-            style={styles.searchInput} 
-            placeholder='Votre recherche..' 
-            onChangeText={(value) => setSearchText(value)} 
-            keyboardType="default"
-            onEndEditing={handleSearchKeyPress}
-            value={searchText}
-          />
-          <Picker
-            selectedValue={selectedCategory}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedCategory(itemValue)
-            }
-            style={styles.picker}
-          >
-            <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
-            {categoriesPickable.map((category: string) => (
-                <Picker.Item key={category} label={category} value={category} style={styles.pickerItem} />
-            ))}
-          </Picker>
-          <TouchableOpacity onPress={handlePressOnLens}>
-            <Text>Loupe</Text>
-          </TouchableOpacity>
-
+          <View style={styles.topContainer}>
+            <View style={styles.topContainerSub1}>
+              <Text style={styles.searchText}>En quête d'inspiration ?</Text>
+              <TextInput 
+                style={styles.searchInput} 
+                placeholder='Votre recherche..' 
+                onChangeText={(value) => setSearchText(value)} 
+                keyboardType="default"
+                onEndEditing={handleSearchKeyPress}
+                value={searchText}
+              />
+            </View>
+            <View style={styles.topContainerSub2}>
+              <Picker
+                selectedValue={selectedCategory}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedCategory(itemValue)
+                }
+                style={styles.picker}
+                dropdownIconColor='#AAAAAA'
+              >
+                <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
+                {categoriesPickable.map((category: string) => (
+                    <Picker.Item 
+                      key={category} 
+                      label={category} 
+                      value={category} 
+                      style={
+                        selectedCategory === category
+                            ? { backgroundColor: 'black', color: "#FFDE67", fontWeight: 'bold', fontSize: 12 }
+                            : { backgroundColor: 'black', color: '#EEEEEE', fontWeight: 'normal', fontSize: 12 }
+                      } 
+                    />
+                ))}
+              </Picker>
+              <TouchableOpacity onPress={handlePressOnLens}>
+                <MaterialIcons name='search' size={30} color={selectedCategory ? "#FFDE67" : "#AAAAAA"} style={{ marginLeft: 10 }}/> 
+              </TouchableOpacity>
+            </View>
+          </View>
 
           {/* All frames shared */}
           <ScrollView>
@@ -268,6 +283,26 @@ const styles = StyleSheet.create({
     marginTop: 70,
     justifyContent: 'center',
     alignItems: 'center',
+    //backgroundColor: '#050505',
+  },
+  topContainer: {
+    marginTop: 25,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  topContainerSub1: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Poppins-Medium',
+    marginBottom: 20,
+  },
+  topContainerSub2: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Poppins-Medium',
+    marginBottom: 20,
   },
   searchText: {
     fontSize: 14,
@@ -292,19 +327,26 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: 300,
-    backgroundColor: '#f8f8f8',
+    width: 200,
+    backgroundColor: 'black',
     borderColor: '#cccccc',
     borderWidth: 1,
     borderRadius: 5,
   },
   pickerItemTitle: {
-    color: 'black',
+    backgroundColor: 'black',
+    color: '#AAAAAA',
     fontSize: 12,
+    fontFamily: 'Poppins-Light'
   },
   pickerItem: {
     color: 'black',
     fontSize: 12,
+  },
+  category: {
+    color: '#EEEEEE',
+    fontSize: 12,
+    fontFamily: 'Poppins-Light'
   },
   frameSharedContainer: {
 

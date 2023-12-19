@@ -135,7 +135,9 @@ export default function CommunitySearchCategoryScreen({ route }: { route: any })
         </TouchableOpacity>
 
         {/* All frames shared */}
+        <ScrollView>
         { framesFromCategorySearchedList }
+        </ScrollView>
 
         <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
