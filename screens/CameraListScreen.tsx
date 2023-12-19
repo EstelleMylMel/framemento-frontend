@@ -79,30 +79,38 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
     setBrand('');
     setModel('');
   
-    // requête pour sauvegarder la caméra dans la collection camera
-    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${user._id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ brand, model }),
-    })
+    // Vérification que brand et model sont définis
+    if (brand && model) {
+      // requête pour sauvegarder la camera
+      fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${user._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ brand, model }),
+      })
       .then((response) => response.json())
       .then((data) => {
-        if (data.result) {
-          // Mettre à jour l'état local des caméras avec la nouvelle caméra
-          setCameras((prevCameras) => [...prevCameras, data.newCamera]);
-        
-            // Mettre à jour l'état local du UserProfile avec la nouvelle liste de caméras
-            setUserCameras((prevUserCameras) => [...prevUserCameras, data.newCamera]); 
+        console.log(data)
+        if (data && data.result) {
+          // Mettre à jour l'état local des cameras avec la nouvelle camera
+          setCameras((prevCameras) => [...prevCameras, data.camera]);
+  
+          // Mettre à jour l'état local du UserProfile avec la nouvelle liste des cameras
+          setUserCameras((prevUserCameras) => [...prevUserCameras, data.camera]);
+        } else if (data && data.error) {
+          console.error('Error saving camera:', data.error);
         } else {
-         console.error('Error saving camera', data.error);
+          console.error('Unexpected response format:', data);
         }
       })
       .catch((error) => {
         console.error('Error saving camera:', error);
       });
-    };
+    } else {
+      console.error('Brand or model is not defined');
+    } 
+  };
   
 
   return (

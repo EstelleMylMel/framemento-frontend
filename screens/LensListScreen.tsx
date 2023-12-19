@@ -75,34 +75,42 @@ function LensListScreen({ navigation }: LensListScreenProps) {
 
   // fonction permettant d'ajouter et enregistrer brand et model
   const handleSaveLens = () => {
-    // actions pour réinitialiser les états
-    setBrand('');
-    setModel('');
+  // actions pour réinitialiser les états
+  setBrand('');
+  setModel('');
 
+  // Vérification que brand et model sont définis
+  if (brand && model) {
     // requête pour sauvegarder l'objectif
-  fetch(`${BACKEND_LOCAL_ADRESS}/material/lens/${user._id}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ brand, model }),
-  })
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/lenses/${user._id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ brand, model }),
+    })
     .then((response) => response.json())
     .then((data) => {
-      if (data.result) {
+      console.log(data)
+      if (data && data.result) {
         // Mettre à jour l'état local des objectifs avec le nouvel objectif
-        setLenses((prevLenses) => [...prevLenses, data.newLens]);
+        setLenses((prevLenses) => [...prevLenses, data.lens]);
 
-        // Mettre à jour l'état local du UserProfile avec la nouvelle liste de objectifs
-        setUserLenses((prevUserLenses) => [...prevUserLenses, data.newLens]);
+        // Mettre à jour l'état local du UserProfile avec la nouvelle liste d'objectifs
+        setUserLenses((prevUserLenses) => [...prevUserLenses, data.lens]);
+      } else if (data && data.error) {
+        console.error('Error saving lens1:', data.error);
       } else {
-        console.error('Error saving lens:', data.error);
+        console.error('Unexpected response format:', data);
       }
     })
     .catch((error) => {
-      console.error('Error saving lens:', error);
+      console.error('Error saving lens2:', error);
     });
-  };
+  } else {
+    console.error('Brand or model is not defined');
+  } 
+};
 
   return (
     <View style={styles.lensContainer}>

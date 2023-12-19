@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     inputEmail: {
-      backgroundColor: 'grey',
+      backgroundColor: '0.11 0.11 0.11 1',
       width: 320,
       height: 40,
       paddingLeft: 10,
