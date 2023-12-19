@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -62,11 +62,11 @@ type SigninScreenProps = {
 
     return (
         <View style={styles.container}>
-          {/* header ? */}
-            <Text>Email</Text>
+          <Text style={styles.h1}>Connexion</Text>
+            <Text style={styles.textEmail}>Email</Text>
             <TextInput style={styles.inputEmail} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
             
-            <Text>Mot de passe</Text>
+            <Text style={styles.textPassword}>Mot de passe</Text>
             <TextInput style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
             
             <TouchableOpacity style={styles.buttonConnexion} onPress={handleSubscription}>
@@ -76,6 +76,16 @@ type SigninScreenProps = {
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>DEV : SKIP</Text>
             </TouchableOpacity>
+              <Text style={styles.textSigninWith}>Se connecter avec</Text>
+              <Image 
+                style={styles.logoGoogle} 
+                source={require('../assets/google.png')} />
+              <Image 
+                style={styles.logoBehance}
+                source={require('../assets/behance.png')} />
+              <Image 
+                style={styles.logoMeta} 
+                source={require('../assets/meta.png')} />
         </View>
     )
 }
@@ -87,25 +97,42 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    h1: {
+      color: '#EEEEEE',
+      fontSize: 30,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      bottom: 200,
+    },
     inputEmail: {
-      backgroundColor: 'grey',
+      backgroundColor: '#1B1B1B',
       width: 320,
       height: 40,
       paddingLeft: 10,
       marginTop: -20,
       color: 'white',
       borderRadius: 12,
-      bottom: 150,
+      bottom: 120,
+    },
+    textEmail: {
+      color: '#EEEEEE',
+      bottom: 140,
+      marginRight: 260,
     },
     inputPassword: {
-      backgroundColor: 'grey',
+      backgroundColor: '#1B1B1B',
       width: 320,
       height: 40,
       paddingLeft: 10,
       marginTop: -20,
       color: 'white',
       borderRadius: 12,
-      bottom: 145,
+      bottom: 85,
+    },
+    textPassword: {
+      color: '#EEEEEE',
+      bottom: 105,
+      marginRight: 210,
     },
     buttonConnexion: {
       backgroundColor: '#FFFF5B',
@@ -119,7 +146,7 @@ const styles = StyleSheet.create({
       overflow: 'hidden', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      bottom: 90,
+      bottom: 50,
     },
     textConnexion: {
       color: 'black',
@@ -129,4 +156,22 @@ const styles = StyleSheet.create({
       lineHeight: 28,
       letterSpacing: 0.15,
     },
+    textSigninWith: {
+      color: '#EEEEEE',
+      fontSize: 18,
+      top: 80,
+    },
+    logoGoogle: {
+      top: 100,
+      marginRight: 150,
+    },
+    logoBehance: {
+      top: 85,
+      marginRight: 20,
+    },
+    logoMeta: {
+      top: 70,
+      marginLeft: 120,
+    },
+
   });

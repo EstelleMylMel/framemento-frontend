@@ -121,7 +121,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
                 <Text style={styles.textList}>{lens.model}</Text>
               </View>
               <TouchableOpacity onPress={() => handleDeleteLens(lens._id)}>
-                <FontAwesome name="trash" size={20} color="red" style={styles.deleteIcon} />
+                <FontAwesome name="trash" size={18} color="red" style={styles.deleteIcon} />
               </TouchableOpacity>
             </View>
           ))}
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     color: 'white',  
   },
   buttonAdd: {
-    backgroundColor: '#1B1B1B',
+    backgroundColor: '#FFFF5B',
     width: 320,
     height: 40,
     paddingLeft: 4, 
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -150 }], // Ajustez la moitié de la largeur du bouton pour le centrer
   },
   textButtonAdd: {
-    color: '#FFFF5B',
+    color: '#1B1B1B',
     fontSize: 14,
     fontFamily: 'Poppins',
     fontWeight: '600',

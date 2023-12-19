@@ -25,6 +25,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   // fonctions permettant d'ajouter du texte dans les inputs
   const handleBrandChange = (text: string) => {
@@ -53,7 +54,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
       });
   }, [user._id]); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
 
-  /// supprimer une caméra ///
+  /// SUPPRIMER UNE CAMERA ///
   const handleDeleteCamera = (cameraId: string) => {
     fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${cameraId}`, {
       method: 'DELETE',
@@ -73,9 +74,9 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
       setUserCameras((prevCameras) => prevCameras.filter((camera) => camera._id !== cameraId));
   }
 
-  // fonction permettant d'ajouter et enregistrer brand et model
+  /// AJOUTER UNE CAMERA ///
   const handleSaveCamera = () => {
-    // actions pour réinitialiser les états
+    // Actions pour réinitialiser les états
     setBrand('');
     setModel('');
   
@@ -89,28 +90,40 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
         },
         body: JSON.stringify({ brand, model }),
       })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        if (data && data.result) {
-          // Mettre à jour l'état local des cameras avec la nouvelle camera
-          setCameras((prevCameras) => [...prevCameras, data.camera]);
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data && data.result) {
+            // Mettre à jour l'état local des cameras avec la nouvelle camera
+            setCameras((prevCameras) => [...prevCameras, data.camera]);
   
-          // Mettre à jour l'état local du UserProfile avec la nouvelle liste des cameras
-          setUserCameras((prevUserCameras) => [...prevUserCameras, data.camera]);
-        } else if (data && data.error) {
-          console.error('Error saving camera:', data.error);
-        } else {
-          console.error('Unexpected response format:', data);
-        }
-      })
-      .catch((error) => {
-        console.error('Error saving camera:', error);
-      });
+            // Mettre à jour l'état local du UserProfile avec la nouvelle liste des cameras
+            setUserCameras((prevUserCameras) => [...prevUserCameras, data.camera]);
+  
+            // Réinitialiser le message d'alerte
+            setAlertMessage(null);
+  
+            // Fermer la modal seulement si aucun message d'alerte n'est présent
+            if (!alertMessage) {
+              setModalVisible(false);
+            }
+          } else if (data && data.error) {
+  
+            // Définir le message d'alerte
+            setAlertMessage('Appareil déjà enregistré');
+          } else {
+            setAlertMessage('Appareil déjà enregistré');
+          }
+        })
+        .catch((error) => {
+          console.error('Error saving camera:', error);
+        });
     } else {
       console.error('Brand or model is not defined');
-    } 
+    }
   };
+  
+  
   
 
   return (
@@ -122,53 +135,69 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
                 <Text style={styles.textList}>{camera.model}</Text>
               </View>
               <TouchableOpacity onPress={() => handleDeleteCamera(camera._id)}>
-                <FontAwesome name="trash" size={20} color="red" style={styles.deleteIcon} />
+                <FontAwesome name="trash" size={18} color="red" style={styles.deleteIcon} />
               </TouchableOpacity>
             </View>
           ))}
-      <Modal
-        style={styles.modal}
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+      {modalVisible && (
+  <Modal
+    style={styles.modal}
+    animationType="slide"
+    transparent={true}
+    visible={modalVisible}
+    onRequestClose={() => {
+      Alert.alert('Modal has been closed.');
+      setModalVisible(!modalVisible);
+    }}
+  >
+    <View style={styles.centeredView}>
+      <View style={styles.modalView}>
+        {alertMessage && (
+          <Text style={styles.alertText}>Appareil déjà enregistré</Text>
+        )}
+          <>
             <Text style={styles.textAdd}>Nom de l'appareil</Text>
             <TextInput
               style={styles.input}
               placeholder="Marque"
               value={brand}
-              onChangeText={handleBrandChange}
+              onChangeText={(text) => {
+                handleBrandChange(text);
+                setAlertMessage(null); // Clear the error message on input change
+              }}
             />
             <TextInput
               style={styles.input}
               placeholder="Modèle"
               value={model}
-              onChangeText={handleModelChange}
+              onChangeText={(text) => {
+                handleModelChange(text);
+                setAlertMessage(null); // Clear the error message on input change
+              }}
             />
             <Pressable
               style={styles.buttonEnregistrer}
-              onPress={() => {
-                handleSaveCamera(); // Appeler la fonction pour sauvegarder l'appareil
-                setModalVisible(!modalVisible); // Cacher la modal
-              }}
+              onPress={() => handleSaveCamera()}
             >
+              
               <Text style={styles.textButtonSave}>Enregistrer un appareil</Text>
             </Pressable>
             <Pressable
               style={styles.buttonAnnuler}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                setAlertMessage(null); // Clear the error message on "Annuler" press
+              }}
             >
               <Text style={styles.textButtonAnnuler}>Annuler</Text>
-      </Pressable>
-          </View>
-        </View>
-      </Modal>
+            </Pressable>
+          </>
+      </View>
+    </View>
+  </Modal>
+)}
+
+
       <Pressable
         style={styles.buttonAdd}
         onPress={() => setModalVisible(true)}
@@ -285,7 +314,7 @@ const styles = StyleSheet.create({
     color: 'white',  
   },
   buttonAdd: {
-    backgroundColor: '#1B1B1B',
+    backgroundColor: '#FFFF5B',
     width: 320,
     height: 40,
     paddingLeft: 4, 
@@ -303,7 +332,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -150 }], // Ajustez la moitié de la largeur du bouton pour le centrer
   },
   textButtonAdd: {
-    color: '#FFFF5B',
+    color: '#1B1B1B',
     fontSize: 14,
     fontFamily: 'Poppins',
     fontWeight: '600',
@@ -333,5 +362,11 @@ const styles = StyleSheet.create({
     fontWeight: '600', 
     position: 'absolute', // Ajout de la propriété position absolute
     bottom: 15, // Ajustez la distance depuis le bas selon vos besoins
-  }
+  },
+  alertText: {
+    color: 'red',
+    fontSize: 16,
+    marginTop: 80, // Ajustez la marge inférieure à une valeur plus petite
+    textAlign: 'center',
+  },  
 });

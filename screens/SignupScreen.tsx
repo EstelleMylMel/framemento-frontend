@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -65,20 +65,46 @@ type SignupScreenProps = {
     }
 
     return (
-        <View style={styles.container}>
-          {/* header ? */}
-            <Text>Email</Text>
-            <TextInput style={styles.inputEmail} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
+        <View 
+          style={styles.container}>
+          <Text 
+            style={styles.h1}>Inscription</Text>
+            <Text 
+              style={styles.textEmail}>Email</Text>
+            <TextInput 
+              style={styles.inputEmail} 
+              placeholder={'john@gmail.com'} 
+              onChangeText={(value) => setEmail(value)} 
+              value={email}/>
             
-            <Text>Pseudo</Text>
-            <TextInput style={styles.inputPseudo} placeholder={'john'} onChangeText={(value) => setUsername(value)} value={username}/>
+            <Text 
+              style={styles.textPseudo}>Pseudo</Text>
+            <TextInput 
+              style={styles.inputPseudo} 
+              placeholder={'john'} 
+              onChangeText={(value) => setUsername(value)} 
+              value={username}/>
+            <Text 
+              style={styles.textPassword}>Mot de passe</Text>
+            <TextInput 
+              style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
             
-            <Text>Mot de passe</Text>
-            <TextInput style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
-            
-            <TouchableOpacity style={styles.buttonInscription} onPress={handleSubscription}>
-              <Text style={styles.textInscription}>INSCRIPTION</Text>
+            <TouchableOpacity 
+              style={styles.buttonInscription} onPress={handleSubscription}>
+              <Text 
+                style={styles.textInscription}>INSCRIPTION</Text>
             </TouchableOpacity>
+              <Text 
+                style={styles.textSignupWith}>S'inscrire avec</Text>
+              <Image 
+                style={styles.logoGoogle} 
+                source={require('../assets/google.png')} />
+              <Image 
+                style={styles.logoBehance}
+                source={require('../assets/behance.png')} />
+              <Image 
+                style={styles.logoMeta} 
+                source={require('../assets/meta.png')} />
         </View>
     )
 }
@@ -90,35 +116,57 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    h1: {
+      color: '#EEEEEE',
+      fontSize: 30,
+      fontFamily: 'Poppins',
+      fontWeight: '600',
+      bottom: 200,
+    },
     inputEmail: {
-      backgroundColor: '0.11 0.11 0.11 1',
+      backgroundColor: '#1B1B1B',
       width: 320,
       height: 40,
       paddingLeft: 10,
       marginTop: -20,
-      color: 'white',
+      color: '#787878',
       borderRadius: 12,
-      bottom: 75,
+      bottom: 100,
+    },
+    textEmail: {
+      color: '#EEEEEE',
+      bottom: 120,
+      marginRight: 260,
     },
     inputPseudo: {
-      backgroundColor: 'grey',
+      backgroundColor: '#1B1B1B',
       width: 320,
       height: 40,
       paddingLeft: 10,
       marginTop: -20,
-      color: 'white',
+      color: '#787878',
       borderRadius: 12,
       bottom: 70,
     }, 
+    textPseudo: {
+      color: '#EEEEEE',
+      bottom: 90,
+      marginRight: 250,
+    },
     inputPassword: {
-      backgroundColor: 'grey',
+      backgroundColor: '#1B1B1B',
       width: 320,
       height: 40,
       paddingLeft: 10,
       marginTop: -20,
-      color: 'white',
+      color: '#787878',
       borderRadius: 12,
-      bottom: 50,
+      bottom: 40,
+    },
+    textPassword: {
+      color: '#EEEEEE',
+      bottom: 60,
+      marginRight: 210,
     },
     buttonInscription: {
       backgroundColor: '#FFFF5B',
@@ -132,14 +180,32 @@ const styles = StyleSheet.create({
       overflow: 'hidden', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      bottom: 10,
+      top: 5,
     },
     textInscription: {
-      color: 'black',
+      color: '#1B1B1B',
       fontSize: 14,
       fontFamily: 'Poppins',
       fontWeight: '600',
       lineHeight: 28,
       letterSpacing: 0.15,
     },
+    textSignupWith: {
+      color: '#EEEEEE',
+      fontSize: 18,
+      top: 80,
+    },
+    logoGoogle: {
+      top: 100,
+      marginRight: 150,
+    },
+    logoBehance: {
+      top: 85,
+      marginRight: 20,
+    },
+    logoMeta: {
+      top: 70,
+      marginLeft: 120,
+    },
+
   });
