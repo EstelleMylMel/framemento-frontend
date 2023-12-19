@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Image, TextInput, ScrollView, FlatList, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image, TextInput, ScrollView, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -78,6 +78,7 @@ type RollScreenProps = {
     const [ framesData, setFramesData ] = useState<FrameType[] | undefined>(); // à chaque ajout de photo on ajoute 1 dans ce tableau.
     const [ previousFrame, setPreviousFrame ] = useState<FrameType | undefined>(framesData && framesData.length > 0 ? framesData[framesData?.length - 1] :  undefined);
 
+    //console.log("framesData", framesData)
 
     /// ATTENDRE QUE LES IMAGES CHARGENT AVANT D'AFFICHER ///
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
@@ -94,8 +95,6 @@ type RollScreenProps = {
     const [ currentAdress, setCurrentAdress ] = useState<string>('');
 
     /// INPUTS VARIABLES & FONCTIONS ///
-
-    const [ frameNumber, setFrameNumber ] = useState<number | undefined >(previousFrame?.numero ? previousFrame.numero +1 : 1);
 
 
     /// Gérer l'incrémentation irrégulière du slider speed
@@ -128,7 +127,8 @@ type RollScreenProps = {
       setLocation(customLocation);
     };
 
-    const [date, setDate] = useState<Date | undefined>();
+    const [date, setDate] = useState<Date | undefined>(new Date());
+
     const handleChangeDate = (): void => {
 
         setDatepickerVisible(true);
@@ -162,7 +162,8 @@ type RollScreenProps = {
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
                 setIsLoading(false); // Laisser le temps à la requête de répondre avant d'afficher
 
-              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
+              // fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
+              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera._id}/`)
               .then(response => response.json())
               .then(cameraData => {
                 cameraData? setCamera(cameraData.camera) : console.log('no data : ', cameraData)
@@ -200,8 +201,6 @@ type RollScreenProps = {
 
     function handlePressOnPlus(): void {
 
-        setTimeout(()=> setModalAddFrameVisible(true), 2000);
-
         /// geoloc & date actuelles ///
         (async () => {
           const { status } = await Location.requestForegroundPermissionsAsync();
@@ -211,8 +210,10 @@ type RollScreenProps = {
               (location) => {
                 setLatitude(location.coords.latitude);
                 setLongitude(location.coords.longitude);
-                setDate(new Date(location.timestamp));
-                console.log('date :',date)
+
+                // Attendre que l'API réponde pour ouvrir la modale pour éviter le lieu undefined
+                setTimeout(()=> setModalAddFrameVisible(true), 2000);
+
               });
           }
         })();
@@ -259,9 +260,15 @@ type RollScreenProps = {
 
     };
 
+    console.log('lastFrame', previousFrame);
+
     /// CAROUSEL DE NUMEROS DE PHOTO ///
 
     /* CREER LA LISTE DE NUMEROS */
+    const [firstNum, setFirstNum] = useState<number>(1);
+    const [numeros, setNumeros] = useState<number[]>([]);
+    const [frameNumber, setFrameNumber] = useState<number | undefined >(previousFrame?.numero ? previousFrame.numero +1 : 1);
+
     function listOfNums(firstNum: number | undefined, lastNum: number) {
       const tab: number[] = [];
       for (let i: number = firstNum ? firstNum : 0; i <= lastNum; i++) {
@@ -270,19 +277,31 @@ type RollScreenProps = {
       return tab;
     }
 
-    let firstNum: number = previousFrame?.numero ? previousFrame.numero + 1 : 1;
-    
-    const numeros = listOfNums(firstNum, roll.images); 	   
+    useEffect(() => {
+      if (previousFrame) {
+        setFirstNum(previousFrame.numero + 1);
+        setNumeros(listOfNums(firstNum, roll.images))
+        setFrameNumber(previousFrame.numero + 1)
+      }
+    }, [previousFrame])
+
+    console.log("firstNum", firstNum)
+    console.log("numeros", numeros)
+
+
+    // let firstNum: number = previousFrame?.numero ? previousFrame.numero + 1 : 1;
+    // const numeros = listOfNums(firstNum, roll.images); 	   
 
 
     /* GERER LE SCROLL */
   
     const renderItem = ({ item }: {item: any}) => {
-      const isSelected = item === frameNumber;
+      const isSelected = item === frameNumber || item === numeros[0];
       return (
         <TouchableOpacity onPress={() => setFrameNumber(item)}>
-          <View style={{ paddingLeft: 20, paddingRight: 20, borderRadius: 16, opacity: isSelected ? 1 : 0.5, backgroundColor: '#101010' }}>
-            <Text style={{ fontSize: 50, color: 'white' }}>{item}</Text>
+          {/* <View style={{ paddingLeft: 20, paddingRight: 20, borderRadius: 16, opacity: isSelected ? 1 : 0.5, backgroundColor: '#101010' }}> */}
+          <View style={isSelected ? { height: 80, width: 80, borderRadius: 100, backgroundColor: '#101010', justifyContent: 'center', alignItems: 'center' } : { height: 80, width: 60, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={isSelected ? { fontSize: 48, color: '#EEEEEE' } : { fontSize: 48, color: '#222222' }}>{item}</Text>
           </View>
         </TouchableOpacity>
       );
@@ -357,8 +376,6 @@ type RollScreenProps = {
           console.error('Erreur lors du fetch upload photo :', error);
         });
 
-
-      
     }
 
     function handlePressOnSaveFrame(): void {
@@ -394,7 +411,7 @@ type RollScreenProps = {
         setUrlPhotoFromPhone(data.url);
         setFramesData(framesData ? [...framesData, data.newFrame] : [])
         setPreviousFrame(data.newFrame);
-        setModalAddFrameVisible(false);
+        setModalAddFrameVisible(false)
       })
       .catch(error => {
         console.error('Erreur lors du post photo :', error);
@@ -415,8 +432,8 @@ type RollScreenProps = {
 
     const frames = framesData?.map((frame: FrameType, i: number)=> {
             
-      let title: string;
-      frame.title !== undefined ? title = frame.title : title = frame.location; //ATTENTION PENSER LA LOGIQUE EN CAS D'ABSENCE DE TITRE
+      //AFFICHER LA LOCALISATION EN CAS D'ABSENCE DE TITRE
+      const thisTitle: string = frame.title ? frame.title : frame.location; 
 
       // AFFICHER L'IMAGE S'iL Y EN A UNE
       const imageURI: string | undefined = frame.argenticPhoto ? frame.argenticPhoto : undefined;
@@ -435,7 +452,7 @@ type RollScreenProps = {
               <Text style={styles.frameNumber}>{`${frame.numero}`}</Text>
           </View>
           <View style={styles.textContainer}>
-              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.title}>{thisTitle}</Text>
               <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
           </View>
           </View>
@@ -455,9 +472,6 @@ type RollScreenProps = {
 
       if(image) {
 
-      
-       console.log('uri image argentique ', image)
-
        const formData: any = new FormData();
 
       formData.append('photoFromFront', {
@@ -465,9 +479,6 @@ type RollScreenProps = {
         name: 'photo.jpg', // CHANGER LE NOM DE LA PHOTO
         type: 'image/jpeg',
       });
-
-      console.log('form data append  ', formData)
-      console.log('form data append  ', formData._parts[0][1].uri)
 
         
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/upload`, {
@@ -507,7 +518,6 @@ type RollScreenProps = {
       console.log('result asset', result.assets ? result.assets[0].uri : 'rien')
       if (result.assets) {
         setImage(result.assets[0].uri);
-
       }
     };
 
@@ -549,7 +559,7 @@ type RollScreenProps = {
       .then(response => response.json())
       .then(data => {
           if (data.result) {
-          console.log('result detch delete frame', data.result);
+          console.log('result fetch delete frame', data.result);
           setModalViewFrameVisible(false);
           }
       })
@@ -584,14 +594,13 @@ type RollScreenProps = {
 
 
     }
-
     
 if (!isLoading) {    
 return (
 
     <View style={styles.body}>
-      <SafeAreaView style={styles.headerContainer}>
-        <Header navigation={navigation} iconLeft='arrow-back' title='Remplacer' iconRight='more-vert' onPressRightButton={() => setContextualMenuVisible(true)}/>
+        <SafeAreaView style={styles.headerContainer}>
+          <Header navigation={navigation} iconLeft='arrow-back' title={roll.name} iconRight='more-vert' onPressRightButton={() => setContextualMenuVisible(true)}/>
         </SafeAreaView>
         { <ScrollView style={styles.framesContainer}>{frames}</ScrollView> || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
        
@@ -604,222 +613,241 @@ return (
           <MaterialIcons name="add" size={40} color="#050505"/>
         </TouchableOpacity>
       
-        <Modal visible={modalAddFrameVisible} transparent>
-          <KeyboardAvoidingView>
-          <SafeAreaProvider>
-              <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                
+        <View style={styles.centeredView}>
+          <Modal visible={modalAddFrameVisible} transparent>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            {/* <SafeAreaProvider> */}
+                <View style={styles.modalView}>
+                  
 
-                {/* Modal Header */}
-                <SafeAreaView>
-                <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalAddFrameVisible(false)} title='Nouvelle photo'/>
-                </SafeAreaView>
+                    {/* Modal Header */}
+                    {/* <SafeAreaView> */}
+                     <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalAddFrameVisible(false)} title='Nouvelle photo'/>
+                    {/* </SafeAreaView> */}
 
-                <ScrollView style={styles.scrollView}>
-                {/* Modal Text Inputs */}
+                    <View style={styles.mainContent}>
+                      {/* Modal Text Inputs */}
+                      
+                      <ScrollView style={styles.scrollView}>
+                          {/* Selecteur du numéro de la photo */}
+                          <View style={styles.numSelector}>
+                            <FlatList
+                              ref={flatListRef}
+                              data={numeros}
+                              style={styles.flatList}
+                              renderItem={renderItem}
+                              keyExtractor={(item) => item.toString()}
+                              horizontal
+                              showsHorizontalScrollIndicator={false}
+                              getItemLayout={(data, index) => ({
+                                length: 50, // Hauteur de chaque élément
+                                offset: 50 * index, // Calcul de l'espacement entre les éléments
+                                index,
+                              })}
+                              initialScrollIndex={0} // Scroll initial à l'élément sélectionné
+                            />
+                          </View>
 
-                {/* Selecteur du numéro de la photo */}
-                <View style={styles.numSelector}>
-                  <FlatList
-                    ref={flatListRef}
-                    data={numeros}
-                    style={styles.flatList}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    getItemLayout={(data, index) => ({
-                      length: 50, // Hauteur de chaque élément
-                      offset: 50 * index, // Calcul de l'espacement entre les éléments
-                      index,
-                    })}
-                    initialScrollIndex={0} // Scroll initial à l'élément sélectionné
-                  />
-                  <Text style={{ textAlign: 'center', fontSize: 20, marginVertical: 20, color: 'white' }}>
-                    Nombre sélectionné : {frameNumber}
-                  </Text>
-                </View>
+                          {/* Slider vitesse */}
 
-                {/* Slider vitesse */}
+                          <Text style={styles.label}>Vitesse</Text>
 
-                <Text style={styles.paramsText}>{frameSpeed}</Text>
-                <Slider
-                  style={{width: '100%', height: 40}}
-                  minimumValue={0}
-                  maximumValue={shutterSpeeds.length -1 } // dernier index du tableau de valeurs shutterSpeeds
-                  step={1}
-                  value={lastFrameSpeedValue}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={value => setFrameSpeed(`1/${shutterSpeeds[value]}`)} //
-                />
-                <Text style={styles.minText}>{shutterSpeeds[0]}</Text>
-                <Text style={styles.maxText}>{shutterSpeeds[shutterSpeeds.length -1]}</Text>
+                          <Text style={styles.paramsText}>{frameSpeed}”</Text>
+                          <Slider
+                            style={{width: '100%', height: 40}}
+                            minimumValue={0}
+                            maximumValue={shutterSpeeds.length -1 } // dernier index du tableau de valeurs shutterSpeeds
+                            step={1}
+                            value={lastFrameSpeedValue}
+                            minimumTrackTintColor="#FFDE67"
+                            thumbTintColor="#FFDE67"
+                            maximumTrackTintColor="#222222"
+                            onValueChange={value => setFrameSpeed(`1/${shutterSpeeds[value]}`)}
+                          />
+                          <View style={styles.boundariesContainer}>
+                            <Text style={styles.minText}>{shutterSpeeds[0]}</Text>
+                            <Text style={styles.maxText}>{shutterSpeeds[shutterSpeeds.length -1]}</Text>
+                          </View>
 
-                {/* Slider ouverture */}
+                          {/* Slider ouverture */}
 
-                <Text style={styles.paramsText}>{frameAperture}</Text>
-                <Slider
-                  style={{width: '100%', height: 40}}
-                  minimumValue={0}
-                  maximumValue={apertures.length -1 } // dernier index du tableau de valeurs shutterSpeeds
-                  step={1}
-                  value={lastFrameApertureValue}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={value => setFrameAperture(`f/${value}`)}
-                />
-                <Text style={styles.minText}>{apertures[0]}</Text>
-                <Text style={styles.maxText}>{apertures[shutterSpeeds.length -1]}</Text>
-                
+                          <Text style={styles.label}>Ouverture</Text>
 
-                <View style={styles.inputsGroup1}>
+                          <Text style={styles.paramsText}>{frameAperture}</Text>
+                          <Slider
+                            style={{width: '100%', height: 40}}
+                            minimumValue={0}
+                            maximumValue={apertures.length -1 } // dernier index du tableau de valeurs shutterSpeeds
+                            step={1}
+                            value={lastFrameApertureValue}
+                            minimumTrackTintColor="#FFDE67"
+                            thumbTintColor="#FFDE67"
+                            maximumTrackTintColor="#222222"
+                            onValueChange={value => setFrameAperture(`f/${apertures[value]}`)}
+                          />
+                          <View style={styles.boundariesContainer}>
+                            <Text style={styles.minText}>{apertures[0]}</Text>
+                            <Text style={styles.maxText}>{apertures[apertures.length -1]}</Text>
+                          </View>
+                        
 
-                    {/* Input lieu */}
+                        <View style={styles.inputsGroup1}>
 
-                    <CustomInput
-                      label='Lieu'
-                      icon='location-on'
-                    >
-                      <TextInput
-                        placeholder='-'
-                        placeholderTextColor='#AAAAAA'
-                        value={currentAdress}
-                        onChangeText={(value) => handleChangeLocation(value)}
-                        style={styles.input}
+                            {/* Input lieu */}
+
+                            <CustomInput
+                              label='Lieu'
+                              icon='location-on'
+                            >
+                              <TextInput
+                                placeholder='-'
+                                placeholderTextColor='#AAAAAA'
+                                value={currentAdress}
+                                onChangeText={(value) => handleChangeLocation(value)}
+                                style={styles.input}
+                                />
+                            </CustomInput>
+
+                            {/* Input date */}
+
+                            <CustomInput
+                              label='Date'
+                              icon='date-range'
+                            >
+                              <TouchableOpacity onPress={handleChangeDate} style={styles.fakeInput}>
+                                {date && <Text style={styles.fakeInputText}>{date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}</Text>}
+                              </TouchableOpacity>
+                            </CustomInput>
+
+                            {datepickerVisible && (
+                              <DateTimePicker
+                              value={date}
+                              onValueChange={(pickedDate) => console.log('pickedDate :', pickedDate)}
+                            />
+                            )}
+
+                            {/* Input meteo */}
+
+                            <CustomInput
+                              label='Météo'
+                              icon='cloud'
+                            >
+                              <TextInput
+                                placeholder='-'
+                                placeholderTextColor='#AAAAAA'
+                                value={weather}
+                                onChangeText={(value) => handleChangeWeather(value)}
+                                style={styles.input}
+                                />
+                            </CustomInput>
+
+                        </View>
+                        
+                        <View style={styles.inputsGroup1}>
+
+                            {/* Input appareil */}
+
+                            <CustomInput
+                              label='Appareil'
+                              icon='photo-camera'
+                            >
+                                <Text style={styles.fakeInputText}>{camera?.brand} - {camera?.model}</Text>
+                            </CustomInput>
+
+                            {/* Inputs objectif */}
+
+                            <Text style={styles.label}>Objectif</Text>
+
+                            <CustomInput
+                              label='Marque'
+                              icon='circle'
+                            >
+                              <TextInput
+                                placeholder='-'
+                                placeholderTextColor='#AAAAAA'
+                                value={lensBrand? lensBrand : ''}
+                                onChangeText={(value) => setLensBrand(value)}
+                                style={styles.input}
+                                />
+                            </CustomInput>
+
+                            <CustomInput
+                              label='Modèle'
+                              icon='circle'
+                            >
+                              <TextInput
+                                placeholder='-'
+                                placeholderTextColor='#AAAAAA'
+                                value={lensModel? lensModel : ''}
+                                onChangeText={(value) => setLensModel(value)}
+                                style={styles.input}
+                                />
+                            </CustomInput>
+
+                        </View>
+
+                        <View style={styles.inputsGroup1}>
+
+                                {/* Input Nom */}
+
+                                <CustomInput
+                                label='Nom'
+                                icon='local-offer'
+                              >
+                                <TextInput
+                                  placeholder='-'
+                                  placeholderTextColor='#AAAAAA'
+                                  value={title}
+                                  onChangeText={(value) => setTitle(value)}
+                                  style={styles.input}
+                                  />
+                              </CustomInput>
+
+                                {/* Input commentaire */}
+
+                                <CustomInput
+                                label='Commentaire'
+                                icon='notes'
+                              >
+                                <TextInput
+                                  placeholder='Ajoutez un commentaire'
+                                  placeholderTextColor='#AAAAAA'
+                                  value={commentary}
+                                  onChangeText={(value) => setCommentary(value)}
+                                  style={styles.input}
+                                  />
+                              </CustomInput>
+
+                        </View>
+
+                        {/* Ajouter une photo depuis son smartphone */}
+                        <TouchableOpacity onPress={handlePressOnAddPhotoFromPhone} style={styles.addPhotoContainer}>
+                            {urlPhotoFromPhone && <Image source={{ uri: urlPhotoFromPhone }} style={{ width: '100%', height: 200 }} resizeMode='contain'/>}
+                            {!urlPhotoFromPhone && (
+                              <View style={styles.addPhotoContent}>
+                                <MaterialIcons name='add-photo-alternate' size={40} color="#AAAAAA"/>
+                                <Text style={styles.addPhotoText}>Ajouter une photo avec mon téléphone</Text>
+                              </View>
+                            )}
+                        </TouchableOpacity>
+                        
+                      </ScrollView>
+
+                    </View>
+
+                     <View style={styles.saveButtonContainer}>         
+                        <CustomButton
+                          title="Enregistrer"
+                          onPress={handlePressOnSaveFrame}
+                          type="primary"
                         />
-                    </CustomInput>
-
-                    {/* Input date */}
-
-                    <CustomInput
-                      label='Date'
-                      icon='calendar'
-                    >
-                      <TouchableOpacity onPress={handleChangeDate} style={styles.fakeInput}>
-                        <Text style={styles.fakeInputText}>{date?.getDay()}/{date?.getMonth()}/{date?.getFullYear()}</Text>
-                      </TouchableOpacity>
-                    </CustomInput>
-
-                    {datepickerVisible && (
-                      <DateTimePicker
-                      value={date}
-                      onValueChange={(pickedDate) => console.log(pickedDate)}
-                    />
-                    )}
-
-                    {/* Input meteo */}
-
-                    <CustomInput
-                      label='Météo'
-                      icon='cloud'
-                    >
-                      <TextInput
-                        placeholder='-'
-                        placeholderTextColor='#AAAAAA'
-                        value={weather}
-                        onChangeText={(value) => handleChangeWeather(value)}
-                        style={styles.input}
-                        />
-                    </CustomInput>
-                    
-                </View>
-                <View style={styles.inputsGroup1}>
-
-                {/* Input appareil */}
-
-                <CustomInput
-                  label='Appareil'
-                  icon='photo-camera'
-                >
-                    <Text style={styles.fakeInputText}>{camera?.brand} - {camera?.model}</Text>
-                </CustomInput>
-
-                {/* Inputs objectif */}
-
-                <Text style={styles.label}>Objectif</Text>
-
-                <CustomInput
-                  label='Marque'
-                  icon='circle'
-                >
-                  <TextInput
-                    placeholder='-'
-                    placeholderTextColor='#AAAAAA'
-                    value={lensBrand? lensBrand : ''}
-                    onChangeText={(value) => setLensBrand(value)}
-                    style={styles.input}
-                    />
-                </CustomInput>
-
-                <CustomInput
-                  label='Modèle'
-                  icon='circle'
-                >
-                  <TextInput
-                    placeholder='-'
-                    placeholderTextColor='#AAAAAA'
-                    value={lensModel? lensModel : ''}
-                    onChangeText={(value) => setLensModel(value)}
-                    style={styles.input}
-                    />
-                </CustomInput>
+                      </View>
 
                 </View>
-                <View style={styles.inputsGroup1}>
-
-
-                  {/* Input Nom */}
-
-                  <CustomInput
-                  label='Nom'
-                  icon='local-offer'
-                >
-                  <TextInput
-                    placeholder='-'
-                    placeholderTextColor='#AAAAAA'
-                    value={title}
-                    onChangeText={(value) => setTitle(value)}
-                    style={styles.input}
-                    />
-                </CustomInput>
-
-                  {/* Input commentaire */}
-
-                  <CustomInput
-                  label='Commentaire'
-                  icon='notes'
-                >
-                  <TextInput
-                    placeholder='Ajoutez un commentaire'
-                    placeholderTextColor='#AAAAAA'
-                    value={title}
-                    onChangeText={(value) => setTitle(value)}
-                    style={styles.input}
-                    />
-                </CustomInput>
-
-                </View>
-
-                {/* Ajouter une photo depuis son smartphone */}
-                  <TouchableOpacity onPress={handlePressOnAddPhotoFromPhone} style={styles.addPhotoContainer}>
-                      <Text>Ajouter une photo avec mon téléphone</Text>
-                  </TouchableOpacity>
-
-                  </ScrollView>
-
-                  <CustomButton
-                    title="Enregistrer"
-                    onPress={handlePressOnSaveFrame}
-                    type="primary"
-                  />
-
-                  </View>
-                  </View>
-            </SafeAreaProvider>
-          </KeyboardAvoidingView>    
-        </Modal>
+              {/* </SafeAreaProvider> */}
+            </KeyboardAvoidingView>    
+          </Modal>
+        </View>
 
 
         <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
@@ -917,6 +945,12 @@ return (
     
           <Camera type={type} flashMode={flashMode} ref={(ref: any) => cameraRef = ref} style={styles.camera}>
             <View style={styles.photoButtonsContainer}>
+            <TouchableOpacity
+                onPress={() => setModalTakePictureVisible(false)}
+                style={styles.photoButton}
+              >
+                <FontAwesome name='close' size={25} color='#ffffff' />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setType(type === CameraType.back ? CameraType.front : CameraType.back)}
                 style={styles.photoButton}
@@ -944,11 +978,11 @@ return (
         </Modal>
         }
 
-        <ContextMenu visible={contextMenuVisible} onClose={() => console.log('coucou')} options={[
+        {/* <ContextMenu visible={contextMenuVisible} onClose={() => console.log('coucou')} options={[
           { text: 'Option 1', onPress: () => console.log('Option 1 selected') },
           { text: 'Option 2', onPress: () => console.log('Option 2 selected') },
           // Ajoutez d'autres options ici
-        ]}/>
+        ]}/> */}
                 
     </View>
     
@@ -969,18 +1003,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#050505',
+    height:'100%',
     width: '100%',
   },
   headerContainer: {
     height: 130,
     width: '100%',
-  },
-  scrollView: {
-    width: '100%',
-    paddingTop: 88,
-    padding: 24,
-    gap: 24,
-    zIndex: -1,
   }, 
   addFrameButton: {
     height: 80,
@@ -990,8 +1018,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 100,
     position: 'absolute',
-    Zindex: 2,
-    bottom: 48,
+    zIndex: 20,
+    bottom: 110,
+    right: 20,
   },
   framesContainer: {
     padding: 24,
@@ -1000,6 +1029,7 @@ const styles = StyleSheet.create({
   },
   frameContainer: {
     borderRadius: 12,
+    marginBottom: 16,
   },
   frameInfos: {
     flexDirection: 'row',
@@ -1056,15 +1086,20 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     fontWeight: '300',
     lineHeight: 24,
+    width: 200,
+    textAlign: 'right',
   },
   centeredView: {
       flex: 1,
-      backgroundColor: 'black',
+      height: '100%',
       alignItems: 'center',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
   },
   modalView: {
     width: '100%',
+    height: '100%',
+    justifyContent: 'flex-start',
+    //marginTop: 1200
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1082,19 +1117,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#101010',
     borderRadius: 16,
   },
-  closeModalIcon: {
-    color: '#EEEEEE',
-    fontSize: 24,
+  mainContent: {
+    width: '100%',
+    height: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#050505',
+    padding: 24,
+    gap: 24,
+    marginTop: 88,
   },
-  textModalHeader: {
-    color: '#EEEEEE',
-    fontSize: 24,
-    marginLeft: 15
+  scrollView: {
+    width: '100%',
+    height: '100%',
+  },
+  saveButtonContainer: {
+    padding: 24,
+    backgroundColor: '#050505',
+    borderTopWidth: 0.5,
+    borderTopStyle: 'solid',
+    borderTopColor: '#222222'
   },
   numSelector: {
     justifyContent: 'center',
      alignItems: 'center', /*backgroundColor: 'green',*/
-     width: 300,
+     width: '100%',
      height: 88,
   },
   flatList: {
@@ -1104,14 +1151,30 @@ const styles = StyleSheet.create({
   paramsText:{
     color: '#EEEEEE',
     fontSize: 40,
+    width: '100%',
+    textAlign: 'center',
+    fontFamily: 'Poppins-Medium',
+    fontWeight: '500',
+  },
+  boundariesContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
   },
   minText: {
     color: '#EEEEEE',
     fontSize: 12,
+    fontFamily: 'Poppins-Light',
+    fontWeight: '300',
+    lineHeight: 24,
   },
   maxText: {
     color: '#EEEEEE',
     fontSize: 12,
+    fontFamily: 'Poppins-Light',
+    fontWeight: '300',
+    lineHeight: 24,
   },
   inputsGroup1: {
     width: '100%',
@@ -1120,7 +1183,7 @@ const styles = StyleSheet.create({
     gap: -1,
     borderColor: '#050505',
     borderWidth: 0.5,
-    backgroundColor: 'red',
+    marginBottom: 24,
   },
   inputsGroup2: {
     width: '100%',
@@ -1131,12 +1194,11 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   fakeInput: {
-    flexDirection: 'row',
     marginBottom: 20,
     backgroundColor: '#101010',
     height: 48,
     width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   labelContainer: {
@@ -1146,9 +1208,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 18,
-    color: '#EEEEEE',
-    alignItems: 'center',
+    marginTop: 24,
+    color: '#AAAAAA',
+    textAlign: 'center',
+    fontFamily: 'Poppins-Light',
+    fontSize: 14,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -1158,34 +1222,33 @@ const styles = StyleSheet.create({
     
   },
   fakeInputText: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingRight: 16,
-    alignContent: 'flex-end',
     color: '#EEEEEE',
     fontSize: 14,
-    width: '70%',
-    backgroundColor: '#101010'
+    fontFamily: 'Poppins-Light',
+    // width: '70%',
   },
   addPhotoContainer: {
     borderRadius: 8,
-    boderColor: 'white',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    width: '100%',
-    height: 104,
+    // boderColor: 'white',
+    // borderWidth: 1,
+    // borderStyle: 'dashed',
+    // width: '100%',
+    // height: 104,
+    // backgroundColor: '#050505',
     backgroundColor: '#050505',
-    // backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 144,
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   addPhotoContent: {
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'blue',
-    // borderColor: 'blue',
-    // borderWidth: 1,
-    // borderStyle: 'solid',
+    backgroundColor: '#050505',
+    borderColor: '#222222',
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    height: 144,
   },
   camera: {
     flex: 1,

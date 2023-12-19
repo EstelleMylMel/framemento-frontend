@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, TextInput, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -135,7 +135,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
       { user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
       
       {/* OU DES PELLICULES */}
-      { rollsList && <View style={styles.rollsContainer}>{rollsList}</View>}
+      { rollsList && <ScrollView style={styles.rollsContainer}>{rollsList}</ScrollView>}
 
       {/* BOUTON AJOUTER UNE PELLICULE */}
       <TouchableOpacity 
@@ -247,6 +247,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                       </View>
 
                     </View>
+
+                    {/* Bouton enregistrer */}
                     <View style={styles.saveButtonContainer}>
                       <CustomButton
                         title='Enregistrer'
@@ -268,22 +270,25 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 const styles = StyleSheet.create({
     body: {
       height: '100%',
+      width: '100%',
       flex: 1,
       backgroundColor: '#050505',
       alignItems: 'center',
-      justifyContent: 'flex-start',
-      width: '100%',
     },
     fullScreen: {
       width: '100%',
+      height: '100%',
+      justifyContent: 'flex-start',
     },
     headerContainer: {
-      height: 130,
+      // height: 130,
+      flex: 1,
       width: '100%',
     },
     rollsContainer: {
       padding: 24,
       width: '100%',
+      height: '80%',
       gap: 16,
     },
     addRollButton: {
@@ -303,14 +308,20 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
       alignItems: 'center',
       justifyContent: 'flex-start',
+      height: '100%',
     },
     modalView: {
       width: '100%',
+      height: '100%',
+      justifyContent: 'flex-start',
     },
     mainContent: {
-      height: '92%',
+      flex: 7,
       padding: 24,
+      marginTop: 100,
       gap: 24,
+      height: '80%',
+      justifyContent: 'space-between',
     },
     form: {
       gap: 24,
@@ -373,7 +384,7 @@ const styles = StyleSheet.create({
       height: 80,
       padding: 16,
       borderRadius: 12,
-      
+      marginBottom: 16,
     },
     rollName: {
       color: '#EEEEEE',
@@ -394,7 +405,7 @@ const styles = StyleSheet.create({
       lineHeight: 24,
       fontFamily: 'Poppins-Light'
     },
-    saveButtonContainer: {
-      width: '100%',
-    }
+    // saveButtonContainer: {
+    //   width: '100%',
+    // }
 });
