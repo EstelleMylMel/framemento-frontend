@@ -79,7 +79,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
         <TouchableOpacity onPress={() => openMoreOptions(onPressRightButton)} style={styles.button}>
           <MaterialIcons name='more-vert' size={24} color="#EEEEEE" />
         </TouchableOpacity> 
-        <Text style={styles.title}>{title}</Text>
         </>)
       }
 
@@ -89,7 +88,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
         <TouchableOpacity onPress={onPressRightButton} style={styles.button}>
           <MaterialIcons name={iconRight? iconRight : ''} size={24} color="#FFDE67" />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
         </>)}
 
       {/* share */}
@@ -98,7 +96,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
         <TouchableOpacity onPress={onPressRightButton} style={styles.button}>
           <MaterialIcons name={iconRight? iconRight : ''} size={24} color="#EEEEEE" />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
         </>)}
 
     </View>
@@ -113,7 +110,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 1,
     backgroundColor: '#050505',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     paddingVertical: 20,

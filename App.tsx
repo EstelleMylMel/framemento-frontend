@@ -159,6 +159,7 @@ const TabNavigator = () => {
         borderRadius: 16, 
         paddingHorizontal: 8, 
         position: 'absolute', 
+        zIndex: 0, 
         bottom: 10, 
         left: 10,
         right: 10,

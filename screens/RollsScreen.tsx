@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, TextInput } from 'react-native';
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -9,6 +9,11 @@ import { addRoll, importRolls, removeRoll } from '../reducers/user';
 import { RollType } from '../types/roll';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from '../components/Header';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+
+/// COMPOSANTS ///
+import CustomInput from '../components/CustomInput';
+import CustomButton from '../components/CustomButton';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -117,156 +122,169 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     )
   })
 
+  console.log('rollList : ', user.rolls);
+
 
   return (
-      <View style={styles.body}>
-          <Header navigation={navigation} iconLeft='menu' title='Framemento'/>
-          {user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
-          
-          { rollsList && <View style={styles.rollsContainer}>{rollsList}</View>}
-          <TouchableOpacity 
-            style={styles.addRollButton} 
-            activeOpacity={0.8}
-            onPress={handlePressOnPlus}
-          >
-            <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
-          </TouchableOpacity>
-
-          <Modal visible={modalVisible} animationType="fade" transparent>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-
-                {/* Modal Header */}
-                <View style={styles.modalHeader}>
-                  <TouchableOpacity 
-                    onPress={() => handlePressOnX()} 
-                    style={styles.closeModalButton} 
-                    activeOpacity={0.8}
-                  >
-                    <FontAwesome name='times' style={styles.closeModalIcon} />
-                  </TouchableOpacity>
-                  <Text style={styles.textModalHeader}>Nouvelle pellicule</Text>
-                </View>
-
-                {/* Modal Text Inputs */}
-                <View style={styles.textInputs1}>
-                  <View style={styles.textInputTopContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Nom</Text>
-                    </View>
-                    <TextInput 
-                    placeholder='-'
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={name}
-                    onChangeText={(value) => setName(value)}
-                    />
-                  </View>
-                  <View style={styles.textInputContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Type de film</Text>
-                    </View>
-                    <TextInput 
-                    placeholder='-'
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={rollType}
-                    onChangeText={(value) => setRollType(value)}
-                    />
-                  </View>
-                  <View style={styles.textInputContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='hashtag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Nombre d'images</Text>
-                    </View>
-                    <TextInput 
-                    placeholder="-"
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={`${Number(images)}`}
-                    onChangeText={(value) => setImages(Number(value))}
-                    />
-                  </View>
-                  <View style={styles.textInputBottomContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Push / Pull</Text>
-                    </View>
-                    <TextInput 
-                    placeholder="-"
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={`${pushPull}`}
-                    onChangeText={(value) => setPushPull(Number(value))}
-                    />
-                  </View>
-                </View>
-
-                <View style={styles.textInputs2}>
-                  <Text style={styles.textCamera}>Appareil photo</Text>
-                  <View style={styles.textInputTopContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Marque</Text>
-                    </View>
-                    <TextInput 
-                    placeholder='-'
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={brand}
-                    onChangeText={(value) => setBrand(value)}
-                    />
-                  </View>
-                  <View style={styles.textInputBottomContainer}>
-                    <View style={styles.textInputSubContainer}>
-                      <FontAwesome name='tag' style={styles.textInputIcon} />
-                      <Text style={styles.textTitle}>Modèle</Text>
-                    </View>
-                    <TextInput 
-                    placeholder='-'
-                    placeholderTextColor="#AAAAAA" 
-                    style={styles.textInput}
-                    value={model}
-                    onChangeText={(value) => setModel(value)}
-                    />
-                  </View>
-                </View>
-
-                <View>
-                  <TouchableOpacity 
-                    style={styles.saveRollButton} 
-                    activeOpacity={0.8}
-                    onPress={handlePressOnSaveRoll}
-                  >
-                    <Text style={styles.saveRollText}>ENREGISTRER</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
-
+    <SafeAreaView style={styles.body}>
+      <View style={styles.headerContainer}>
+        <Header navigation={navigation} iconLeft='menu' title='Framemento'/>
       </View>
+      
+      {/* AFFICAHGE DU MESSAGE */}
+      { user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
+      
+      {/* OU DES PELLICULES */}
+      { rollsList && <View style={styles.rollsContainer}>{rollsList}</View>}
+
+      {/* BOUTON AJOUTER UNE PELLICULE */}
+      <TouchableOpacity 
+        style={styles.addRollButton} 
+        activeOpacity={0.8}
+        onPress={handlePressOnPlus}
+      >
+        <MaterialIcons name="add" size={40} color="#050505" style={{ borderRadius: 15 }}/>
+      </TouchableOpacity>
+
+      {/* MODALE AJOUTER UNE PELLICULE */}
+
+      <Modal visible={modalVisible} animationType="fade" transparent>
+          <SafeAreaProvider style={styles.body}>
+            <KeyboardAvoidingView style={styles.fullScreen}>
+              <SafeAreaView style={styles.centeredView}>
+                <View style={styles.modalView}>
+                
+                  {/* Modal Header */}
+                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalVisible(false)} title='Nouvelle pellicule'/>
+
+                  {/* Modal Text Inputs */}
+                  <View style={styles.mainContent}>  
+                    <View style={styles.form}>
+                      <View style={styles.textInputs1}>
+
+                        <CustomInput
+                          label='Nom'
+                          icon='local-offer'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={name}
+                            onChangeText={(value) => setName(value)}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+                        <CustomInput
+                          label='Type de film'
+                          icon='camera-roll'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={rollType}
+                            onChangeText={(value) => setRollType(value)}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+                        <CustomInput
+                          label={`Nombre d'images`}
+                          icon='tag'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={`${Number(images)}`}
+                            onChangeText={(value) => setImages(Number(value))}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+                        <CustomInput
+                          label='Push / Pull'
+                          icon='swap-vert'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={`${pushPull}`}
+                            onChangeText={(value) => setPushPull(Number(value))}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+
+                      </View>
+
+                      <View style={styles.cameraInputsContainer}>
+                        <Text style={styles.textCamera}>Appareil photo</Text>
+                        <View style={styles.textInputs2}>
+
+                        <CustomInput
+                          label='Marque'
+                          icon='photo-camera'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={brand}
+                            onChangeText={(value) => setBrand(value)}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+                        <CustomInput
+                          label='Modèle'
+                          icon='photo-camera'
+                        >
+                          <TextInput
+                            placeholder='-'
+                            placeholderTextColor='#AAAAAA'
+                            value={model}
+                            onChangeText={(value) => setModel(value)}
+                            style={styles.input}
+                            />
+                        </CustomInput>
+                      
+                          
+                          </View>
+                      </View>
+
+                    </View>
+                    <View style={styles.saveButtonContainer}>
+                      <CustomButton
+                        title='Enregistrer'
+                        onPress={handlePressOnSaveRoll}
+                        type='primary'
+                        />
+                    </View>
+                  </View>
+
+                </View>
+              </SafeAreaView>
+            </KeyboardAvoidingView>
+          </SafeAreaProvider>
+      </Modal>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
     body: {
+      height: '100%',
       flex: 1,
       backgroundColor: '#050505',
       alignItems: 'center',
       justifyContent: 'flex-start',
       width: '100%',
     },
+    fullScreen: {
+      width: '100%',
+    },
+    headerContainer: {
+      height: 130,
+      width: '100%',
+    },
     rollsContainer: {
       padding: 24,
       width: '100%',
       gap: 16,
-    },
-
-    h1: {
-      
     },
     addRollButton: {
       height: 80,
@@ -275,75 +293,43 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 100,
+      position: 'absolute',
+      zIndex: 20,
+      bottom: 110,
+      right: 20,
     },
     centeredView: {
       flex: 1,
       backgroundColor: 'black',
-      alignItems: 'center'
+      alignItems: 'center',
+      justifyContent: 'flex-start',
     },
     modalView: {
-
+      width: '100%',
     },
-    modalHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 52
+    mainContent: {
+      height: '92%',
+      padding: 24,
+      gap: 24,
     },
-    closeModalButton: {
-      backgroundColor: '#101010',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: 48,
-      width: 48,
-      marginLeft: 20,
-      borderRadius: 16
-    },
-    closeModalIcon: {
-      color: '#EEEEEE',
-      fontSize: 24,
-    },
-    textModalHeader: {
-      color: '#EEEEEE',
-      fontSize: 24,
-      marginLeft: 15
+    form: {
+      gap: 24,
     },
     textInputs1: {
-      marginTop: 44,
+      
+      borderRadius: 12,
+      width: '100%',
     },
     textInputs2: {
-      marginTop: 24,
+      
     },
-    textInputTopContainer: {
-      backgroundColor: '#101010',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      height: 48,
-      width: 342,
-      marginBottom: 1,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16
-    },
-    textInputContainer: {
-      backgroundColor: '#101010',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      height: 48,
-      width: 342,
-      marginBottom: 1
-    },
-    textInputBottomContainer: {
-      backgroundColor: '#101010',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      height: 48,
-      width: 342,
-      marginBottom: 1,
-      borderBottomLeftRadius: 16,
-      borderBottomRightRadius: 16
-    },
-    textInputSubContainer: {
-      flexDirection: `row`,
-      alignItems: 'center'
+    input: {
+      color: '#EEEEEE',
+      fontSize: 14,
+      fontFamily: 'Poppins-Light',
+      fontStyle: 'normal',
+      fontWeight: '300',
+      lineHeight: 24,
     },
     textTitle: {
       color: '#AAAAAA',
@@ -360,12 +346,15 @@ const styles = StyleSheet.create({
       fontSize: 14,
       marginRight: 16
     },
+    cameraInputsContainer: {
+      gap: 8,
+
+    },
     textCamera: {
       color: '#AAAAAA',
       textAlign: 'center',
-      fontSize: 16,
-      marginBottom: 12,
-      marginTop: 10
+      fontFamily: 'Poppins-Light',
+      fontSize: 12,
     },
     saveRollButton: {
       justifyContent: 'center',
@@ -404,5 +393,8 @@ const styles = StyleSheet.create({
       fontWeight: '300',
       lineHeight: 24,
       fontFamily: 'Poppins-Light'
+    },
+    saveButtonContainer: {
+      width: '100%',
     }
 });

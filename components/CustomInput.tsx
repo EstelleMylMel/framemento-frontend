@@ -1,23 +1,16 @@
 import { View, Text, TextInput, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useState } from 'react';
 
 interface InputProps {
   label: string;
-  placeholder?: string;
   icon?: React.ReactNode;
-  value: string;
-  onChange: (text: string) => void;
-  style?: {
-    container?: ViewStyle;
-    label?: TextStyle;
-    inputContainer?: ViewStyle;
-    iconContainer?: ViewStyle;
-    icon?: TextStyle;
-  };
+  children?: React.JSX.Element | React.JSX.Element[];
 }
 
-const CustomInput: React.FC<InputProps> = ({ label, placeholder, icon, value, onChange, style }) => {
+const CustomInput: React.FC<InputProps> = ({ label,  icon , children}) => {
   
+
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
@@ -26,13 +19,8 @@ const CustomInput: React.FC<InputProps> = ({ label, placeholder, icon, value, on
                 </View>}
         <Text style={styles.label}>{label}</Text>
       </View>
-      <TextInput
-        placeholder={placeholder}
-        placeholderTextColor='#777777'
-        value={value}
-        onChangeText={onChange}
-        style={styles.input}
-      />
+      {children}
+      
     </View>
   );
 };
@@ -51,7 +39,7 @@ const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: 'row',
     gap: 12,
-    width: '30%',
+    width: '40%',
     alignItems: 'center',
   },
   label: {
@@ -79,8 +67,8 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
     color: '#EEEEEE',
     fontSize: 14,
-    width: '70%',
-    backgroundColor: '#101010'
+    width: '60%',
+    backgroundColor: '#101010',
   },
   icon: {
     fontSize: 20,
