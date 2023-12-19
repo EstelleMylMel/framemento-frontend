@@ -75,6 +75,17 @@ export default function CommunityProfileScreen() {
                 });
             }
         }
+        // updateLikesInFramesShared(updatedFrame)
+    }
+
+    function updateLikesInFramesShared(updatedFrame: FrameType) {
+        const updatedFramesShared = framesShared.map(frame => {
+            if (frame._id === updatedFrame._id) {
+                return updatedFrame;
+            }
+            return frame;
+        });
+        setFramesShared(updatedFramesShared);
     }
     
 
@@ -97,7 +108,6 @@ export default function CommunityProfileScreen() {
     }, [])
 
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     function handleCategorySelection(category: string, frameId: string) {
         if (selectedCategories.includes(category)) {
@@ -150,6 +160,24 @@ export default function CommunityProfileScreen() {
 
     /// AFFICHE LES FRAMES PARTAGÉES DU USER ///
 
+    const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
+    const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
+
+    function handlePressOnFrame(frame: FrameType): void {
+        fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
+            .then(response => response.json())
+            .then(data => {
+                setFrameToDisplay(data.frame);
+                if (data.frame.categories) {
+                    setSelectedCategories(data.frame.categories)
+                }
+            })
+            .catch(error => {
+              console.error('Erreur lors du fetch frame cliquée :', error);
+            });
+        setModalViewFrameVisible(true)
+    }
+
     const framesSharedList = framesShared.map((frame: FrameType, i: number) => {
 
         // STYLE LIKE
@@ -159,56 +187,35 @@ export default function CommunityProfileScreen() {
         }
         let heartColor = isLikedByUserConnected ? "yellow" : "black";
 
+        const date = new Date(frame.date);
+
         return (
             <View key={i} style={styles.frameSharedContainer}>
-                <TouchableOpacity onPress={() => setModalViewFrameVisible(true)}>
-                    <Image source={require("../assets/favicon.png")} style={styles.argenticPhoto} />
+                <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
+                    <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
                 </TouchableOpacity>
-                <Text>{frame.location}</Text>
-
-                <Picker
-                    selectedValue={selectedCategoriesList}
-                    onValueChange={(itemValue: any) => handleCategorySelection(itemValue, frame._id)}
-                    style={styles.picker}
-                >
-                    <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
-                    {categoriesPickable.map((category: string) => (
-                        <Picker.Item key={category} label={category} value={category} style={styles.pickerItem} />
-                    ))}
-                </Picker>
-                <View>{selectedCategoriesList}</View>
-
-                <View style={styles.iconsContainer}>
-                    <TouchableOpacity onPress={() => handlePressOnHeart(frame)} >
-                        <FontAwesome name='tag' color={`${heartColor}`} style={styles.heartIcon} />
-                    </TouchableOpacity>
-                    <Text style={styles.likeCount}>{frame.likes?.length}</Text>
-                    <FontAwesome name='tag' style={styles.commentaryIcon} />
-                    <Text style={styles.commentaryCount}>{frame.commentaries?.length}</Text>
+                <View style={styles.textContainer}>
+                    <Text style={styles.titleFrame}>{frame.location}</Text>
+                    <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
                 </View>
 
+                <View style={styles.iconsContainer}>
+                    { /* Likes */ }
+                    { /* <TouchableOpacity onPress={() => handlePressOnHeart(frame)} >
+                        <MaterialIcons name='favorite' color={`${heartColor}`} style={styles.heartIcon} />
+                    </TouchableOpacity>
+                    <Text style={styles.likeCount}>{frame.likes?.length}</Text> */}
+                    { /* Commentaries */ }
+                    {/* <FontAwesome name='tag' style={styles.commentaryIcon} />
+                    <Text style={styles.commentaryCount}>{frame.commentaries?.length}</Text> */}
+                </View>
             </View>
         )
     })
 
 
-    /// VOIR LES DÉTAILS D'UNE FRAME EN CLIQUANT DESSUS ///
+    /// UNSHARE UNE FRAME ///
 
-    const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
-    const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
-
-
-    function hundlePressOnFrame(frame: FrameType): void {
-        fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
-            .then(response => response.json())
-            .then(data => {
-                setFrameToDisplay(frame);
-                console.log(frameToDisplay)
-            })
-            .catch(error => {
-              console.error('Erreur lors du fetch frame cliquée :', error);
-            });
-    }
 
     function handlePressOnShareButton(displayedFrame: FrameType | undefined) {
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/${displayedFrame?._id}`, {
@@ -219,6 +226,11 @@ export default function CommunityProfileScreen() {
         .then((response) => response.json())
         .then((data) => {
             console.log('frame unshared successfully')
+            setFramesShared((prevFrames) =>
+                prevFrames.filter((frame) => frame._id !== displayedFrame?._id)
+            );
+            setFrameToDisplay(undefined);
+            setModalViewFrameVisible(false)
         })
         .catch(error => {
             console.error('Erreur lors du put frameToDisplay :', error);
@@ -232,13 +244,18 @@ export default function CommunityProfileScreen() {
         <View style={styles.container}>
 
             {/* Header */}
-            <View style={styles.header}>
-                <Image source={require("../assets/favicon.png")} style={styles.profilePicture} />
-                <Text style={styles.profileText}>{user.username}</Text>
+            <View style={styles.topContainer}>
+                <View style={styles.topContainerProfile}>
+                    <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
+                    <Text style={styles.profileText}>{user.username}</Text>
+                </View>
+                <Text style={styles.topContainerText}>Mes photos partagées</Text>
             </View>
 
             {/* Frames shared */}
-            {framesShared.length > 0 && framesSharedList}
+            <ScrollView style={styles.scrollView}>
+                {framesShared.length > 0 && framesSharedList}
+            </ScrollView>
 
             <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
             <SafeAreaProvider>
@@ -248,7 +265,7 @@ export default function CommunityProfileScreen() {
 
                 {/* Modal Header */}
                 <SafeAreaView style={styles.modalHeader}>
-                    <TouchableOpacity onPress={() => setModalViewFrameVisible(false)} style={styles.headerButton} activeOpacity={0.8}>
+                    <TouchableOpacity onPress={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} style={styles.headerButton} activeOpacity={0.8}>
                         <MaterialIcons name="close" size={24} color="#EEEEEE" />
                     </TouchableOpacity>
                     <Text style={styles.title}>TO CHANGE !!!</Text>
@@ -267,9 +284,40 @@ export default function CommunityProfileScreen() {
                 </SafeAreaView>
             
 
-                    <ScrollView style={styles.scrollView}>
+                    <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
-                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={{ width: 200, height: 200 }} />
+                        <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+
+                    { /* Choisir la/les catégorie.s de la photo */}
+                    <View style={styles.pickerContainer}>
+                        <Picker
+                        selectedValue={selectedCategoriesList}
+                        onValueChange={(itemValue: any) => {if (frameToDisplay) handleCategorySelection(itemValue, frameToDisplay._id)}}
+                        style={styles.picker}
+                        dropdownIconColor='#AAAAAA'
+                        >
+                            <Picker.Item key='Selection' label='Choisir une catégorie' style={styles.pickerItemTitle} />
+                            {categoriesPickable.map((category: string) => (
+                                <Picker.Item 
+                                    key={category} 
+                                    label={category} 
+                                    value={category} 
+                                    style={
+                                        selectedCategories.includes(category)
+                                            ? { backgroundColor: 'black', color: "#FFDE67", fontWeight: 'bold', fontSize: 14 }
+                                            : { backgroundColor: 'black', color: '#EEEEEE', fontWeight: 'normal', fontSize: 12 }
+                                    } 
+                                />
+                            ))}
+                        </Picker>
+                        <View style={styles.categories}>
+                            {
+                                selectedCategories.map((category: string, i: number) => {
+                                    return <Text key={i} style={styles.category}>{category}</Text>
+                                })
+                            }
+                        </View>
+                    </View>
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -285,10 +333,18 @@ export default function CommunityProfileScreen() {
 
                     <View style={styles.fieldsGroup}>
                         {/* appareil */}
-                        <CustomField label='Appareil' icon='photo-camera' value={`${frameToDisplay?.camera.brand} - ${frameToDisplay?.camera.model}`}></CustomField>
+                        <CustomField label='Appareil' icon='photo-camera' value={`${frameToDisplay?.camera?.brand} - ${frameToDisplay?.camera?.model}`}></CustomField>
 
                         {/* objectif */}
                         <CustomField label='Objectif' icon='circle' value={`${frameToDisplay?.lens?.brand} - ${frameToDisplay?.lens?.model}`}></CustomField>
+                    </View>
+
+                    <View style={styles.fieldsGroup}>
+                        {/* ouverture */}
+                        <CustomField label='Ouverture' icon='photo-camera' value={frameToDisplay?.aperture}></CustomField>
+
+                        {/* vitesse d'obturation */}
+                        <CustomField label="Vitesse d'obturation" icon='circle' value={frameToDisplay?.shutterSpeed}></CustomField>
                     </View>
 
                     <View style={styles.fieldsGroup}>
@@ -320,41 +376,87 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#050505',
   },
-  header: {
-    flexDirection: 'row',
+  topContainer: {
+    marginTop: 25,
     justifyContent: 'center',
     alignItems: 'center'
   },
+  topContainerProfile: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Poppins-Medium',
+    marginBottom: 20,
+  },
+  topContainerText: {
+    fontSize: 15,
+    color: '#EEEEEE',
+    fontFamily: 'Poppins-Medium',
+  },
   profilePicture: {
     height: 60,
-    width: 60
+    width: 60,
+    borderRadius: 10,
+    marginRight: 15
   },
   profileText: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#EEEEEE'
+  },
+  noFrameText: {
+    color: '#EEEEEE'
+  },
+  pickerContainer: {
+    marginTop: 25,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   picker: {
     height: 50,
-    width: 300,
-    backgroundColor: '#f8f8f8',
+    width: 200,
+    backgroundColor: 'black',
     borderColor: '#cccccc',
     borderWidth: 1,
     borderRadius: 5,
   },
   pickerItemTitle: {
-    color: 'black',
+    backgroundColor: 'black',
+    color: '#AAAAAA',
     fontSize: 12,
+    fontFamily: 'Poppins-Light'
   },
   pickerItem: {
     color: 'black',
     fontSize: 12,
   },
-  scrollView: {
+  categories: {
 
   },
-  fieldsGroup: {
+  category: {
+    color: '#EEEEEE',
+    fontSize: 12,
+    fontFamily: 'Poppins-Light'
+  },
+  scrollView: {
     width: '100%',
+    paddingBottom: 24,
+    paddingLeft: 24,
+    paddingRight: 24,
+    gap: 24,
+    marginTop: 10
+  }, 
+  scrollViewModal: {
+    width: '100%',
+    padding: 10,
+    gap: 24,
+  }, 
+  fieldsGroup: {
+    width: 370,
     height: 'auto',
     borderRadius: 12,
     gap: -1,
@@ -365,10 +467,34 @@ const styles = StyleSheet.create({
 
   },
   frameSharedContainer: {
-
+    width: '100%',
+    justifyContent: 'center',
+    marginTop: 15
   },
   argenticPhoto: {
-
+    height: 228,
+    width: '100%',
+  },
+  textContainer: {
+    flex: 1,
+    marginTop: 7
+  },
+  titleFrame: {
+    color: '#EEEEEE',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Medium'
+  },
+  infos: {
+    flexDirection: 'row',
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontStyle: 'normal',
+    fontWeight: '300',
+    lineHeight: 24,
+    fontFamily: 'Poppins-Light'
   },
   iconsContainer: {
 
@@ -389,7 +515,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
     alignItems: 'center',
-    },
+  },
   modalView: {
     flex:1,
     width: '100%',
@@ -400,7 +526,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    //marginTop: 52,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     width: '100%',
   },
   headerButton: {
@@ -420,9 +547,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginLeft: 15
   },
-  title:{
-
-  }
+  title: {
+    color: '#EEEEEE',
+  },
 });
 
 
