@@ -22,7 +22,11 @@
     "@react-navigation/bottom-tabs": "6",
     "@react-navigation/drawer": "^6.6.6",
     "@react-navigation/material-top-tabs": "^6.6.5",
+<<<<<<< HEAD
     "@react-navigation/native": "^6.1.9",
+=======
+    "@react-navigation/native": "6",
+>>>>>>> ea
     "@react-navigation/native-stack": "6",
     "@reduxjs/toolkit": "^2.0.1",
     "expo": "^49.0.21",
@@ -36,7 +40,11 @@
     "react-native-gesture-handler": "~2.12.0",
     "react-native-pager-view": "^6.2.3",
     "react-native-reanimated": "~3.3.0",
+<<<<<<< HEAD
     "react-native-safe-area-context": "^4.8.1",
+=======
+    "react-native-safe-area-context": "^4.6.3",
+>>>>>>> ea
     "react-native-screens": "~3.22.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-ui-datepicker": "^1.0.11",
