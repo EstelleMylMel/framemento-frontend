@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 
+/// COMPOSANTS ///
+import CustomInput from '../components/CustomInput';
+import CustomButton from '../components/CustomButton';
+
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
 type SigninScreenProps = {
@@ -63,17 +67,33 @@ type SigninScreenProps = {
     return (
         <View style={styles.container}>
           <Text style={styles.h1}>Connexion</Text>
-            <Text style={styles.textEmail}>Email</Text>
-            <TextInput style={styles.inputEmail} placeholder={'john@gmail.com'} onChangeText={(value) => setEmail(value)} value={email}/>
-            
-            <Text style={styles.textPassword}>Mot de passe</Text>
-            <TextInput style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
-            
-            <TouchableOpacity style={styles.buttonConnexion} onPress={handleSubscription}>
-              <Text style={styles.textConnexion}>CONNEXION</Text>
-            </TouchableOpacity>
+            <CustomInput
+              label='Email'
+              icon='alternate-email'>
+            <TextInput 
+              placeholder='framemento@frame.fr'
+              placeholderTextColor='#AAAAAA'
+              value={email}
+              onChangeText={(value) => setEmail(value)}
+              style={styles.input} 
+              />
+            </CustomInput>
+            <CustomInput
+              label='Mot de passe'
+              icon='vpn-key'>
+            <TextInput 
+              placeholder='******'
+              placeholderTextColor='#AAAAAA'
+              value={password}
+              onChangeText={(value) => setPassword(value)}
+              style={styles.input}
+              />
+            </CustomInput>
+                <CustomButton
+                  title='Connexion'
+                  onPress={handleSubscription}
+                  type='primary' />
             <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}>
-              {/* Faut il faire un composant pour les boutons ? */}
               <Text>DEV : SKIP</Text>
             </TouchableOpacity>  
         </View>
@@ -93,38 +113,28 @@ const styles = StyleSheet.create({
       fontFamily: 'Poppins-SemiBold',
       bottom: 200,
     },
-    inputEmail: {
-      backgroundColor: '#1B1B1B',
-      width: 320,
-      height: 40,
-      paddingLeft: 10,
-      marginTop: -20,
-      color: 'white',
-      borderRadius: 12,
-      bottom: 120,
-    },
-    textEmail: {
+    input: {
+      width: 160,
       color: '#EEEEEE',
-      bottom: 140,
-      marginRight: 260,
+      fontSize: 14,
+      fontFamily: 'Poppins-Light',
+      fontStyle: 'normal',
+      fontWeight: '300',
+      lineHeight: 24,
     },
-    inputPassword: {
-      backgroundColor: '#1B1B1B',
-      width: 320,
-      height: 40,
-      paddingLeft: 10,
-      marginTop: -20,
-      color: 'white',
-      borderRadius: 12,
-      bottom: 85,
+    textInputIcon: {
+      color: '#AAAAAA',
+      fontSize: 20,
+      marginLeft: 12,
+      marginRight: 12
     },
-    textPassword: {
-      color: '#EEEEEE',
-      bottom: 105,
-      marginRight: 210,
+    textInput: {
+      color: '#AAAAAA',
+      fontSize: 14,
+      marginRight: 16,
     },
     buttonConnexion: {
-      backgroundColor: '#FFFF5B',
+      backgroundColor: '#FFDE67',
       width: 320,
       height: 40,
       paddingLeft: 4, 
@@ -143,10 +153,5 @@ const styles = StyleSheet.create({
       fontFamily: 'Poppins-Regular',
       lineHeight: 28,
       letterSpacing: 0.15,
-    },
-    textSigninWith: {
-      color: '#EEEEEE',
-      fontSize: 18,
-      top: 80,
     },
   });

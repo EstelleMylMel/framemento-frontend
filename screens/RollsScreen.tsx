@@ -335,6 +335,7 @@ const styles = StyleSheet.create({
       
     },
     input: {
+      width: 120,
       color: '#EEEEEE',
       fontSize: 14,
       fontFamily: 'Poppins-Light',

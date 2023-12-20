@@ -3,6 +3,12 @@ import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+
+/// COMPOSANTS ///
+import CustomInput from '../components/CustomInput';
+import CustomButton from '../components/CustomButton';
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -68,31 +74,46 @@ type SignupScreenProps = {
           style={styles.container}>
           <Text 
             style={styles.h1}>Inscription</Text>
-            <Text 
-              style={styles.textEmail}>Email</Text>
-            <TextInput 
-              style={styles.inputEmail} 
-              placeholder={'john@gmail.com'} 
-              onChangeText={(value) => setEmail(value)} 
-              value={email}/>
-            
-            <Text 
-              style={styles.textPseudo}>Pseudo</Text>
-            <TextInput 
-              style={styles.inputPseudo} 
-              placeholder={'john'} 
-              onChangeText={(value) => setUsername(value)} 
-              value={username}/>
-            <Text 
-              style={styles.textPassword}>Mot de passe</Text>
-            <TextInput 
-              style={styles.inputPassword} placeholder={'*************'} onChangeText={(value) => setPassword(value)} value={password}/>
-            
-            <TouchableOpacity 
-              style={styles.buttonInscription} onPress={handleSubscription}>
-              <Text 
-                style={styles.textInscription}>INSCRIPTION</Text>
-            </TouchableOpacity>   
+            <CustomInput
+              label='Email'
+              icon='alternate-email' 
+              >
+               <TextInput 
+                placeholder='framemento@frame.fr'
+                placeholderTextColor='#AAAAAA'
+                value={email}
+                onChangeText={(value) => setEmail(value)}
+                style={styles.input} 
+                />
+            </CustomInput>
+            <CustomInput 
+              label='Pseudo'
+              icon='account-circle' >
+                <TextInput 
+                  placeholder='framemento'
+                  placeholderTextColor='#AAAAAA'
+                  value={username}
+                  onChangeText={(value) => setUsername(value)}
+                  style={styles.input} 
+                  />
+            </CustomInput>
+            <CustomInput
+              label='Mot de passe'
+              icon='vpn-key' >
+                <TextInput 
+                   placeholder='******'
+                   placeholderTextColor='#AAAAAA'
+                   value={password}
+                   onChangeText={(value) => setPassword(value)}
+                   style={styles.input}
+                  />
+            </CustomInput>
+          <View style={styles.viewButton}>
+            <CustomButton 
+              title='Inscription'
+              onPress={handleSubscription}
+              type='primary'/> 
+          </View>  
         </View>
     )
 }
@@ -110,55 +131,33 @@ const styles = StyleSheet.create({
       fontFamily: 'Poppins-SemiBold',
       bottom: 200,
     },
-    inputEmail: {
-      backgroundColor: '#1B1B1B',
-      width: 320,
-      height: 40,
-      paddingLeft: 10,
-      marginTop: -20,
-      color: '#787878',
-      borderRadius: 12,
-      bottom: 100,
-    },
-    textEmail: {
+    input: {
+      width: 160,
       color: '#EEEEEE',
-      bottom: 120,
-      marginRight: 260,
+      fontSize: 14,
+      fontFamily: 'Poppins-Light',
+      fontStyle: 'normal',
+      fontWeight: '300',
+      lineHeight: 24,
     },
-    inputPseudo: {
-      backgroundColor: '#1B1B1B',
-      width: 320,
+    textInputIcon: {
+      color: '#AAAAAA',
+      fontSize: 20,
+      marginLeft: 12,
+      marginRight: 12
+    },
+    textInput: {
+      color: '#AAAAAA',
+      fontSize: 14,
+      marginRight: 16,
+    },
+    viewButton: {
+      width: 342,
       height: 40,
-      paddingLeft: 10,
-      marginTop: -20,
-      color: '#787878',
-      borderRadius: 12,
-      bottom: 70,
-    }, 
-    textPseudo: {
-      color: '#EEEEEE',
-      bottom: 90,
-      marginRight: 250,
-    },
-    inputPassword: {
-      backgroundColor: '#1B1B1B',
-      width: 320,
-      height: 40,
-      paddingLeft: 10,
-      marginTop: -20,
-      color: '#787878',
-      borderRadius: 12,
-      bottom: 40,
-    },
-    textPassword: {
-      color: '#EEEEEE',
-      bottom: 60,
-      marginRight: 210,
+      marginTop: 50,
     },
     buttonInscription: {
-      backgroundColor: '#FFFF5B',
-      width: 320,
-      height: 40,
+      backgroundColor: '#FFDE67',
       paddingLeft: 4, 
       paddingRight: 4, 
       paddingTop: 6, 
@@ -175,10 +174,5 @@ const styles = StyleSheet.create({
       fontFamily: 'Poppins-Regular',
       lineHeight: 28,
       letterSpacing: 0.15,
-    },
-    textSignupWith: {
-      color: '#EEEEEE',
-      fontSize: 18,
-      top: 80,
     },
   });

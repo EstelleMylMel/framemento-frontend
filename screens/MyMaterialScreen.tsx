@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Header from '../components/Header';
 
 import CameraListScreen from './CameraListScreen';
 import LensListScreen from './LensListScreen';
@@ -10,15 +11,18 @@ import LensListScreen from './LensListScreen';
 const Tab = createMaterialTopTabNavigator();
 
 
-const MyMaterialScreen = () => {
+const MyMaterialScreen = ({navigation} : any) => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Mon Matériel</Text>
+      <Header navigation={navigation}
+              iconLeft='arrow-back'
+              title='Mon matériel' />
+      {/*<Text style={styles.header}>Mon Matériel</Text>*/}
       <Tab.Navigator
         screenOptions={{
           tabBarLabelStyle: { fontSize: 16, color: 'white' }, // Style du titre des deux onglets (appareils et objectifs)
           tabBarStyle: { backgroundColor: '#0000' }, // Style de la barre d'onglets
-          tabBarIndicatorStyle: { backgroundColor: '#FFFF5B', width: 100, marginLeft: 55 }, // Style de l'indicateur
+          tabBarIndicatorStyle: { backgroundColor: '#FFDE67', width: 100, marginLeft: 55 }, // Style de l'indicateur
         }}
       >
         <Tab.Screen
