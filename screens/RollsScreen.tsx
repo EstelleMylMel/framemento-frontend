@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, KeyboardAvoidingView, TextInput, ScrollView, Platform } from 'react-native';
 import { useEffect, useState } from 'react';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -102,6 +102,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     navigation.navigate('Roll', { roll })
   }
 
+  console.log('user rolls', user.rolls)
+
   const rollsList: JSX.Element[] = user.rolls?.map((data: RollType, i: number) => {
     return (
       <View key={i} style={styles.rollContainer}>
@@ -123,6 +125,8 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   })
 
   console.log('rollList : ', user.rolls);
+
+  console.log('user : ', user)
 
 
   return (
@@ -148,11 +152,11 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
       {/* MODALE AJOUTER UNE PELLICULE */}
 
-      <Modal visible={modalVisible} animationType="fade" transparent>
-          <SafeAreaProvider style={styles.body}>
-            <KeyboardAvoidingView style={styles.fullScreen}>
-              <SafeAreaView style={styles.centeredView}>
-                <View style={styles.modalView}>
+      <View style={styles.centeredView}>
+        <Modal visible={modalVisible} animationType="fade" transparent>
+            {/* <SafeAreaProvider style={styles.fullScreen}> */}
+              <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                  <View style={styles.modalView}>
                 
                   {/* Modal Header */}
                   <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalVisible(false)} title='Nouvelle pellicule'/>
@@ -259,10 +263,10 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   </View>
 
                 </View>
-              </SafeAreaView>
             </KeyboardAvoidingView>
-          </SafeAreaProvider>
-      </Modal>
+          {/* </SafeAreaProvider> */}
+        </Modal>
+      </View>
     </SafeAreaView>
   )
 }

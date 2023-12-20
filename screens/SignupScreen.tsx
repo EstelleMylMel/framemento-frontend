@@ -40,7 +40,7 @@ type SignupScreenProps = {
           .then(data => {
             console.log(data);
             if ( data.result ) {
-              console.log(data);
+              console.log('new user data : ',data);
               const { _id, username, token, rolls } = data;
               dispatch(updateUser({_id, username, token, rolls}));
               navigation.navigate('DrawerNavigator');
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     h1: {
       color: '#EEEEEE',
       fontSize: 30,
-      fontFamily: 'Poppins',
+      fontFamily: 'Poppins-Regular',
       fontWeight: '600',
       bottom: 200,
     },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     textInscription: {
       color: '#1B1B1B',
       fontSize: 14,
-      fontFamily: 'Poppins',
+      fontFamily: 'Poppins-Regular',
       fontWeight: '600',
       lineHeight: 28,
       letterSpacing: 0.15,
