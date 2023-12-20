@@ -113,7 +113,7 @@ const CommunityTopTabNavigation: React.FC<TopTabNavigationProps> = ({navigation}
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
-      <Header navigation={navigation} iconLeft='menu' title='Framemento' marginTop={35} />
+      <Header navigation={navigation} iconLeft='menu' title='Framemento' marginTop={33} />
       <CommunityTopTab.Navigator
         screenOptions={{
           tabBarLabelStyle: { fontSize: 14, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', fontWeight: '600' },
@@ -269,6 +269,7 @@ const DrawerNavigator = () => {
           <AppStack.Screen name="Signin" component={SigninScreen} />
           
           <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          <AppStack.Screen name="MyMaterial" component={MyMaterialScreen} />
           {/* ... d'autres écrans */}
         </AppStack.Navigator>
       </NavigationContainer>
