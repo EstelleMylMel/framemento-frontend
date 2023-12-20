@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     color: '#EEEEEE',
-    marginLeft: 17
+    marginLeft: 17,
   },
   scrollView: {
     width: '100%',
@@ -388,6 +388,7 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: 'black',
     fontSize: 12,
+    
   },
   category: {
     color: '#EEEEEE',

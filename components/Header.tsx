@@ -29,11 +29,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
     navigation.goBack();
   }
 
-  const openMoreOptions = (onPressRightButton: any) => {
-    // notamment supprimer une pellicule
-
-  }
-
   return (
     <SafeAreaView>
     {/* <View style={{ ...styles.container, top }}> */}
@@ -56,7 +51,7 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
         <TouchableOpacity onPress={goBack} style={styles.button}>
           <MaterialIcons name='arrow-back' size={24} color="#EEEEEE" />
         </TouchableOpacity>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title} >{title}</Text>
         </>)
       }
 
@@ -66,7 +61,7 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
         <TouchableOpacity onPress={onPressLeftButton} style={styles.button}>
           <MaterialIcons name='close' size={24} color="#EEEEEE" />
         </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title2} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
         </>)
       }
 
@@ -75,7 +70,7 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
       {/* more options*/}
       {iconRight && iconRight === 'more-vert' && (
         <>
-        <TouchableOpacity onPress={() => openMoreOptions(onPressRightButton)} style={styles.button}>
+        <TouchableOpacity onPress={onPressRightButton} style={styles.button}>
           <MaterialIcons name='more-vert' size={24} color="#EEEEEE" />
         </TouchableOpacity> 
         </>)
@@ -133,7 +128,17 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     fontWeight: '600',
     lineHeight: 40,
-  }
+  },
+  title2: {
+    color: '#EEEEEE',
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 24,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    lineHeight: 40,
+    width: 200,
+  },
+  
 
 });
 

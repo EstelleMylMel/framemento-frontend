@@ -10,6 +10,7 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+const { transformDate } = require('../modules/transformDate');
 
 
 import { useDispatch } from 'react-redux';
@@ -70,7 +71,7 @@ type RollScreenProps = {
     const [ modalTakePictureVisible, setModalTakePictureVisible ] = useState<boolean>(false);
     const [ requestCamera, setRequestCamera ] = useState<boolean>(false);
 
-    const [ contextMenuVisible, setContextualMenuVisible ] = useState<boolean>(false);
+    const [ contextMenuVisible, setContextMenuVisible ] = useState<boolean>(false);
 
     /// ROLL AND FRAMES DATA ///
     const [ rollData, setRollData ] = useState<RollType | undefined>();
@@ -140,9 +141,9 @@ type RollScreenProps = {
 
     /// DEBUG ///
 
-    useEffect(()=> {
-      console.log('frames Data: ', framesData);
-    },[framesData])
+    // useEffect(()=> {
+    //   console.log('frames Data: ', framesData);
+    // },[framesData])
 
     //////////////
 
@@ -179,11 +180,6 @@ type RollScreenProps = {
           });
 
     },[])
-    
-    /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
-
-    // setLastFrameSpeedValue(shutterSpeeds.findIndex((speed)=> speed == 1/Number(frameSpeed)));
-    // setLastFrameApertureValue(apertures.findIndex((aperture)=> `f/${aperture}` == frameAperture));
 
     function handlePressOnPlus(): void {
 
@@ -220,10 +216,6 @@ type RollScreenProps = {
             }
         })();
 
-        console.log('frames dans le roll ?  : ',roll.framesList?.length);
-        console.log('images dispos dans le roll ?  : ',roll.images);
-        console.log('numero previous frame ?  : ',previousFrame?.numero);
-
 
         
         //Récupérer les informations de la frame précédente
@@ -239,6 +231,15 @@ type RollScreenProps = {
               setLensModel(data.frame.lens.model);
               setFrameAperture(data.frame.aperture);
               setFrameSpeed(data.frame.shutterSpeed);
+
+              
+              /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
+
+              const cutString = data.frame.shutterSpeed.split('/');
+
+              setLastFrameSpeedValue(shutterSpeeds.findIndex((speed) => speed == cutString[1]));
+              setLastFrameApertureValue(apertures.findIndex((aperture) => `f/${aperture}` === data.frame.aperture));
+
           })
           .catch(error => {
             console.error('Erreur lors du fetch last frame :', error);
@@ -406,20 +407,21 @@ type RollScreenProps = {
 
     function hundlePressOnFrame(frame: FrameType): void {
       
-      const selectedFrame = frame;
-      selectedFrame.title = !selectedFrame.title? selectedFrame.location : selectedFrame.title;
+      // frame.title = frame.title? frame.title : frame.location;
 
-      setFrameToDisplay(selectedFrame);
-      const date = new Date(selectedFrame.date);
+      fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
+      .then(response => response.json())
+      .then(frameData => {
 
-      const formDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        const selectedFrame = frameData.frame;
+        selectedFrame.title = selectedFrame.title ? selectedFrame.title : selectedFrame.location;
+        setFrameToDisplay(selectedFrame);
+        setModalViewFrameVisible(true)
 
-      setModalViewFrameVisible(true)
-
-      console.log('frameToDisplay', frameToDisplay);
-
-      console.log('selectedFrame : ',selectedFrame);
-
+      })
+      .catch(error => {
+        console.error('Erreur lors du get lens :', error);
+      });
     }
 
     // création des éléments JSX
@@ -444,7 +446,7 @@ type RollScreenProps = {
           </View>
           <View style={styles.textContainer}>
               <Text style={styles.title}>{thisTitle}</Text>
-              <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
+              <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1 }/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
           </View>
           </View>
       </TouchableOpacity>
@@ -463,21 +465,24 @@ type RollScreenProps = {
 
       if(image) {
 
-       const formData: any = new FormData();
+        const formData: any = new FormData();
 
-      formData.append('photoFromFront', {
-        uri: image,
-        name: 'photo.jpg', // CHANGER LE NOM DE LA PHOTO
-        type: 'image/jpeg',
-      });
+        formData.append('photoFromFront', {
+          uri: image,
+          name: 'photo.jpg', // CHANGER LE NOM DE LA PHOTO
+          type: 'image/jpeg',
+        });
+        setModalAddFrameVisible(false);
 
-        
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/upload`, {
         method: 'POST',
         body: formData,
         })
         .then((response) => response.json())
         .then((data) => {
+
+          setModalAddFrameVisible(false);
+          
           fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frameToDisplay?._id}`, {
             method: 'PUT',
             headers: { 'Content-Type' : 'application/json'},
@@ -485,6 +490,9 @@ type RollScreenProps = {
           })
           .then((response) => response.json())
           .then((data) => {
+
+            // setModalAddFrameVisible(false);
+
           })
           .catch(error => {
             console.error('Erreur lors du put frameToDisplay :', error);
@@ -493,8 +501,11 @@ type RollScreenProps = {
         .catch(error => {
           console.error('Erreur lors du fetch upload argentic photo :', error);
         });
-      }
 
+        setModalAddFrameVisible(false);
+        
+      }
+      setModalAddFrameVisible(false);
     }, [image])
 
 
@@ -509,7 +520,27 @@ type RollScreenProps = {
 
       console.log('result asset', result.assets ? result.assets[0].uri : 'rien')
       if (result.assets) {
+
+        
         setImage(result.assets[0].uri);
+        setModalViewFrameVisible(true);
+
+
+        /// AFFICHER LA PHOTO UPLOADEE DANS LA MODALE PAR UNE MAJ FRAMETODISPLAY ///
+        const selectedFrame = frameToDisplay;
+        if (selectedFrame) {
+          selectedFrame.argenticPhoto = result.assets[0].uri;
+          setFrameToDisplay(selectedFrame);
+        }
+
+        /// AFFICHER LA PHOTO UPLOADEE DANS LA PELLICULE PAR UNE MAJ FRAMEDATA ///
+        const framesDataCopy = framesData;
+        if (frameToDisplay && framesDataCopy) {
+          framesDataCopy[frameToDisplay?.numero - 1] = frameToDisplay;
+          setFramesData(framesDataCopy);
+        }
+
+      
       }
     };
 
@@ -520,16 +551,19 @@ type RollScreenProps = {
       fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${user._id}/${roll._id}`, { 
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.result) {
-          dispatch(removeRoll(roll._id))
-        }
-    })
-    .catch(error => {
-      console.error('Erreur lors du delete roll :', error);
-    });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+              dispatch(removeRoll(roll._id))
+            }
+        })
+        .catch(error => {
+          console.error('Erreur lors du delete roll :', error);
+        });
+
+        setContextMenuVisible(false);
+        navigation.navigate('Rolls');
   }
 
     /// MODIFIER LA FRAME AFFICHÉE ///
@@ -559,23 +593,35 @@ type RollScreenProps = {
         console.error('Erreur lors du delete frame :', error);
       });
 
+      setFramesData(framesData?.filter((frame) => frame._id !== frameToDisplay?._id));
+
     }
 
 
     /// PARTAGER UNE PHOTO ///
 
-    function handlePressOnShareButton(displayedFrame: FrameType | undefined) {
+    function handlePressOnShareButton() {
 
       if (frameToDisplay) {
+            
         if (frameToDisplay.argenticPhoto) {
-          fetch(`${BACKEND_LOCAL_ADRESS}/frames/${displayedFrame?._id}`, {
+          fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frameToDisplay?._id}`, {
             method: 'PUT',
             headers: { 'Content-Type' : 'application/json'},
-            body: JSON.stringify({shared: !displayedFrame?.shared}),
+            body: JSON.stringify({shared: !frameToDisplay?.shared}),
           })
           .then((response) => response.json())
           .then((data) => {
             console.log('fetch put frameToDisplay succeeded')
+            console.log('avant : ',frameToDisplay.shared)
+
+            const selectedFrame = frameToDisplay;
+            if (selectedFrame) {
+              selectedFrame.shared = !selectedFrame.shared;
+              setFrameToDisplay(selectedFrame);
+            }
+            
+            console.log('après : ',frameToDisplay.shared)
 
           })
           .catch(error => {
@@ -586,11 +632,6 @@ type RollScreenProps = {
           // et l'icone passe en jaune
         } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT */}
       }
-
-      useEffect(()=> {
-        console.log('frameToDisplay',frameToDisplay?.date);
-      },[frameToDisplay])
-      
     }
 
     function handlePressOnCloseButton(): void {
@@ -604,9 +645,13 @@ return (
 
     <View style={styles.body}>
         <SafeAreaView style={styles.headerContainer}>
-          <Header navigation={navigation} iconLeft='arrow-back' title={roll.name} iconRight='more-vert' onPressRightButton={() => setContextualMenuVisible(true)}/>
+          <Header navigation={navigation} iconLeft='arrow-back' title={roll.name} iconRight='more-vert' onPressRightButton={() => setContextMenuVisible(true)}/>
         </SafeAreaView>
-        { framesData === undefined || framesData.length > 0 && <ScrollView style={styles.framesContainer}>{frames}</ScrollView> }
+        { framesData === undefined || framesData.length > 0 && 
+        <ScrollView style={styles.framesContainer}>
+          {frames}
+          <View style={{height: 100}}></View>
+          </ScrollView> }
         { framesData?.length === 0 && <Text style={styles.noFrameText}>Ajoutez votre première photo</Text> }
        
 
@@ -670,7 +715,7 @@ return (
                             onValueChange={value => setFrameSpeed(`1/${shutterSpeeds[value]}`)}
                           />
                           <View style={styles.boundariesContainer}>
-                            <Text style={styles.minText}>{shutterSpeeds[0]}</Text>
+                            <Text style={styles.minText}>{`1/${shutterSpeeds[0]}`}</Text>
                             <Text style={styles.maxText}>{shutterSpeeds[shutterSpeeds.length -1]}</Text>
                           </View>
 
@@ -691,8 +736,8 @@ return (
                             onValueChange={value => setFrameAperture(`f/${apertures[value]}`)}
                           />
                           <View style={styles.boundariesContainer}>
-                            <Text style={styles.minText}>{apertures[0]}</Text>
-                            <Text style={styles.maxText}>{apertures[apertures.length -1]}</Text>
+                            <Text style={styles.minText}>{`f/${apertures[0]}`}</Text>
+                            <Text style={styles.maxText}>{`f/${apertures[apertures.length -1]}`}</Text>
                           </View>
                         
 
@@ -864,13 +909,16 @@ return (
               {/* Modal Header */}
               
               {/* <View style={styles.modalHeader}> */}
-                      {
-                      frameToDisplay?.shared?
-                      
-                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)} marginTop={20}/>
-                      :
-                      <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton(frameToDisplay)} marginTop={20}/>
-                    }
+                
+                {frameToDisplay?.shared && <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>}
+                {!frameToDisplay?.shared && <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>}
+                  {/*frameToDisplay?.shared ?
+
+                  
+                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>
+                  :
+                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>
+                */}
           
               {/* </View> */}
         
@@ -915,7 +963,7 @@ return (
                     <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                     {/* date */}
-                    <CustomField label='Date' icon='date-range' value={dateToDisplay}
+                    <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}
                     // {frameToDisplay?.date? `${frameToDisplay.date.getDate()}/${frameToDisplay.date.getMonth() + 1}/${frameToDisplay.date.getFullYear()}` 
                     //                                                   : ''}
                     />
@@ -946,15 +994,17 @@ return (
 
                 </ScrollView>
               </View>
+
               <View style={styles.bottomButtonContainer}>
 
                 {/* bouton modifier */}
+                <View style={styles.modifyButtonContainer}>
                 <CustomButton title='MODIFIER' type='primary' onPress={()=> handlePressOnModifyFrameButton()}></CustomButton>
-
+                </View>
                 {/* bouton supprimer */}
 
                 <TouchableOpacity onPress={handlePressOnDeleteFrameButton} style={styles.trashButtonContainer}>
-                  <MaterialIcons name="delete" size={24} color="#FFDE67"/>
+                  <MaterialIcons name="delete" size={40} color="#FFDE67"/>
                 </TouchableOpacity>
               
               </View>
@@ -1004,11 +1054,12 @@ return (
         </Modal>
         }
 
-        {/* <ContextMenu visible={contextMenuVisible} onClose={() => console.log('coucou')} options={[
-          { text: 'Option 1', onPress: () => console.log('Option 1 selected') },
-          { text: 'Option 2', onPress: () => console.log('Option 2 selected') },
-          // Ajoutez d'autres options ici
-        ]}/> */}
+        {/* MENU CONTEXTUEL */}
+
+        <ContextMenu visible={contextMenuVisible} onClose={() => console.log('coucou')} options={[
+          { text: 'Supprimer la pellicule', onPress: () => handlePressOnDeleteRollButton()},
+          { text: 'Retour', onPress: () => setContextMenuVisible(false)},
+        ]}/>
                 
     </View>
     
@@ -1058,6 +1109,7 @@ const styles = StyleSheet.create({
     padding: 24,
     width: '100%',
     gap: 16,
+    height: '70%',
   },
   frameContainer: {
     borderRadius: 12,
@@ -1070,8 +1122,6 @@ const styles = StyleSheet.create({
     height: 80,
     padding: 16,
     gap:16,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
   },
   imgStyle: {
     height: 228,
@@ -1341,8 +1391,14 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#050505'
   },
+  modifyButtonContainer: {
+    width: '80%'
+  },
+
   trashButtonContainer: {
-    width: 80,
+    width: '10%',
+    alignItems: 'center',
+
   },
   settingsContainer: {
     flexDirection: 'row',
