@@ -12,7 +12,7 @@ import CustomField from '../components/CustomField';
 import Header from '../components/Header';
 import { RootStackParamList } from '../App';
 import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
-
+const { transformDate } = require('../modules/transformDate');
 
 
 // Typage du contenu des paramètres de la route
@@ -251,7 +251,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
                         <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                         {/* date */}
-                        <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
+                        <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}></CustomField>
 
                         {/* meteo */}
                         <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>

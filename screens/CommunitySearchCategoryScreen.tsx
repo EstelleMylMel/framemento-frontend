@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import CustomField from '../components/CustomField';
 import Header from '../components/Header';
+const { transformDate } = require('../modules/transformDate');
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -83,16 +84,23 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
 
     const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
     const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
+    const [ username, setUsername ] = useState<string>("");
 
     function handlePressOnFrame(frame: FrameType): void {
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
-            .then(response => response.json())
-            .then(data => {
-                setFrameToDisplay(data.frame);
-            })
-            .catch(error => {
-              console.error('Erreur lors du fetch frame cliquée :', error);
-            });
+        .then(response => response.json())
+        .then(data => {
+            setFrameToDisplay(data.frame);
+        })
+        .catch(error => {
+          console.error('Erreur lors du fetch frame cliquée :', error);
+        });
+
+        fetch(`${BACKEND_LOCAL_ADRESS}/users/find/${frame._id}`)
+        .then(response => response.json())
+        .then(data => {
+          setUsername(data.user.username)
+        })
         setModalViewFrameVisible(true)
     }
 
@@ -166,6 +174,10 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
                     <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
                         <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+                        <View style={{ flexDirection: 'row', marginLeft: 15, marginBottom: 15, alignItems: 'center' }}>
+                          <Text style={{ color: '#AAAAAA', fontFamily: 'Poppins-Light', paddingTop: 18 }}>Auteur </Text>
+                          <Text style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 25, paddingTop: 18 }}>{username}</Text>
+                        </View>
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -173,7 +185,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
                         <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                         {/* date */}
-                        <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
+                        <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}></CustomField>
 
                         {/* meteo */}
                         <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
@@ -299,6 +311,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
+    height: '62%',
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,

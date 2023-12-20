@@ -15,7 +15,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import { RootStackParamList } from '../App';
 import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
-
+const { transformDate } = require('../modules/transformDate');
 
 
 // Typage du contenu des paramètres de la route
@@ -317,7 +317,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                         <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                         {/* date */}
-                        <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
+                        <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}></CustomField>
 
                         {/* meteo */}
                         <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
@@ -431,7 +431,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   categories: {
-
+    paddingBottom: 10,
+    marginLeft: 10
   },
   category: {
     color: '#EEEEEE',
