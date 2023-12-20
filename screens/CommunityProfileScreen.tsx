@@ -204,7 +204,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                 </TouchableOpacity>
                 <View style={styles.textContainer}>
                     <Text style={styles.titleFrame}>{frame.location}</Text>
-                    <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
+                    <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
                 </View>
 
                 <View style={styles.iconsContainer}>
@@ -376,8 +376,9 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     marginTop: 25,
+    width: '88%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'flex-start'
   },
   topContainerProfile: {
     flexDirection: 'row',
@@ -392,8 +393,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   profilePicture: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     borderRadius: 10,
     marginRight: 15
   },
@@ -472,6 +473,8 @@ const styles = StyleSheet.create({
   argenticPhoto: {
     height: 228,
     width: '100%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12
   },
   textContainer: {
     flex: 1,
