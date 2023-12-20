@@ -200,7 +200,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
         return (
             <View key={i} style={styles.frameSharedContainer}>
                 <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
-                    <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+                    <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
                 </TouchableOpacity>
                 <View style={styles.textContainer}>
                     <Text style={styles.titleFrame}>{frame.location}</Text>
@@ -247,7 +247,6 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
 
 
 
-
     return (
         <View style={styles.container}>
 
@@ -274,7 +273,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
 
                 {/* Modal Header */}
 
-                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' iconRight='visibility' onPressLeftButton={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} onPressRightButton={() => handlePressOnShareButton(frameToDisplay)} />
+                <Header navigation={navigation} iconLeft='close' title={frameToDisplay ? (frameToDisplay?.title ? frameToDisplay.title : frameToDisplay?.location) : ""} iconRight='visibility' onPressLeftButton={() => {setModalViewFrameVisible(false); setSelectedCategories([])}} onPressRightButton={() => handlePressOnShareButton(frameToDisplay)} />
             
 
                     <ScrollView style={styles.scrollViewModal}>
@@ -441,6 +440,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
+    height: '52%',
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,

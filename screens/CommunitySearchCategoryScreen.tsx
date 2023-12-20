@@ -110,7 +110,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
     return (
       <View key={i} style={styles.frameSharedContainer}>
         <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
-            <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+            <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
             <Text style={styles.titleFrame}>{frame.location}</Text>
@@ -160,7 +160,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
 
                 {/* Modal Header */}
 
-                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' onPressLeftButton={() => setModalViewFrameVisible(false)} />
+                <Header navigation={navigation} iconLeft='close' title={frameToDisplay ? (frameToDisplay?.title ? frameToDisplay.title : frameToDisplay?.location) : ""} onPressLeftButton={() => setModalViewFrameVisible(false)} />
 
             
                     <ScrollView style={styles.scrollViewModal}>

@@ -34,8 +34,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
 
   }
 
-  console.log(onPressLeftButton);
-
   return (
     <SafeAreaView>
     {/* <View style={{ ...styles.container, top }}> */}

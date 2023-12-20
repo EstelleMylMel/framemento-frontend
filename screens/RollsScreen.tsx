@@ -136,7 +136,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
       </View>
       
       {/* AFFICAHGE DU MESSAGE */}
-      { user.rolls.length === 0 && <Text>Ajoutez votre première pellicule</Text>}
+      { user.rolls.length === 0 && <Text style={styles.noRollText}>Ajoutez votre première pellicule</Text>}
       
       {/* OU DES PELLICULES */}
       { rollsList && <ScrollView style={styles.rollsContainer}>{rollsList}</ScrollView>}
@@ -154,7 +154,6 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
 
       <View style={styles.centeredView}>
         <Modal visible={modalVisible} animationType="fade" transparent>
-            {/* <SafeAreaProvider style={styles.fullScreen}> */}
               <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                   <View style={styles.modalView}>
                 
@@ -279,21 +278,27 @@ const styles = StyleSheet.create({
       backgroundColor: '#050505',
       alignItems: 'center',
     },
-    fullScreen: {
-      width: '100%',
-      height: '100%',
-      justifyContent: 'flex-start',
-    },
     headerContainer: {
       // height: 130,
       flex: 1,
       width: '100%',
+    },
+    noRollText: {
+      fontFamily: 'Poppins-Medium',
+      fontSize: 20,
+      lineHeight: 32,
+      fontWeight: '500',
+      textAlign: 'center',
+      color: '#EEEEEE',
+      marginTop: 350,
+      width: 200
     },
     rollsContainer: {
       padding: 24,
       width: '100%',
       height: '80%',
       gap: 16,
+      marginTop: 24
     },
     addRollButton: {
       height: 80,
@@ -318,6 +323,7 @@ const styles = StyleSheet.create({
       width: '100%',
       height: '100%',
       justifyContent: 'flex-start',
+      backgroundColor: '#050505'
     },
     mainContent: {
       flex: 7,
@@ -345,6 +351,8 @@ const styles = StyleSheet.create({
       fontStyle: 'normal',
       fontWeight: '300',
       lineHeight: 24,
+      width: 150,
+      textAlign: 'right',
     },
     textTitle: {
       color: '#AAAAAA',
@@ -409,7 +417,7 @@ const styles = StyleSheet.create({
       lineHeight: 24,
       fontFamily: 'Poppins-Light'
     },
-    // saveButtonContainer: {
+    saveButtonContainer: {
     //   width: '100%',
-    // }
+    }
 });

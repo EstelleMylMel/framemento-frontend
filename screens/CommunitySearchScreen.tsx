@@ -116,7 +116,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
     return (
       <View key={i} style={styles.frameSharedContainer}>
         <TouchableOpacity onPress={() => handlePressOnFrame(frame)}>
-            <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+            <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
             <Text style={styles.titleFrame}>{frame.location}</Text>
@@ -141,6 +141,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
   function handlePressOnLensUser() {
     if (searchText) {
       navigation.navigate('CommunitySearchUsername', {searchText})
+      setSearchText("")
     }
   }
 
@@ -172,6 +173,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
   function handlePressOnLensCategory() {
     if (selectedCategory) {
       navigation.navigate('CommunitySearchCategory', {selectedCategory})
+      setSelectedCategory("")
     }
   }
 
@@ -237,7 +239,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
 
 
                 {/* Modal Header */}
-                <Header navigation={navigation} iconLeft='close' title='Nom de la photo' onPressLeftButton={() => setModalViewFrameVisible(false)} />
+                <Header navigation={navigation} iconLeft='close' title={frameToDisplay ? (frameToDisplay?.title ? frameToDisplay.title : frameToDisplay?.location) : ""} onPressLeftButton={() => setModalViewFrameVisible(false)} />
 
                     <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
@@ -344,6 +346,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
+    height: '40%',
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,

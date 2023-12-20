@@ -72,29 +72,19 @@ type RollScreenProps = {
 
     const [ contextMenuVisible, setContextualMenuVisible ] = useState<boolean>(false);
 
-    // const [ modalTest, setModalTest ] = useState<boolean>(true)
-
     /// ROLL AND FRAMES DATA ///
     const [ rollData, setRollData ] = useState<RollType | undefined>();
     const [ framesData, setFramesData ] = useState<FrameType[] | undefined>(); // à chaque ajout de photo on ajoute 1 dans ce tableau.
     const [ previousFrame, setPreviousFrame ] = useState<FrameType | undefined>(framesData && framesData.length > 0 ? framesData[framesData?.length - 1] :  undefined);
-
-    //console.log("framesData", framesData)
-
-    /// ATTENDRE QUE LES IMAGES CHARGENT AVANT D'AFFICHER ///
-    const [ isLoading, setIsLoading ] = useState<boolean>(true);
-
-    useEffect(()=> {
-      
-      framesData? setIsLoading(false) : undefined;
-
-    },[framesData]);
+    const [ rollNotFull, setRollNotFull ] = useState<boolean>(true);
 
 
-    const [latitude, setLatitude] = useState<number>(0);
-    const [longitude, setLongitude] = useState<number>(0);
+    // const [latitude, setLatitude] = useState<number>(0);
+    // const [longitude, setLongitude] = useState<number>(0);
     const [ currentAdress, setCurrentAdress ] = useState<string>('');
 
+    
+    
     /// INPUTS VARIABLES & FONCTIONS ///
 
 
@@ -113,20 +103,18 @@ type RollScreenProps = {
 
     const [lastFrameApertureValue, setLastFrameApertureValue ] = useState<number>(0);
 
-    const [location, setLocation] = useState({latitude: 0,
-      longitude: 0,
-      adress: currentAdress
-    });
+    // const [location, setLocation] = useState({latitude: 0,
+    //   longitude: 0,
+    //   adress: currentAdress
+    // });
+
     const handleChangeLocation = (text: string) => {  
       
-      const customLocation = {
-        latitude: 0,
-        longitude: 0,
-        adress: text
-      }
+      setCurrentAdress(text);
+    }
 
-      setLocation(customLocation);
-    };
+    //   setLocation(customLocation);
+    // };
 
     const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -137,6 +125,7 @@ type RollScreenProps = {
     };
 
     const [weather, setWeather] = useState<string>('');
+
     const handleChangeWeather = (text: string): void => {
       setWeather(text);
     }
@@ -149,11 +138,19 @@ type RollScreenProps = {
 
     const [ urlPhotoFromPhone, setUrlPhotoFromPhone ] = useState<string>('');
 
+    /// DEBUG ///
 
+    useEffect(()=> {
+      console.log('frames Data: ', framesData);
+    },[framesData])
+
+    //////////////
+
+/// RECUPERER LE CONTENU DE LA PELLICULE ///
 
     useEffect(()=>{
 
-        /// Récuper le contenu de la pellicule
+        
         fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${roll._id}`)
         .then(response => response.json())
         .then(rollData => {
@@ -161,10 +158,11 @@ type RollScreenProps = {
               
                 setRollData(rollData.roll);
                 rollData !== undefined ? setFramesData(rollData.framesList) : undefined;
-                setIsLoading(false); // Laisser le temps à la requête de répondre avant d'afficher
+                setFramesData(rollData.frames)
+                setPreviousFrame(rollData.frames ? rollData.frames[rollData.frames.length -1] : {})
 
               // fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
-              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera._id}/`)
+              fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera._id}`)
               .then(response => response.json())
               .then(cameraData => {
                 cameraData? setCamera(cameraData.camera) : console.log('no data : ', cameraData)
@@ -180,25 +178,12 @@ type RollScreenProps = {
             console.error('Erreur lors du fetch de la pellicule :', error);
           });
 
-
     },[])
+    
+    /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
 
-    // Remplir framesData des frames existantes dans la roll en cours
-
-    useEffect(() => {
-      fetch(`${BACKEND_LOCAL_ADRESS}/rolls/${roll._id}`)
-      .then(response => response.json())
-      .then(data => {
-        data.result && (setFramesData(data.frames), setPreviousFrame(data.frames ? data.frames[data.frames.length -1] : {}))
-
-      /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
-
-      // setLastFrameSpeedValue(shutterSpeeds.findIndex((speed)=> speed == 1/Number(frameSpeed)));
-      // setLastFrameApertureValue(apertures.findIndex((aperture)=> `f/${aperture}` == frameAperture));
-
-      })
-    }, []);
-
+    // setLastFrameSpeedValue(shutterSpeeds.findIndex((speed)=> speed == 1/Number(frameSpeed)));
+    // setLastFrameApertureValue(apertures.findIndex((aperture)=> `f/${aperture}` == frameAperture));
 
     function handlePressOnPlus(): void {
 
@@ -209,37 +194,38 @@ type RollScreenProps = {
           if (status === 'granted') {
             Location.watchPositionAsync({ distanceInterval: 10 },
               (location) => {
-                setLatitude(location.coords.latitude);
-                setLongitude(location.coords.longitude);
 
-                // Attendre que l'API réponde pour ouvrir la modale pour éviter le lieu undefined
-                setTimeout(()=> setModalAddFrameVisible(true), 2000);
+                /// Obtenir l'adresse à partir des données de geoloc
+                fetch(`https://geocode.maps.co/reverse?lat=${location.coords.latitude}&lon=${location.coords.longitude}`)
+                .then(response => response.json())
+                .then((data)=> {
+                  setCurrentAdress(`${data.address.road}, ${data.address.city}`)
+                  
+                })
+                .catch(error => {
+                  console.error('Erreur lors du fetch api data gouv :', error);
+                });
 
-              });
-          }
+                /// Obtenir la météo actuelle
+                fetch(`${BACKEND_LOCAL_ADRESS}/frames/weather/${location.coords.latitude}/${location.coords.longitude}`)
+                .then(response => response.json())
+                .then(data => {
+                    setWeather(data.weather);
+                    setModalAddFrameVisible(true);
+                })
+                .catch(error => {
+                  console.error('Erreur lors du fetch api weather app :', error);
+                });
+                      });
+            }
         })();
 
-        /// Obtenir l'adresse à partir des données de geoloc
-        fetch(`https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`)
-        .then(response => response.json())
-        .then((data)=> {
-          setCurrentAdress(`${data.address.road}, ${data.address.city}`)
-        })
-        .catch(error => {
-          console.error('Erreur lors du fetch api data gouv :', error);
-        });
-
-        /// Obtenir la météo actuelle
-        fetch(`${BACKEND_LOCAL_ADRESS}/frames/weather/${latitude}/${longitude}`)
-        .then(response => response.json())
-				.then(data => {
-            setWeather(data.weather);
-        })
-        .catch(error => {
-          console.error('Erreur lors du fetch api weather app :', error);
-        });
-
         console.log('frames dans le roll ?  : ',roll.framesList?.length);
+        console.log('images dispos dans le roll ?  : ',roll.images);
+        console.log('numero previous frame ?  : ',previousFrame?.numero);
+
+
+        
         //Récupérer les informations de la frame précédente
         if (roll.framesList?.length) {
 
@@ -259,9 +245,9 @@ type RollScreenProps = {
           });
         }
 
-    };
+        
 
-    console.log('lastFrame', previousFrame);
+    };
 
     /// CAROUSEL DE NUMEROS DE PHOTO ///
 
@@ -278,26 +264,21 @@ type RollScreenProps = {
       return tab;
     }
 
-    useEffect(() => {
+    useEffect(() => {   
       if (previousFrame) {
         setFirstNum(previousFrame.numero + 1);
         setNumeros(listOfNums(firstNum, roll.images))
         setFrameNumber(previousFrame.numero + 1)
+      } else {
+        setNumeros(listOfNums(firstNum, roll.images))
       }
+      if (previousFrame) setRollNotFull(previousFrame.numero < roll.images ? true : false)
     }, [previousFrame])
-
-    console.log("firstNum", firstNum)
-    console.log("numeros", numeros)
-
-
-    // let firstNum: number = previousFrame?.numero ? previousFrame.numero + 1 : 1;
-    // const numeros = listOfNums(firstNum, roll.images); 	   
-
 
     /* GERER LE SCROLL */
   
     const renderItem = ({ item }: {item: any}) => {
-      const isSelected = item === frameNumber || item === numeros[0];
+      const isSelected = item === frameNumber // || item === numeros[0];
       return (
         <TouchableOpacity onPress={() => setFrameNumber(item)}>
           {/* <View style={{ paddingLeft: 20, paddingRight: 20, borderRadius: 16, opacity: isSelected ? 1 : 0.5, backgroundColor: '#101010' }}> */}
@@ -312,17 +293,17 @@ type RollScreenProps = {
 
     const flatListRef = useRef<any>(null);
 
-    const scrollToSelectedItem = (item: any) => {
+    /*const scrollToSelectedItem = (item: any) => {
       const index = numeros.indexOf(item);
       if (index >= 0 && flatListRef.current) {
         flatListRef.current.scrollToIndex({ index: index, animated: true, viewPosition: 0 });
       }
-    };
+    };*/
   
     // Appeler la fonction de défilement chaque fois que frameNumber change
-    useEffect(() => {
+    /*useEffect(() => {
       scrollToSelectedItem(frameNumber);
-    }, [frameNumber]);
+    }, [frameNumber]);*/
 
     /// PRISE DE PHOTO AVEC SON TELEPHONE ///
 
@@ -379,6 +360,8 @@ type RollScreenProps = {
 
     }
 
+    // SAUVEGARDER LA PHOTO EN DB 1 CLOUDINARY ///
+
     function handlePressOnSaveFrame(): void {
 
       console.log('url photo from phone', urlPhotoFromPhone);
@@ -419,6 +402,7 @@ type RollScreenProps = {
       });
     }
 
+    // AFFICHER LE DETAIL D'UNE FRAME ///
 
     function hundlePressOnFrame(frame: FrameType): void {
       
@@ -513,6 +497,7 @@ type RollScreenProps = {
 
     }, [image])
 
+
     const pickImage = async () => {
       // No permissions request is necessary for launching the image library
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -551,7 +536,7 @@ type RollScreenProps = {
 
     function handlePressOnModifyFrameButton() {
 
-      // GERER LA MODIFICATION, DONC LE PASSAGE EN MODE EDITION
+      // TO DO : GERER LA MODIFICATION, DONC LE PASSAGE EN MODE EDITION
 
     }
 
@@ -575,6 +560,9 @@ type RollScreenProps = {
       });
 
     }
+
+
+    /// PARTAGER UNE PHOTO ///
 
     function handlePressOnShareButton(displayedFrame: FrameType | undefined) {
 
@@ -611,24 +599,24 @@ type RollScreenProps = {
 
       setModalViewFrameVisible(false)
     }
-    
-if (!isLoading) {    
+        
 return (
 
     <View style={styles.body}>
         <SafeAreaView style={styles.headerContainer}>
           <Header navigation={navigation} iconLeft='arrow-back' title={roll.name} iconRight='more-vert' onPressRightButton={() => setContextualMenuVisible(true)}/>
         </SafeAreaView>
-        { <ScrollView style={styles.framesContainer}>{frames}</ScrollView> || <Text style={styles.h2}>Ajoutez votre première photo</Text> }
+        { framesData === undefined || framesData.length > 0 && <ScrollView style={styles.framesContainer}>{frames}</ScrollView> }
+        { framesData?.length === 0 && <Text style={styles.noFrameText}>Ajoutez votre première photo</Text> }
        
 
-        <TouchableOpacity 
+        {rollNotFull && <TouchableOpacity 
             style={styles.addFrameButton} 
             activeOpacity={0.8}
             onPress={handlePressOnPlus}
           >
           <MaterialIcons name="add" size={40} color="#050505"/>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       
         <View style={styles.centeredView}>
           <Modal visible={modalAddFrameVisible} transparent>
@@ -1024,10 +1012,6 @@ return (
                 
     </View>
     
-)} else return (
-  <View style={styles.body}>
-    <Text>CHARGEMENT</Text>
-  </View>
 )
 
 }
@@ -1048,6 +1032,16 @@ const styles = StyleSheet.create({
     height: 130,
     width: '100%',
   }, 
+  noFrameText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 20,
+    lineHeight: 32,
+    fontWeight: '500',
+    textAlign: 'center',
+    color: '#EEEEEE',
+    marginTop: 250,
+    width: 200,
+  },
   addFrameButton: {
     height: 80,
     width: 80,
