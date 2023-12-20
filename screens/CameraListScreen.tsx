@@ -7,7 +7,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { UserState } from '../reducers/user';
 
 // IMPORTS TYPES //
-import { CameraType } from '../types/camera';
+import { CamType } from '../types/camera';
 
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
@@ -20,8 +20,8 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
  
   const user = useSelector((state: { user: UserState }) => state.user.value);
   
-  const [userCameras, setUserCameras] = useState<CameraType[]>([]);
-  const [cameras, setCameras] = useState<CameraType[]>([]);
+  const [userCameras, setUserCameras] = useState<CamType[]>([]);
+  const [cameras, setCameras] = useState<CamType[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
