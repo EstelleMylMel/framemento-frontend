@@ -301,8 +301,8 @@ const styles = StyleSheet.create({
       marginTop: 24
     },
     addRollButton: {
-      height: 80,
-      width: 80,
+      height: 60,
+      width: 60,
       backgroundColor: '#FFDE67',
       justifyContent: 'center',
       alignItems: 'center',
@@ -310,7 +310,14 @@ const styles = StyleSheet.create({
       position: 'absolute',
       zIndex: 20,
       bottom: 110,
-      right: 20,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 4, // La hauteur de l'ombre
+      },
+      shadowOpacity: 0.30, // L'opacité de l'ombre
+      shadowRadius: 4.65, // Le rayon de flou de l'ombre
+      // right: 160,
     },
     centeredView: {
       flex: 1,

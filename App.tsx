@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
 
 /// REDUX PERSIST ///
 import { persistStore, persistReducer } from 'redux-persist';
@@ -191,11 +192,13 @@ const TabNavigator = () => {
       headerShown: false,
     })}>
 
-      <Tab.Screen name="Mes pellicules" component={MyRollsStackNavigation} />
+      <Tab.Screen name="Mes pellicules" component={MyRollsStackNavigation}/>
       <Tab.Screen name="Communauté" component={CommunityTopTabNavigation} />
     </Tab.Navigator>
   );
 }
+
+
 
 const DrawerNavigator = () => {
   return (

@@ -1094,8 +1094,8 @@ const styles = StyleSheet.create({
     width: 200,
   },
   addFrameButton: {
-    height: 80,
-    width: 80,
+    height: 60,
+    width: 60,
     backgroundColor: '#FFDE67',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1103,7 +1103,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 20,
     bottom: 110,
-    right: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
   },
   framesContainer: {
     padding: 24,

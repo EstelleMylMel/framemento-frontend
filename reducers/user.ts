@@ -32,7 +32,7 @@ export const userSlice = createSlice({
     addRoll: (state: UserState, action: PayloadAction<RollType>) => {
       state.value.rolls.push(action.payload);  
     },
-    removeRoll: (state, action) => {
+    removeRoll: (state: UserState, action: PayloadAction<string>) => {
       state.value.rolls = state.value.rolls.filter(e => e.name !== action.payload);
     },
     importRolls: (state, action) => {

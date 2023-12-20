@@ -47,18 +47,28 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ visible, onClose, options }) 
         backgroundColor: 'rgba(0,0,0,0.5)',
       },
       menu: {
-        backgroundColor: 'white',
-        borderRadius: 5,
+        backgroundColor: '#050505',
+        borderRadius: 16,
         padding: 10,
         width: 200,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 0.30,
+        shadowRadius: 4.65,
       },
       menuItem: {
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        paddingVertical: 30,
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#ddd',
       },
       text: {
         textAlign: 'center',
+        color: '#EEEEEE',
+        fontFamily: 'Poppins-Regular',
+        fontSize: 14,
       },
     });
 
