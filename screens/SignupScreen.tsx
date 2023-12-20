@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Header from '../components/Header';
 
 
 /// COMPOSANTS ///
@@ -70,51 +71,59 @@ type SignupScreenProps = {
     }
 
     return (
-        <View 
-          style={styles.container}>
-          <Text 
-            style={styles.h1}>Inscription</Text>
-            <CustomInput
-              label='Email'
-              icon='alternate-email' 
-              >
-               <TextInput 
-                placeholder='framemento@frame.fr'
-                placeholderTextColor='#AAAAAA'
-                value={email}
-                onChangeText={(value) => setEmail(value)}
-                style={styles.input} 
-                />
-            </CustomInput>
-            <CustomInput 
-              label='Pseudo'
-              icon='account-circle' >
+          <View 
+            style={styles.container}>
+            <Header
+                navigation={navigation}
+                iconLeft='arrow-back'
+                title='Inscription'
+                marginTop={-130}
+             />
+              <Text 
+                style={styles.h1}>Inscription</Text>
+            <View style={styles.viewInput}>
+              <CustomInput
+                label='Email'
+                icon='alternate-email' 
+                >
                 <TextInput 
-                  placeholder='framemento'
+                  placeholder='email@email.fr'
                   placeholderTextColor='#AAAAAA'
-                  value={username}
-                  onChangeText={(value) => setUsername(value)}
+                  value={email}
+                  onChangeText={(value) => setEmail(value)}
                   style={styles.input} 
                   />
-            </CustomInput>
-            <CustomInput
-              label='Mot de passe'
-              icon='vpn-key' >
-                <TextInput 
-                   placeholder='******'
-                   placeholderTextColor='#AAAAAA'
-                   value={password}
-                   onChangeText={(value) => setPassword(value)}
-                   style={styles.input}
-                  />
-            </CustomInput>
-          <View style={styles.viewButton}>
-            <CustomButton 
-              title='Inscription'
-              onPress={handleSubscription}
-              type='primary'/> 
-          </View>  
-        </View>
+              </CustomInput>
+              <CustomInput 
+                label='Pseudo'
+                icon='account-circle' >
+                  <TextInput 
+                    placeholder='framemento'
+                    placeholderTextColor='#AAAAAA'
+                    value={username}
+                    onChangeText={(value) => setUsername(value)}
+                    style={styles.input} 
+                    />
+              </CustomInput>
+              <CustomInput
+                label='Mot de passe'
+                icon='vpn-key' >
+                  <TextInput 
+                    placeholder='******'
+                    placeholderTextColor='#AAAAAA'
+                    value={password}
+                    onChangeText={(value) => setPassword(value)}
+                    style={styles.input}
+                    />
+              </CustomInput>
+              </View>
+            <View style={styles.viewButton}>
+              <CustomButton 
+                title='Inscription'
+                onPress={handleSubscription}
+                type='primary'/> 
+            </View>  
+          </View>
     )
 }
 
@@ -125,6 +134,14 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    header: {
+      color: 'white',
+      fontSize: 24,
+      fontWeight: 'bold',
+      textAlign: 'center', 
+      marginTop: 20,
+      marginBottom: 20,
+    },
     h1: {
       color: '#EEEEEE',
       fontSize: 30,
@@ -132,13 +149,16 @@ const styles = StyleSheet.create({
       bottom: 200,
     },
     input: {
-      width: 160,
+      width: 110,
       color: '#EEEEEE',
       fontSize: 14,
       fontFamily: 'Poppins-Light',
       fontStyle: 'normal',
       fontWeight: '300',
       lineHeight: 24,
+    },
+    viewInput: {
+      width: 342,  
     },
     textInputIcon: {
       color: '#AAAAAA',

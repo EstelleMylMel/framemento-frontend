@@ -3,6 +3,7 @@ import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
+import Header from '../components/Header';
 
 /// COMPOSANTS ///
 import CustomInput from '../components/CustomInput';
@@ -66,12 +67,19 @@ type SigninScreenProps = {
 
     return (
         <View style={styles.container}>
+          <Header
+              navigation={navigation}
+              iconLeft='arrow-back'
+              title='Connexion'
+              marginTop={-100}
+             />
           <Text style={styles.h1}>Connexion</Text>
+          <View style={styles.viewInput}>
             <CustomInput
               label='Email'
               icon='alternate-email'>
             <TextInput 
-              placeholder='framemento@frame.fr'
+              placeholder='email@email.fr'
               placeholderTextColor='#AAAAAA'
               value={email}
               onChangeText={(value) => setEmail(value)}
@@ -89,10 +97,13 @@ type SigninScreenProps = {
               style={styles.input}
               />
             </CustomInput>
+            </View>
+              <View style={styles.viewButton}>
                 <CustomButton
                   title='Connexion'
                   onPress={handleSubscription}
                   type='primary' />
+              </View>
             <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}>
               <Text>DEV : SKIP</Text>
             </TouchableOpacity>  
@@ -114,13 +125,16 @@ const styles = StyleSheet.create({
       bottom: 200,
     },
     input: {
-      width: 160,
-      color: '#EEEEEE',
+      width: 110,
+      color: '#101010',
       fontSize: 14,
       fontFamily: 'Poppins-Light',
       fontStyle: 'normal',
       fontWeight: '300',
       lineHeight: 24,
+    },
+    viewInput: {
+      width: 342,
     },
     textInputIcon: {
       color: '#AAAAAA',
@@ -132,6 +146,11 @@ const styles = StyleSheet.create({
       color: '#AAAAAA',
       fontSize: 14,
       marginRight: 16,
+    },
+    viewButton: {
+      width: 342,
+      height: 40,
+      marginTop: 50,
     },
     buttonConnexion: {
       backgroundColor: '#FFDE67',

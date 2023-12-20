@@ -170,6 +170,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
                 title="Nouvel appareil"
                 marginTop={-100}
               />
+              <View style={styles.viewInput}>
               <CustomInput label="Marque" icon="sell">
                 <TextInput
                   style={styles.input}
@@ -192,6 +193,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
                   }}
                 />
               </CustomInput>
+              </View>
               {alertMessage && (
                 <Text style={styles.alertText}>Appareil déjà enregistré</Text>
               )}
@@ -284,6 +286,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Poppins-Light',
   },
+  viewInput: {
+    width: 342, 
+  },
   alertText: {
     color: 'red',
     fontSize: 16,
@@ -293,7 +298,7 @@ const styles = StyleSheet.create({
   },
   buttonEnregistrer: {
     backgroundColor: '#FFDE67',
-    width: 350,
+    width: 320,
     height: 40,
     paddingLeft: 4,
     paddingRight: 4,
@@ -305,6 +310,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',  // Ajout de cette ligne pour centrer horizontalement
     position: 'absolute',
-    bottom: 24,  // Ajustement pour placer le bouton à 24px du bas
+    bottom: 50,  // Ajustement pour placer le bouton à 50px du bas
   },
 });

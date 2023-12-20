@@ -38,17 +38,18 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             {/*<TouchableOpacity style={styles.buttonSignup} onPress={()=> navigation.navigate('Signup')}>
               <Text style={styles.textSignup}>S'INSCRIRE</Text>
             {/*</TouchableOpacity>*/}
+            <View style={styles.viewButtonSignup}>
               <CustomButton
                 title="S'inscrire"
                 onPress={handlePressSignup}
                 type='primary' />
-            {/*<TouchableOpacity style={styles.buttonSignin} onPress={()=> navigation.navigate('Signin')}>
-              <Text style={styles.textSignin}>SE CONNECTER</Text>
-    </TouchableOpacity>*/}
+            </View>
+            <View style={styles.viewButtonSignin}>
                 <CustomButton
                   title="Se connecter"
                   onPress={handlePressSignin}
                   type='secondary'/>
+            </View>
             <TouchableOpacity onPress={()=> navigation.navigate('MyMaterial')}>
               <Text style={styles.buttonTest}>DEV : MATERIAL</Text> 
             </TouchableOpacity>
@@ -74,11 +75,16 @@ const styles = StyleSheet.create({
     color: '#FFDE67',
     fontSize: 40,
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 400, 
+    marginBottom: 300, 
   },
   buttonTest: {
     color: '#FFDE67',
     marginTop: 20, 
+  },
+  viewButtonSignup: {
+    width: 342,
+    height: 40,
+    marginTop: 50,
   },
   buttonSignup: {
     backgroundColor: '#FFFF5B',
@@ -106,6 +112,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20, 
+  },
+  viewButtonSignin: {
+    width: 342,
+    height: 40,
+    marginTop: 50,
   },
   textSignin: {
     color: '#FFFF5B',
