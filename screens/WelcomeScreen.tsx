@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UserState } from '../reducers/user';
 
-
 type WelcomeScreenProps = {
     navigation: NavigationProp<ParamListBase>;
   };
@@ -20,7 +19,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
 
     return (
         <View style={styles.container}>
-          {/*<ImageBackground style={styles.backgroundImage} resizeMode="cover" source={require('../assets/backgroundImageWelcomescreen.jpg')} >*/}
+          <ImageBackground 
+              style={styles.backgroundImage} 
+              resizeMode="cover" 
+              source={require('../assets/background-image.jpg')} >
             <Text style={styles.h1}>Framemento</Text>
             <TouchableOpacity style={styles.buttonSignup} onPress={()=> navigation.navigate('Signup')}>
               {/* Faut il faire un composant pour les boutons ? */}
@@ -33,63 +35,66 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             <TouchableOpacity onPress={()=> navigation.navigate('MyMaterial')}>
               <Text style={styles.buttonTest}>DEV : MATERIAL</Text> 
             </TouchableOpacity>
-            {/*</ImageBackground>*/}
+          </ImageBackground>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'black',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    h1: {
-      color: '#FFFF5B',
-      fontSize: 40,
-      fontFamily: 'Poppins',
-      fontWeight: '600',
-      bottom: 200,
-    },
-    buttonTest: {
-      color: 'white'
-    },
-    buttonSignup: {
-      backgroundColor: '#FFFF5B',
-      width: 300,
-      height: 45,
-      borderRadius: 12,
-      overflow: 'hidden',
-      justifyContent: 'center', 
-      alignItems: 'center',
-      top: 150,
-    },
-    textSignup: {
-      color: 'black',
-      fontSize: 18,
-      fontFamily: 'Poppins',
-      fontWeight: '600',
-      lineHeight: 28,
-      letterSpacing: 0.15,
-    },
-    buttonSignin: {
-      backgroundColor: '#1B1B1B',
-      width: 300,
-      height: 45,
-      borderRadius: 12,
-      overflow: 'hidden',
-      justifyContent: 'center', 
-      alignItems: 'center',
-      top: 165,
-      marginHorizontal: 20,
-    },
-    textSignin: {
-      color: '#FFFF5B',
-      fontSize: 18,
-      fontFamily: 'Poppins',
-      fontWeight: '600',
-      lineHeight: 28,
-      letterSpacing: 0.15,
-    },
-  });
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%', 
+  },
+  h1: {
+    color: '#FFFF5B',
+    fontSize: 40,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 300, 
+  },
+  buttonTest: {
+    color: 'yellow',
+    marginTop: 20, 
+  },
+  buttonSignup: {
+    backgroundColor: '#FFFF5B',
+    width: 300,
+    height: 45,
+    borderRadius: 12,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20, 
+  },
+  textSignup: {
+    color: 'black',
+    fontSize: 18,
+    fontFamily: 'Poppins-Regular',
+    lineHeight: 28,
+    letterSpacing: 0.15,
+  },
+  buttonSignin: {
+    backgroundColor: '#1B1B1B',
+    width: 300,
+    height: 45,
+    borderRadius: 12,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20, 
+  },
+  textSignin: {
+    color: '#FFFF5B',
+    fontSize: 18,
+    fontFamily: 'Poppins-Regular',
+    lineHeight: 28,
+    letterSpacing: 0.15,
+  },
+});

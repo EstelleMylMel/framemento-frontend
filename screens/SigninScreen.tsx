@@ -1,4 +1,4 @@
-import { View, Image, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -75,17 +75,7 @@ type SigninScreenProps = {
             <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}>
               {/* Faut il faire un composant pour les boutons ? */}
               <Text>DEV : SKIP</Text>
-            </TouchableOpacity>
-              <Text style={styles.textSigninWith}>Se connecter avec</Text>
-              <Image 
-                style={styles.logoGoogle} 
-                source={require('../assets/google.png')} />
-              <Image 
-                style={styles.logoBehance}
-                source={require('../assets/behance.png')} />
-              <Image 
-                style={styles.logoMeta} 
-                source={require('../assets/meta.png')} />
+            </TouchableOpacity>  
         </View>
     )
 }
@@ -100,8 +90,7 @@ const styles = StyleSheet.create({
     h1: {
       color: '#EEEEEE',
       fontSize: 30,
-      fontFamily: 'Poppins',
-      fontWeight: '600',
+      fontFamily: 'Poppins-SemiBold',
       bottom: 200,
     },
     inputEmail: {
@@ -151,8 +140,7 @@ const styles = StyleSheet.create({
     textConnexion: {
       color: 'black',
       fontSize: 14,
-      fontFamily: 'Poppins',
-      fontWeight: '600',
+      fontFamily: 'Poppins-Regular',
       lineHeight: 28,
       letterSpacing: 0.15,
     },
@@ -161,17 +149,4 @@ const styles = StyleSheet.create({
       fontSize: 18,
       top: 80,
     },
-    logoGoogle: {
-      top: 100,
-      marginRight: 150,
-    },
-    logoBehance: {
-      top: 85,
-      marginRight: 20,
-    },
-    logoMeta: {
-      top: 70,
-      marginLeft: 120,
-    },
-
   });

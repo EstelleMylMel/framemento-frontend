@@ -1,10 +1,10 @@
 // Importez les bibliothèques nécessaires de React
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, TextInput, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { UserState } from '../reducers/user';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // IMPORTS TYPES //
 import { LensType } from '../types/lens';
@@ -24,6 +24,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   // fonctions permettant d'ajouter du texte dans les inputs
   const handleBrandChange = (text: string) => {
@@ -52,7 +53,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       });
   }, [user._id]); // Utiliser une dépendance vide pour n'exécuter useEffect qu'une seule fois (après le rendu initial)
 
-  
+    /// SUPPRIMER UN OBJECTIF ///
   const handleDeleteLens = (lensId: string) => {
     fetch(`${BACKEND_LOCAL_ADRESS}/material/lens/${lensId}`, {
       method: 'DELETE',
@@ -72,8 +73,7 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       setUserLenses((prevLenses) => prevLenses.filter((lens) => lens._id !== lensId));
   }
 
-
-  // fonction permettant d'ajouter et enregistrer brand et model
+  /// AJOUTER UNE OBJECTIF ///
   const handleSaveLens = () => {
   // actions pour réinitialiser les états
   setBrand('');
@@ -98,22 +98,33 @@ function LensListScreen({ navigation }: LensListScreenProps) {
 
         // Mettre à jour l'état local du UserProfile avec la nouvelle liste d'objectifs
         setUserLenses((prevUserLenses) => [...prevUserLenses, data.lens]);
-      } else if (data && data.error) {
-        console.error('Error saving lens1:', data.error);
-      } else {
-        console.error('Unexpected response format:', data);
-      }
-    })
-    .catch((error) => {
-      console.error('Error saving lens2:', error);
-    });
-  } else {
-    console.error('Brand or model is not defined');
-  } 
-};
+
+        // Réinitialiser le message d'alerte
+           setAlertMessage(null);
+  
+           // Fermer la modal seulement si aucun message d'alerte n'est présent
+           if (!alertMessage) {
+             setModalVisible(false);
+           }
+         } else if (data && data.error) {
+ 
+           // Définir le message d'alerte
+           setAlertMessage('Appareil déjà enregistré');
+         } else {
+           setAlertMessage('Appareil déjà enregistré');
+         }
+       })
+       .catch((error) => {
+         console.error('Error saving objectif:', error);
+       });
+   } else {
+     console.error('Brand or model is not defined');
+   }
+ };
 
   return (
     <View style={styles.lensContainer}>
+      <ScrollView style={styles.scrollView}>
           {userLenses.map((lens) => (
             <View key={lens._id} style={styles.lensItem}>
               <View style={styles.lensTextContainer}>
@@ -121,10 +132,12 @@ function LensListScreen({ navigation }: LensListScreenProps) {
                 <Text style={styles.textList}>{lens.model}</Text>
               </View>
               <TouchableOpacity onPress={() => handleDeleteLens(lens._id)}>
-                <FontAwesome name="trash" size={18} color="red" style={styles.deleteIcon} />
+                <MaterialIcons name='delete' size={18} color="white" style={styles.deleteIcon}/>
               </TouchableOpacity>
             </View>
           ))}
+      </ScrollView>
+        {modalVisible && (
       <Modal
         style={styles.modal}
         animationType="slide"
@@ -137,37 +150,48 @@ function LensListScreen({ navigation }: LensListScreenProps) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            
             <Text style={styles.textAdd}>Nom de l'objectif</Text>
             <TextInput
               style={styles.input}
               placeholder="Marque"
               value={brand}
-              onChangeText={handleBrandChange}
+              onChangeText={(text) => {
+                handleBrandChange(text);
+                setAlertMessage(null); // Clear the error message on input change
+              }}            
             />
             <TextInput
               style={styles.input}
               placeholder="Modèle"
               value={model}
-              onChangeText={handleModelChange}
+              onChangeText={(text) => {
+                handleModelChange(text);
+                setAlertMessage(null); // Clear the error message on input change
+              }}
             />
+            {alertMessage && (
+              <Text style={styles.alertText}>Appareil déjà enregistré</Text>
+            )}
             <Pressable
               style={styles.buttonEnregistrer}
-              onPress={() => {
-                handleSaveLens(); // Appeler la fonction pour sauvegarder l'objectif
-                setModalVisible(!modalVisible); // Cacher la modal
-              }}
+              onPress={() => handleSaveLens()}
             >
               <Text style={styles.textButtonSave}>Enregistrer un objectif</Text>
             </Pressable>
             <Pressable
               style={styles.buttonAnnuler}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                setAlertMessage(null); // Clear the error message on "Annuler" press
+              }}
             >
               <Text style={styles.textButtonAnnuler}>Annuler</Text>
       </Pressable>
           </View>
         </View>
       </Modal>
+        )}
       <Pressable
         style={styles.buttonAdd}
         onPress={() => setModalVisible(true)}
@@ -189,6 +213,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'black',
+  },
+  scrollView: {
+    backgroundColor: 'transparent',
+    marginVertical: 30,
+    marginBottom: 120, 
   },
   lensItem: {
     flexDirection: 'row',
@@ -222,12 +251,12 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: 350,
-    height: 270,
+    height: 300,
     padding: 32,
     backgroundColor: '#000000',
     borderRadius: 16,
-    borderColor: 'white', // Couleur du contour
-    borderWidth: 0.5, // Largeur du contour
+    borderColor: 'white',
+    borderWidth: 0.5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -236,8 +265,7 @@ const styles = StyleSheet.create({
   textAdd: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '500',
+    fontFamily: 'Poppins-Light',
   },
   input: {
     backgroundColor: '#1B1B1B',
@@ -246,12 +274,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginTop: -20,
     color: 'white',
+    fontFamily: 'Poppins-Light',
   },
   modalText: {
-    // Vos styles pour le texte modal
   },
   button: {
-    // Vos styles pour les boutons
   },
   buttonEnregistrer: {
     backgroundColor: '#FFFF5B',
@@ -296,41 +323,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     gap: 10,
-    position: 'absolute', // Ajout de la propriété position absolute
-    bottom: 75, // Ajustez la distance depuis le bas selon vos besoins
-    left: '50%', // Centre le bouton horizontalement
-    transform: [{ translateX: -150 }], // Ajustez la moitié de la largeur du bouton pour le centrer
+    position: 'absolute', 
+    bottom: 75, 
+    left: '50%', 
+    transform: [{ translateX: -150 }], 
   },
   textButtonAdd: {
     color: '#1B1B1B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   textButtonSave: {
     color: '#1B1B1B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   textButtonAnnuler: {
     color: '#FFFF5B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   footer: {
     color: 'white', 
     fontSize: 24,
-    fontFamily: 'Poppins',
-    fontWeight: '600', 
-    position: 'absolute', // Ajout de la propriété position absolute
-    bottom: 15, // Ajustez la distance depuis le bas selon vos besoins
-  }
+    fontFamily: 'Poppins-SemiBold',
+    position: 'absolute',
+    bottom: 15, 
+  },
+  alertText: {
+    color: 'red',
+    fontSize: 16,
+    marginTop: -10, 
+    textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
+  },  
 });

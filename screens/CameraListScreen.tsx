@@ -1,14 +1,13 @@
 // Importez les bibliothèques nécessaires de React
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, TextInput } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, TextInput, View, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { UserState } from '../reducers/user';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // IMPORTS TYPES //
 import { CamType } from '../types/camera';
-
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -122,12 +121,10 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
       console.error('Brand or model is not defined');
     }
   };
-  
-  
-  
 
   return (
     <View style={styles.cameraContainer}>
+      <ScrollView style={styles.scrollView}>
           {userCameras.map((camera) => (
             <View key={camera._id} style={styles.cameraItem}>
               <View style={styles.cameraTextContainer}>
@@ -135,10 +132,11 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
                 <Text style={styles.textList}>{camera.model}</Text>
               </View>
               <TouchableOpacity onPress={() => handleDeleteCamera(camera._id)}>
-                <FontAwesome name="trash" size={18} color="red" style={styles.deleteIcon} />
+                <MaterialIcons name='delete' size={18} color="white" style={styles.deleteIcon}/>
               </TouchableOpacity>
             </View>
           ))}
+      </ScrollView>
       {modalVisible && (
   <Modal
     style={styles.modal}
@@ -152,10 +150,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
   >
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
-        {alertMessage && (
-          <Text style={styles.alertText}>Appareil déjà enregistré</Text>
-        )}
-          <>
+        
             <Text style={styles.textAdd}>Nom de l'appareil</Text>
             <TextInput
               style={styles.input}
@@ -175,11 +170,13 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
                 setAlertMessage(null); // Clear the error message on input change
               }}
             />
+            {alertMessage && (
+              <Text style={styles.alertText}>Appareil déjà enregistré</Text>
+            )}
             <Pressable
               style={styles.buttonEnregistrer}
               onPress={() => handleSaveCamera()}
             >
-              
               <Text style={styles.textButtonSave}>Enregistrer un appareil</Text>
             </Pressable>
             <Pressable
@@ -190,14 +187,11 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
               }}
             >
               <Text style={styles.textButtonAnnuler}>Annuler</Text>
-            </Pressable>
-          </>
+            </Pressable> 
       </View>
     </View>
   </Modal>
 )}
-
-
       <Pressable
         style={styles.buttonAdd}
         onPress={() => setModalVisible(true)}
@@ -219,6 +213,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'black',
+  },
+  scrollView: {
+    backgroundColor: 'transparent',
+    marginVertical: 30,
+    marginBottom: 120, 
   },
   cameraItem: {
     flexDirection: 'row',
@@ -252,12 +251,12 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: 350,
-    height: 270,
+    height: 300,
     padding: 32,
     backgroundColor: '#000000',
     borderRadius: 16,
-    borderColor: 'white', // Couleur du contour
-    borderWidth: 0.5, // Largeur du contour
+    borderColor: 'white', 
+    borderWidth: 0.5, 
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -266,8 +265,7 @@ const styles = StyleSheet.create({
   textAdd: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '500',
+    fontFamily: 'Poppins-Light',
   },
   input: {
     backgroundColor: '#1B1B1B',
@@ -276,12 +274,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginTop: -20,
     color: 'white',
+    fontFamily: 'Poppins-Light',
   },
   modalText: {
-    // Vos styles pour le texte modal
   },
   button: {
-    // Vos styles pour les boutons
   },
   buttonEnregistrer: {
     backgroundColor: '#FFFF5B',
@@ -326,47 +323,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     gap: 10,
-    position: 'absolute', // Ajout de la propriété position absolute
-    bottom: 75, // Ajustez la distance depuis le bas selon vos besoins
-    left: '50%', // Centre le bouton horizontalement
-    transform: [{ translateX: -150 }], // Ajustez la moitié de la largeur du bouton pour le centrer
+    position: 'absolute', 
+    bottom: 75, 
+    left: '50%', 
+    transform: [{ translateX: -150 }], 
   },
   textButtonAdd: {
     color: '#1B1B1B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   textButtonSave: {
     color: '#1B1B1B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   textButtonAnnuler: {
     color: '#FFFF5B',
     fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     lineHeight: 28,
     letterSpacing: 0.15,
   },
   footer: {
     color: 'white', 
     fontSize: 24,
-    fontFamily: 'Poppins',
-    fontWeight: '600', 
-    position: 'absolute', // Ajout de la propriété position absolute
-    bottom: 15, // Ajustez la distance depuis le bas selon vos besoins
+    fontFamily: 'Poppins-SemiBold',
+    fontWeight: '800', 
+    position: 'absolute', 
+    bottom: 15, 
   },
   alertText: {
     color: 'red',
     fontSize: 16,
-    marginTop: 80, // Ajustez la marge inférieure à une valeur plus petite
+    marginTop: -10, 
     textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
   },  
 });
