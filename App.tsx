@@ -119,7 +119,7 @@ const CommunityTopTabNavigation: React.FC<TopTabNavigationProps> = ({navigation}
         screenOptions={{
           tabBarLabelStyle: { fontSize: 14, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', fontWeight: '600' },
           tabBarStyle: { backgroundColor: '#050505', justifyContent: 'flex-end', flex: 0.10, marginTop: 85 }, // Style de la barre d'onglets
-          tabBarIndicatorStyle: { backgroundColor: '#FFDE67' }, // Style de l'indicateur
+          tabBarIndicatorStyle: { backgroundColor: '#FFDE67'} // Style de l'indicateur
         }}
       >
         <CommunityTopTab.Screen
@@ -212,15 +212,16 @@ const DrawerNavigator = () => {
       drawerStyle: {
         backgroundColor: '#050505',
         width: 240,
+        paddingTop: 10,
       },
     }}>
-      <Drawer.Screen name="Main" component={TabNavigator} options={{
+      <Drawer.Screen name="Retour" component={TabNavigator} options={{
           drawerIcon: () => (
-            <MaterialIcons name="account-circle" color='#EEEEEE' size={24} />
+            <MaterialIcons name="arrow-back" color='#EEEEEE' size={24} />
           ),
           drawerLabel: () => (
-            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
-              Main
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 16 }}>
+              Retour
             </Text>
           )
         }}/>
@@ -229,7 +230,7 @@ const DrawerNavigator = () => {
             <MaterialIcons name="account-circle" color='#EEEEEE' size={24} />
           ),
           drawerLabel: () => (
-            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 16 }}>
               Mon compte
             </Text>
           )
@@ -239,7 +240,7 @@ const DrawerNavigator = () => {
             <MaterialIcons name="photo-camera" color='#EEEEEE' size={24} />
           ),
           drawerLabel: () => (
-            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 20 }}>
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 16 }}>
               Mes appareils
             </Text>
           )

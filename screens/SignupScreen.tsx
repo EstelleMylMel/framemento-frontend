@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -71,68 +71,85 @@ type SignupScreenProps = {
     }
 
     return (
-          <View 
-            style={styles.container}>
-            <Header
-                navigation={navigation}
-                iconLeft='arrow-back'
-                title='Inscription'
-                marginTop={-130}
-             />
-              <Text 
-                style={styles.h1}>Inscription</Text>
-            <View style={styles.viewInput}>
-              <CustomInput
-                label='Email'
-                icon='alternate-email' 
-                >
-                <TextInput 
-                  placeholder='email@email.fr'
-                  placeholderTextColor='#AAAAAA'
-                  value={email}
-                  onChangeText={(value) => setEmail(value)}
-                  style={styles.input} 
+
+            <View style={styles.body}>
+              <SafeAreaView style={styles.headerContainer}>
+                <Header
+                    navigation={navigation}
+                    iconLeft='arrow-back'
+                    title='Inscription'
+                    marginTop={30}
                   />
-              </CustomInput>
-              <CustomInput 
-                label='Pseudo'
-                icon='account-circle' >
-                  <TextInput 
-                    placeholder='framemento'
-                    placeholderTextColor='#AAAAAA'
-                    value={username}
-                    onChangeText={(value) => setUsername(value)}
-                    style={styles.input} 
-                    />
-              </CustomInput>
-              <CustomInput
-                label='Mot de passe'
-                icon='vpn-key' >
-                  <TextInput 
-                    placeholder='******'
-                    placeholderTextColor='#AAAAAA'
-                    value={password}
-                    onChangeText={(value) => setPassword(value)}
-                    style={styles.input}
-                    />
-              </CustomInput>
+              </SafeAreaView>
+              <View style={styles.container}>
+                <View style={styles.viewInput}>
+                  <CustomInput
+                    label='Email'
+                    icon='alternate-email' 
+                    >
+                    <TextInput 
+                      placeholder='email@email.fr'
+                      placeholderTextColor='#AAAAAA'
+                      value={email}
+                      onChangeText={(value) => setEmail(value)}
+                      style={styles.input} 
+                      />
+                  </CustomInput>
+                  <CustomInput 
+                    label='Pseudo'
+                    icon='account-circle' >
+                      <TextInput 
+                        placeholder='framemento'
+                        placeholderTextColor='#AAAAAA'
+                        value={username}
+                        onChangeText={(value) => setUsername(value)}
+                        style={styles.input} 
+                        />
+                  </CustomInput>
+                  <CustomInput
+                    label='Mot de passe'
+                    icon='vpn-key' >
+                      <TextInput 
+                        placeholder='******'
+                        placeholderTextColor='#AAAAAA'
+                        value={password}
+                        onChangeText={(value) => setPassword(value)}
+                        style={styles.input}
+                        secureTextEntry={true}
+                        />
+                  </CustomInput>
+                  </View>
+                <View style={styles.viewButton}>
+                  <CustomButton 
+                    title='Inscription'
+                    onPress={handleSubscription}
+                    type='primary'/> 
+                </View>  
               </View>
-            <View style={styles.viewButton}>
-              <CustomButton 
-                title='Inscription'
-                onPress={handleSubscription}
-                type='primary'/> 
-            </View>  
           </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'black',
-      alignItems: 'center',
-      justifyContent: 'center',
+    
+  body: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#050505',
+    height:'100%',
+    width: '100%',
+  },
+  headerContainer: {
+    height: 130,
+    width: '100%',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#050505',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 150,
     },
     header: {
       color: 'white',

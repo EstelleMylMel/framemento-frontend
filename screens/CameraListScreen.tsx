@@ -12,6 +12,7 @@ import {
 import { useSelector } from 'react-redux';
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 /// COMPOSANTS ///
 import CustomInput from '../components/CustomInput';
@@ -64,7 +65,7 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
 
   // Fonction pour supprimer une caméra
   const handleDeleteCamera = (cameraId: string) => {
-    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${cameraId}`, {
+    fetch(`${BACKEND_LOCAL_ADRESS}/material/camera/${cameraId}/${user._id}`, {
       method: 'DELETE',
     })
       .then((response) => response.json())
@@ -137,8 +138,8 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
   return (
     <View style={styles.cameraContainer}>
       <ScrollView style={styles.scrollView}>
-        {userCameras.map((camera) => (
-          <View key={camera._id} style={styles.cameraItem}>
+        {userCameras.map((camera, i) => (
+          <View key={i} style={styles.cameraItem}>
             <View style={styles.cameraTextContainer}>
               <Text style={styles.textListBrand}>{camera.brand}</Text>
               <Text style={styles.textListModel}>{camera.model}</Text>
@@ -150,7 +151,6 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
         ))}
       </ScrollView>
 
-      {modalVisible && (
         <View style={styles.centeredView}>
           <Modal
             style={styles.modal}
@@ -162,37 +162,40 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
               setModalVisible(!modalVisible);
             }}
           >
+            <SafeAreaProvider>
             <View style={styles.modalView}>
+              
               <Header
                 navigation={navigation}
                 iconLeft="close"
                 onPressLeftButton={buttonAnnuler}
                 title="Nouvel appareil"
-                marginTop={-100}
+                marginTop={20}
               />
+              
               <View style={styles.viewInput}>
-              <CustomInput label="Marque" icon="sell">
-                <TextInput
-                  style={styles.input}
-                  placeholder="-"
-                  value={brand}
-                  onChangeText={(text) => {
-                    handleBrandChange(text);
-                    setAlertMessage(null);
-                  }}
-                />
-              </CustomInput>
-              <CustomInput label="Modèle" icon="photo-camera">
-                <TextInput
-                  style={styles.input}
-                  placeholder="-"
-                  value={model}
-                  onChangeText={(text) => {
-                    handleModelChange(text);
-                    setAlertMessage(null);
-                  }}
-                />
-              </CustomInput>
+                <CustomInput label="Marque" icon="local-offer">
+                  <TextInput
+                    style={styles.input}
+                    placeholder="-"
+                    value={brand}
+                    onChangeText={(text) => {
+                      handleBrandChange(text);
+                      setAlertMessage(null);
+                    }}
+                  />
+                </CustomInput>
+                <CustomInput label="Modèle" icon="photo-camera">
+                  <TextInput
+                    style={styles.input}
+                    placeholder="-"
+                    value={model}
+                    onChangeText={(text) => {
+                      handleModelChange(text);
+                      setAlertMessage(null);
+                    }}
+                  />
+                </CustomInput>
               </View>
               {alertMessage && (
                 <Text style={styles.alertText}>Appareil déjà enregistré</Text>
@@ -205,9 +208,9 @@ function CameraListScreen({ navigation }: CameraListScreenProps) {
               />
               </View>
             </View>
+            </SafeAreaProvider>
           </Modal>
         </View>
-      )}
       <CustomButton
         title="Ajouter un appareil"
         onPress={buttonAjout}
@@ -237,9 +240,9 @@ const styles = StyleSheet.create({
   cameraItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
     backgroundColor: '#101010',
-    borderRadius: 2,
+    borderRadius: 12,
     width: 350,
     height: 70,
     paddingRight: 20,
@@ -265,29 +268,48 @@ const styles = StyleSheet.create({
   modal: {},
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    height: '100%',
+    width: '100%',
   },
   modalView: {
-    flex: 1,
-    padding: 32,
-    backgroundColor: '#000000',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 32,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-start',
+    backgroundColor: '#050505',
   },
+  // centeredView: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   width: '100%',
+  //   height: '100%',
+  // },
+  // modalView: {
+  //   flex: 1,
+  //   padding: 32,
+  //   backgroundColor: '#000000',
+  //   flexDirection: 'column',
+  //   justifyContent: 'flex-start',
+  //   alignItems: 'center',
+  //   gap: 32,
+  //   width: '100%',
+  //   height: '100%',
+  // },
   input: {
     backgroundColor: '#101010',
-    width: 320,
+    width: 200,
     height: 40,
     paddingLeft: 10,
     marginTop: 5,
     color: 'white',
     fontFamily: 'Poppins-Light',
+    textAlign: 'right',
   },
   viewInput: {
-    width: 342, 
+    width: '100%',
+    marginTop: 250,
+    padding: 24, 
   },
   alertText: {
     color: 'red',

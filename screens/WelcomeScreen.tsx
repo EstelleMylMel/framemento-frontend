@@ -35,9 +35,6 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               resizeMode="cover" 
               source={require('../assets/background-image.jpg')} >
             <Text style={styles.h1}>Framemento</Text>
-            {/*<TouchableOpacity style={styles.buttonSignup} onPress={()=> navigation.navigate('Signup')}>
-              <Text style={styles.textSignup}>S'INSCRIRE</Text>
-            {/*</TouchableOpacity>*/}
             <View style={styles.viewButtonSignup}>
               <CustomButton
                 title="S'inscrire"
@@ -50,9 +47,6 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
                   onPress={handlePressSignin}
                   type='secondary'/>
             </View>
-            <TouchableOpacity onPress={()=> navigation.navigate('MyMaterial')}>
-              <Text style={styles.buttonTest}>DEV : MATERIAL</Text> 
-            </TouchableOpacity>
           </ImageBackground>
         </View>
     )
@@ -76,10 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: 'Poppins-SemiBold',
     marginBottom: 300, 
-  },
-  buttonTest: {
-    color: '#FFDE67',
-    marginTop: 20, 
   },
   viewButtonSignup: {
     width: 342,

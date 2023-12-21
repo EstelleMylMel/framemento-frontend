@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
 import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
 import { FrameType } from '../types/frame';
@@ -68,58 +68,77 @@ type SigninScreenProps = {
       }
     }
 
+    useEffect(() => {
+      console.log('email', email)
+      console.log('password', password)
+    }, [email, password])
+
     return (
-        <View style={styles.container}>
+      <View style={styles.body}>
+        <SafeAreaView style={styles.headerContainer}>
           <Header
               navigation={navigation}
               iconLeft='arrow-back'
               title='Connexion'
-              marginTop={-100}
+              marginTop={30}
              />
-          <Text style={styles.h1}>Connexion</Text>
-          <View style={styles.viewInput}>
-            <CustomInput
-              label='Email'
-              icon='alternate-email'>
-            <TextInput 
-              placeholder='email@email.fr'
-              placeholderTextColor='#AAAAAA'
-              value={email}
-              onChangeText={(value) => setEmail(value)}
-              style={styles.input} 
-              />
-            </CustomInput>
-            <CustomInput
-              label='Mot de passe'
-              icon='vpn-key'>
-            <TextInput 
-              placeholder='******'
-              placeholderTextColor='#AAAAAA'
-              value={password}
-              onChangeText={(value) => setPassword(value)}
-              style={styles.input}
-              />
-            </CustomInput>
-            </View>
+        </SafeAreaView>
+          <View style={styles.container}>
+            <View style={styles.viewInput}>
+              <CustomInput
+                label='Email'
+                icon='alternate-email'>
+                <TextInput 
+                  placeholder='email@email.fr'
+                  placeholderTextColor='#AAAAAA'
+                  value={email}
+                  onChangeText={(value) => setEmail(value)}
+                  style={styles.input} 
+                  />
+              </CustomInput>
+              <CustomInput
+                label='Mot de passe'
+                icon='vpn-key'>
+                <TextInput 
+                  placeholder='******'
+                  placeholderTextColor='#AAAAAA'
+                  value={password}
+                  onChangeText={(value) => setPassword(value)}
+                  style={styles.input}
+                  secureTextEntry={true}
+                  />
+              </CustomInput>
               <View style={styles.viewButton}>
                 <CustomButton
                   title='Connexion'
                   onPress={handleSubscription}
                   type='primary' />
+              </View> 
               </View>
-            <TouchableOpacity onPress={() => navigation.navigate('DrawerNavigator')}>
-              <Text>DEV : SKIP</Text>
-            </TouchableOpacity>  
-        </View>
+          </View>
+      </View>
     )
 }
 
 const styles = StyleSheet.create({
+  body: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#050505',
+    height:'100%',
+    width: '100%',
+  },
+  headerContainer: {
+    height: 130,
+    width: '100%',
+  },
     container: {
       flex: 1,
-      backgroundColor: 'black',
+      backgroundColor: '#050505',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
+      marginTop: 150,
     },
     h1: {
       color: '#EEEEEE',
@@ -129,7 +148,7 @@ const styles = StyleSheet.create({
     },
     input: {
       width: 110,
-      color: '#101010',
+      color: '#AAAAAA',
       fontSize: 14,
       fontFamily: 'Poppins-Light',
       fontStyle: 'normal',

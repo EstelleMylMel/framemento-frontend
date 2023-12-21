@@ -16,13 +16,13 @@ const MyMaterialScreen = ({navigation} : any) => {
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation}
               iconLeft='arrow-back'
-              title='Mon matériel' />
-      {/*<Text style={styles.header}>Mon Matériel</Text>*/}
+              title='Mon matériel'
+              marginTop={20} />
       <Tab.Navigator
         screenOptions={{
-          tabBarLabelStyle: { fontSize: 16, color: 'white' }, // Style du titre des deux onglets (appareils et objectifs)
-          tabBarStyle: { backgroundColor: '#0000' }, // Style de la barre d'onglets
-          tabBarIndicatorStyle: { backgroundColor: '#FFDE67', width: 100, marginLeft: 55 }, // Style de l'indicateur
+          tabBarLabelStyle: { fontSize: 14, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', fontWeight: '600' }, // Style du titre des deux onglets (appareils et objectifs)
+          tabBarStyle: { backgroundColor: '#050505', justifyContent: 'flex-end', flex: 0.10, marginTop: 85 }, // Style de la barre d'onglets
+          tabBarIndicatorStyle: { backgroundColor: '#FFDE67'}, // Style de l'indicateur
         }}
       >
         <Tab.Screen
