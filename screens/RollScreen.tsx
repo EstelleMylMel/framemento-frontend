@@ -459,13 +459,15 @@ type RollScreenProps = {
     /// UPLOAD DE LA PHOTO ARGENTIQUE NUMERISEE ///
 
     const [image, setImage] = useState<string | null>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    
     // FAIRE ENREGISTREMENT DANS CLOUDINARY
 
     useEffect(()=> {
 
       if(image) {
+
+        setIsLoading(true)
 
         const formData: any = new FormData();
 
@@ -492,7 +494,7 @@ type RollScreenProps = {
           })
           .then((response) => response.json())
           .then((data) => {
-
+            setIsLoading(false)
             // setModalAddFrameVisible(false);
 
           })
@@ -645,6 +647,8 @@ type RollScreenProps = {
 
       setModalViewFrameVisible(false)
     }
+
+if(isLoading) return <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black', zIndex: 15 }}><Text style={{ color: 'white' }}>CHARGEMENT DE LA PHOTO NUMÉRISÉE...</Text></View>
         
 return (
 
