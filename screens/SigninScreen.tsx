@@ -3,6 +3,7 @@ import type { NavigationProp, ParamListBase, } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../reducers/user';
+import { FrameType } from '../types/frame';
 
 const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 
@@ -39,7 +40,9 @@ type SigninScreenProps = {
           .then(data => {
             if ( data.result ) {
               const {_id, username, token, rolls } = data;
-                dispatch(updateUser({_id, username, token, rolls}));
+              let framesShared = data.frames?.filter((frame: FrameType) => frame.shared === true)
+              console.log('framesShared from signin', framesShared)
+                dispatch(updateUser({_id, username, token, rolls, framesShared}));
                 navigation.navigate('DrawerNavigator');
             }
             else  {

@@ -76,7 +76,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
         .catch(error => {
             console.error(`Error fetching frames shared from ${route.params.selectedCategory}:`, error);
         });
-  }, []);
+  }, [user]);
 
 
 
@@ -155,7 +155,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
 
         {/* All frames shared */}
         <ScrollView style={styles.scrollView}>
-        { framesFromCategorySearchedList }
+        {/* framesFromCategorySearchedList */}
         { framesFromCategorySearched.length > 0 && framesFromCategorySearchedList }
         { framesFromCategorySearched.length === 0 && <Text style={{ color: '#EEEEEE', textAlign: 'center', marginTop: 200 }}>Aucune photo partagée dans cette catégorie.</Text>}
         </ScrollView>

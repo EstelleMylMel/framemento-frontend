@@ -11,6 +11,8 @@ import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const { transformDate } = require('../modules/transformDate');
+import { addFrameShared, importFramesShared, removeFrameShared } from '../reducers/user';
+
 
 
 import { useDispatch } from 'react-redux';
@@ -615,12 +617,13 @@ type RollScreenProps = {
             console.log('fetch put frameToDisplay succeeded')
             console.log('avant : ',frameToDisplay.shared)
 
-            const selectedFrame = frameToDisplay;
+            const selectedFrame: FrameType = frameToDisplay;
             if (selectedFrame) {
               selectedFrame.shared = !selectedFrame.shared;
               setFrameToDisplay(selectedFrame);
+              selectedFrame.shared ? dispatch(addFrameShared(selectedFrame)) : dispatch(removeFrameShared(selectedFrame._id))
             }
-            
+
             console.log('après : ',frameToDisplay.shared)
 
           })
@@ -633,6 +636,8 @@ type RollScreenProps = {
         } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT */}
       }
     }
+
+    console.log("user from store: ", user)
 
     function handlePressOnCloseButton(): void {
 
