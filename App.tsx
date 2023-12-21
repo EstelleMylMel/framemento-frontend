@@ -241,7 +241,7 @@ const DrawerNavigator = () => {
           ),
           drawerLabel: () => (
             <Text style={{ fontFamily: 'Poppins-Medium', color: '#EEEEEE', fontSize: 16 }}>
-              Mes appareils
+              Mon matériel
             </Text>
           )
         }}/>
