@@ -49,7 +49,7 @@ type SignupScreenProps = {
             if ( data.result ) {
               console.log('new user data : ',data);
               const { _id, username, token, rolls } = data;
-              dispatch(updateUser({_id, username, token, rolls}));
+              dispatch(updateUser({_id, username, token, rolls, framesShared: []}));
               navigation.navigate('DrawerNavigator');
             }
             else  {

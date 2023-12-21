@@ -11,6 +11,8 @@ import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const { transformDate } = require('../modules/transformDate');
+import { addFrameShared, importFramesShared, removeFrameShared } from '../reducers/user';
+
 
 
 import { useDispatch } from 'react-redux';
@@ -457,13 +459,15 @@ type RollScreenProps = {
     /// UPLOAD DE LA PHOTO ARGENTIQUE NUMERISEE ///
 
     const [image, setImage] = useState<string | null>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    
     // FAIRE ENREGISTREMENT DANS CLOUDINARY
 
     useEffect(()=> {
 
       if(image) {
+
+        setIsLoading(true)
 
         const formData: any = new FormData();
 
@@ -490,7 +494,7 @@ type RollScreenProps = {
           })
           .then((response) => response.json())
           .then((data) => {
-
+            setIsLoading(false)
             // setModalAddFrameVisible(false);
 
           })
@@ -615,12 +619,13 @@ type RollScreenProps = {
             console.log('fetch put frameToDisplay succeeded')
             console.log('avant : ',frameToDisplay.shared)
 
-            const selectedFrame = frameToDisplay;
+            const selectedFrame: FrameType = frameToDisplay;
             if (selectedFrame) {
               selectedFrame.shared = !selectedFrame.shared;
               setFrameToDisplay(selectedFrame);
+              selectedFrame.shared ? dispatch(addFrameShared(selectedFrame)) : dispatch(removeFrameShared(selectedFrame._id))
             }
-            
+
             console.log('après : ',frameToDisplay.shared)
 
           })
@@ -634,12 +639,16 @@ type RollScreenProps = {
       }
     }
 
+    console.log("user from store: ", user)
+
     function handlePressOnCloseButton(): void {
 
       setImage('');
 
       setModalViewFrameVisible(false)
     }
+
+if(isLoading) return <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black', zIndex: 15 }}><Text style={{ color: 'white' }}>CHARGEMENT DE LA PHOTO NUMÉRISÉE...</Text></View>
         
 return (
 

@@ -15,6 +15,8 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import { RootStackParamList } from '../App';
 import { NavigationProp, ParamListBase, useRoute, RouteProp} from '@react-navigation/native';
+const { transformDate } = require('../modules/transformDate');
+import { addFrameShared, importFramesShared, removeFrameShared } from '../reducers/user';
 
 
 
@@ -28,13 +30,14 @@ const BACKEND_LOCAL_ADRESS = process.env.EXPO_PUBLIC_BACKEND_ADRESS;
 const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigation }) => {
 
     const user = useSelector((state: { user: UserState }) => state.user.value);
+    const dispatch = useDispatch();
 
     const [framesShared, setFramesShared] = useState<FrameType[]>([]);
 
 
     /// FETCH LES INFORMATIONS DES FRAMES PARTAGÉES DU USER À L'ARRIVÉE SUR L'ÉCRAN ///
 
-    useEffect(() => {
+    /*useEffect(() => {
         fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
             .then(response => response.json())
             .then((data): void => {
@@ -45,7 +48,11 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                     console.log("fetch for user data went wrong")
                 }
             })
-    }, []);
+    }, []);*/
+
+    useEffect(() => {
+        setFramesShared(user.framesShared)
+    }, [user]);
 
 
     /// GÉRER LE LIKE - UNLIKE ///
@@ -237,6 +244,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
             setFramesShared((prevFrames) =>
                 prevFrames.filter((frame) => frame._id !== displayedFrame?._id)
             );
+            dispatch(removeFrameShared(displayedFrame?._id));
             setFrameToDisplay(undefined);
             setModalViewFrameVisible(false)
         })
@@ -261,7 +269,8 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
 
             {/* Frames shared */}
             <ScrollView style={styles.scrollView}>
-                {framesShared.length > 0 && framesSharedList}
+                {framesShared.length > 0 && framesSharedList.reverse()}
+                {framesShared.length === 0 && <Text style={{ color: '#EEEEEE', textAlign: 'center', marginTop: 200 }}>Partagez votre première photo à la communauté.</Text>}
             </ScrollView>
 
             <View style={styles.centeredView}>
@@ -317,7 +326,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                         <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                         {/* date */}
-                        <CustomField label='Date' icon='date-range' value={String(frameToDisplay?.date)}></CustomField>
+                        <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}></CustomField>
 
                         {/* meteo */}
                         <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
@@ -431,7 +440,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   categories: {
-
+    paddingBottom: 10,
+    marginLeft: 10
   },
   category: {
     color: '#EEEEEE',
