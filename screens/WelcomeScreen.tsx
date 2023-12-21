@@ -33,7 +33,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <ImageBackground 
               style={styles.backgroundImage} 
               resizeMode="cover" 
-              source={require('../assets/background-image.jpg')} >
+              source={require('../assets/welcome-screen.png')} >
             <Text style={styles.h1}>Framemento</Text>
             <View style={styles.viewButtonSignup}>
               <CustomButton

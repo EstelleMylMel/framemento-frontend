@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: '#050505',
   },
   scrollView: {
     backgroundColor: 'transparent',

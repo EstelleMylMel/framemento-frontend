@@ -158,7 +158,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
                   <View style={styles.modalView}>
                 
                   {/* Modal Header */}
-                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalVisible(false)} title='Nouvelle pellicule'/>
+                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => setModalVisible(false)} title='Ajouter pellicule'/>
 
                   {/* Modal Text Inputs */}
                   <View style={styles.mainContent}>  

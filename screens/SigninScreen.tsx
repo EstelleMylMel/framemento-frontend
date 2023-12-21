@@ -147,13 +147,14 @@ const styles = StyleSheet.create({
       bottom: 200,
     },
     input: {
-      width: 110,
+      width: 180,
       color: '#AAAAAA',
       fontSize: 14,
       fontFamily: 'Poppins-Light',
       fontStyle: 'normal',
       fontWeight: '300',
       lineHeight: 24,
+      textAlign: 'right',
     },
     viewInput: {
       width: 342,

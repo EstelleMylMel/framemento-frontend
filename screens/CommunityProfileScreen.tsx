@@ -210,7 +210,8 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                     <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
                 </TouchableOpacity>
                 <View style={styles.textContainer}>
-                    <Text style={styles.titleFrame}>{frame.location}</Text>
+                    {frame.title && <Text style={styles.titleFrame}>{frame.title}</Text>}
+                    {!frame.title && <Text style={styles.titleFrame}>{frame.location}</Text>}
                     <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
                 </View>
 
@@ -261,7 +262,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
             {/* Sous Header */}
             <View style={styles.topContainer}>
                 <View style={styles.topContainerProfile}>
-                    <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
+                    <Image source={require("../assets/ppuser.png")} style={styles.profilePicture} />
                     <Text style={styles.profileText}>{user.username}</Text>
                 </View>
                 <Text style={styles.topContainerText}>Mes photos partagées</Text>
@@ -303,10 +304,11 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
                                     key={category} 
                                     label={category} 
                                     value={category} 
+                                    fontFamily='Poppins-Light'
                                     style={
                                         selectedCategories.includes(category)
-                                            ? { backgroundColor: 'black', color: "#FFDE67", fontWeight: 'bold', fontSize: 14 }
-                                            : { backgroundColor: 'black', color: '#EEEEEE', fontWeight: 'normal', fontSize: 12 }
+                                            ? { backgroundColor: 'black', color: "#FFDE67", fontSize: 14, fontFamily: 'Poppins-Medium' }
+                                            : { backgroundColor: 'black', color: '#EEEEEE', fontSize: 12, fontFamily: 'Poppins-Light' }
                                     } 
                                 />
                             ))}
@@ -392,7 +394,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    fontFamily: 'Poppins-Medium',
     marginBottom: 20,
   },
   topContainerText: {
@@ -407,9 +408,9 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
   profileText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#EEEEEE'
+    fontSize: 20,
+    color: '#EEEEEE',
+    fontFamily: "Poppins-SemiBold"
   },
   noFrameText: {
     color: '#EEEEEE'

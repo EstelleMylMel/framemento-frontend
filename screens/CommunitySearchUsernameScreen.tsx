@@ -121,7 +121,8 @@ export default function CommunitySearchUsernameScreen({ navigation, route }: { n
             <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-            <Text style={styles.titleFrame}>{frame.location}</Text>
+            {frame.title && <Text style={styles.titleFrame}>{frame.title}</Text>}
+            {!frame.title && <Text style={styles.titleFrame}>{frame.location}</Text>}
             <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
         </View>
 
@@ -146,7 +147,7 @@ export default function CommunitySearchUsernameScreen({ navigation, route }: { n
         {/* Header */}
         <View style={styles.topContainer}>
           <View style={styles.subTopContainer}>
-            <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
+            <Image source={require("../assets/pprenaud.png")} style={styles.profilePicture} />
             <Text style={styles.profileText}>{route.params.searchText}</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -258,6 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
+    // alignItems: 'flex-end'
   },
   topContainerProfile: {
     flexDirection: 'row',
@@ -278,9 +280,10 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   profileText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#EEEEEE'
+    fontSize: 16,
+    color: '#EEEEEE',
+    fontFamily: 'Poppins-SemiBold',
+    // marginBottom: -8
   },
   noFrameText: {
     color: '#EEEEEE'

@@ -121,7 +121,8 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
             <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-            <Text style={styles.titleFrame}>{frame.location}</Text>
+            {frame.title && <Text style={styles.titleFrame}>{frame.title}</Text>}
+            {!frame.title && <Text style={styles.titleFrame}>{frame.location}</Text>}
             <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
         </View>
 
@@ -278,9 +279,9 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   profileText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#EEEEEE'
+    fontSize: 20,
+    color: '#EEEEEE',
+    fontFamily: 'Poppins-SemiBold'
   },
   noFrameText: {
     color: '#EEEEEE'

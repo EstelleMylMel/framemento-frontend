@@ -126,7 +126,8 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
             <Image source={{ uri: frame.argenticPhoto }} style={styles.argenticPhoto} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-            <Text style={styles.titleFrame}>{frame.location}</Text>
+            {frame.title && <Text style={styles.titleFrame}>{frame.title}</Text>}
+            {!frame.title && <Text style={styles.titleFrame}>{frame.location}</Text>}
             <Text style={styles.infos}>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} • ${frame.shutterSpeed} • ${frame.aperture}`}</Text>
         </View>
 
@@ -190,7 +191,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
 
           {/* Header */}
           <View style={styles.topContainer}>
-            <Text style={styles.inspirationText}>En quête d'inspiration ?</Text>
+            {/* <Text style={styles.inspirationText}>En quête d'inspiration ?</Text> */}
             <View style={styles.topContainerSub1}>
               <TextInput 
                 style={styles.searchInput} 

@@ -84,7 +84,7 @@ type RollScreenProps = {
 
     // const [latitude, setLatitude] = useState<number>(0);
     // const [longitude, setLongitude] = useState<number>(0);
-    const [ currentAdress, setCurrentAdress ] = useState<string>('');
+    const [ currentAdress, setCurrentAdress ] = useState<string>('21 rte Rétaud, Thénac');
 
     
     
@@ -197,7 +197,7 @@ type RollScreenProps = {
                 fetch(`https://geocode.maps.co/reverse?lat=${location.coords.latitude}&lon=${location.coords.longitude}`)
                 .then(response => response.json())
                 .then((data)=> {
-                  setCurrentAdress(`${data.address.road}, ${data.address.city}`)
+                  // setCurrentAdress(`${data.address.road}, ${data.address.city}`)
                   
                 })
                 .catch(error => {
@@ -286,7 +286,7 @@ type RollScreenProps = {
         <TouchableOpacity onPress={() => setFrameNumber(item)}>
           {/* <View style={{ paddingLeft: 20, paddingRight: 20, borderRadius: 16, opacity: isSelected ? 1 : 0.5, backgroundColor: '#101010' }}> */}
           <View style={isSelected ? { height: 80, width: 80, borderRadius: 100, backgroundColor: '#101010', justifyContent: 'center', alignItems: 'center' } : { height: 80, width: 60, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={isSelected ? { fontSize: 48, color: '#EEEEEE' } : { fontSize: 48, color: '#222222' }}>{item}</Text>
+            <Text style={isSelected ? { fontSize: 48, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', lineHeight: 90 } : { fontSize: 48, color: '#222222', fontFamily: 'Poppins-SemiBold', lineHeight: 90 }}>{item}</Text>
           </View>
         </TouchableOpacity>
       );
@@ -1028,7 +1028,7 @@ return (
           <View style={styles.centeredView}>
           <View style={styles.modalView}>
     
-          <Camera type={type} flashMode={flashMode} ref={(ref: any) => cameraRef = ref} style={styles.camera}>
+          <Camera ratio='18:9' type={type} flashMode={flashMode} ref={(ref: any) => cameraRef = ref} style={styles.camera}>
             <View style={styles.photoButtonsContainer}>
             <TouchableOpacity
                 onPress={() => setModalTakePictureVisible(false)}

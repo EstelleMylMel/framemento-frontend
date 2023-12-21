@@ -43,7 +43,7 @@ const MyMaterialScreen = ({navigation} : any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#050505',
     },
   header: {
     color: 'white',
