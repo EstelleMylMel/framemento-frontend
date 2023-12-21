@@ -269,7 +269,7 @@ const CommunityProfileScreen: React.FC<CommunityProfileScreenProps> = ({ navigat
 
             {/* Frames shared */}
             <ScrollView style={styles.scrollView}>
-                {framesShared.length > 0 && framesSharedList}
+                {framesShared.length > 0 && framesSharedList.reverse()}
                 {framesShared.length === 0 && <Text style={{ color: '#EEEEEE', textAlign: 'center', marginTop: 200 }}>Partagez votre première photo à la communauté.</Text>}
             </ScrollView>
 

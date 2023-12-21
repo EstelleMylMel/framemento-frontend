@@ -83,12 +83,13 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
                   console.log("fetch for frames shared went wrong")
               }
           })
-  }, []);
+  }, [user]);
 
   /// AFFICHER TOUTES LES FRAMES PARTAGÉES À L'ARRIVÉE SUR L'ÉCRAN ///
 
   const [ modalViewFrameVisible, setModalViewFrameVisible ] = useState<boolean>(false);
   const [ frameToDisplay, setFrameToDisplay ] = useState<FrameType | undefined>();
+  const [ username, setUsername ] = useState<string>("");
 
   function handlePressOnFrame(frame: FrameType): void {
       fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
@@ -99,6 +100,12 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
           .catch(error => {
             console.error('Erreur lors du fetch frame cliquée :', error);
           });
+
+      fetch(`${BACKEND_LOCAL_ADRESS}/users/find/${frame._id}`)
+      .then(response => response.json())
+      .then(data => {
+        setUsername(data.user.username)
+      })
       setModalViewFrameVisible(true)
   }
 
@@ -225,11 +232,12 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
                 <MaterialIcons name='search' size={30} color={selectedCategory ? "#FFDE67" : "#AAAAAA"} style={{ marginRight: 6 }}/> 
               </TouchableOpacity>
             </View>
+            <Text style={{marginTop: 10, fontSize: 14, color: '#EEEEEE', fontFamily: 'Poppins-Medium'}}>Les dernières photos de la communauté</Text>
           </View>
 
           {/* All frames shared */}
           <ScrollView style={styles.scrollView}>
-          { allFramesShared.length > 0  && allFramesSharedList }
+          { allFramesShared.length > 0  && allFramesSharedList.reverse().splice(0, 10) }
           </ScrollView>
 
           <View style={styles.centeredView}>
@@ -244,6 +252,19 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
                     <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
                         <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
+                        <View style={{ flexDirection: 'row', marginLeft: 15, alignItems: 'center' }}>
+                          <Text style={{ color: '#AAAAAA', fontFamily: 'Poppins-Light', paddingTop: 18 }}>Auteur </Text>
+                          <Text style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 57, paddingTop: 18 }}>{username}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', marginLeft: 15, marginBottom: 15, alignItems: 'center' }}>
+                          <Text style={{ color: '#AAAAAA', fontFamily: 'Poppins-Light', paddingTop: 18 }}>Catégories </Text>
+                          {/*<Text style={{ color: frameToDisplay?.categories ? (frameToDisplay?.categories.length > 1 ? '#EEEEEE' : '#050505') : ""}}>s</Text>*/}
+                          <View style={{ flexWrap: 'wrap'}}>
+                            {frameToDisplay?.categories?.map((category: string, i: number) => {
+                              return <Text key={i} style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 25 }}>{category}</Text>
+                            })}
+                          </View>
+                        </View>
                     
                     {/* numero photo / vitesse / ouverture */}
                     <View style={styles.fieldsGroup}>
@@ -337,7 +358,7 @@ const styles = StyleSheet.create({
   inspirationText: {
     fontSize: 16,
     color: '#AAAAAA',
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 10
   },
   searchInput: {

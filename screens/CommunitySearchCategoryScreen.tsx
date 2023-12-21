@@ -156,7 +156,7 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
         {/* All frames shared */}
         <ScrollView style={styles.scrollView}>
         {/* framesFromCategorySearchedList */}
-        { framesFromCategorySearched.length > 0 && framesFromCategorySearchedList }
+        { framesFromCategorySearched.length > 0 && framesFromCategorySearchedList.reverse() }
         { framesFromCategorySearched.length === 0 && <Text style={{ color: '#EEEEEE', textAlign: 'center', marginTop: 200 }}>Aucune photo partagée dans cette catégorie.</Text>}
         </ScrollView>
 
@@ -174,9 +174,18 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
                     <ScrollView style={styles.scrollViewModal}>
                     {/* Image de l'argentique */}
                         <Image source={{ uri: frameToDisplay?.argenticPhoto }} style={styles.argenticPhoto} />
-                        <View style={{ flexDirection: 'row', marginLeft: 15, marginBottom: 15, alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', marginLeft: 15, alignItems: 'center' }}>
                           <Text style={{ color: '#AAAAAA', fontFamily: 'Poppins-Light', paddingTop: 18 }}>Auteur </Text>
-                          <Text style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 25, paddingTop: 18 }}>{username}</Text>
+                          <Text style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 57, paddingTop: 18 }}>{username}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', marginLeft: 15, marginBottom: 15, alignItems: 'center' }}>
+                          <Text style={{ color: '#AAAAAA', fontFamily: 'Poppins-Light', paddingTop: 18 }}>Catégories </Text>
+                          {/*<Text style={{ color: frameToDisplay?.categories ? (frameToDisplay?.categories.length > 1 ? '#EEEEEE' : '#050505') : ""}}>s</Text>*/}
+                          <View style={{ flexWrap: 'wrap'}}>
+                            {frameToDisplay?.categories?.map((category: string, i: number) => {
+                              return <Text key={i} style={{ color: '#EEEEEE', fontFamily: 'Poppins-Light', marginLeft: 25 }}>{category}</Text>
+                            })}
+                          </View>
                         </View>
                     
                     {/* numero photo / vitesse / ouverture */}
