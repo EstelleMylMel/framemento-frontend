@@ -84,7 +84,7 @@ type RollScreenProps = {
 
     // const [latitude, setLatitude] = useState<number>(0);
     // const [longitude, setLongitude] = useState<number>(0);
-    const [ currentAdress, setCurrentAdress ] = useState<string>('21 rte Rétaud, Thénac');
+    const [ currentAdress, setCurrentAdress ] = useState<string>('');
 
     
     
@@ -197,7 +197,7 @@ type RollScreenProps = {
                 fetch(`https://geocode.maps.co/reverse?lat=${location.coords.latitude}&lon=${location.coords.longitude}`)
                 .then(response => response.json())
                 .then((data)=> {
-                  // setCurrentAdress(`${data.address.road}, ${data.address.city}`)
+                  setCurrentAdress(`${data.address.road}, ${data.address.city}`)
                   
                 })
                 .catch(error => {

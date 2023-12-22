@@ -147,7 +147,7 @@ export default function CommunitySearchUsernameScreen({ navigation, route }: { n
         {/* Header */}
         <View style={styles.topContainer}>
           <View style={styles.subTopContainer}>
-            <Image source={require("../assets/pprenaud.png")} style={styles.profilePicture} />
+            <Image source={require("../assets/image-profil.jpg")} style={styles.profilePicture} />
             <Text style={styles.profileText}>{route.params.searchText}</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.goBack()}>
