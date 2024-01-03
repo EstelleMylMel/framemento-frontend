@@ -38,22 +38,6 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ model, setModel ] = useState<string>('');
 
 
-  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER AU MONTAGE DU COMPOSANT - INUTILE CAR IMPORTER AU SIGNIN DEPUIS LA MISE EN PLACE DU STORE///
-//  useEffect(() => {
-//     fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
-//     .then(response => response.json())
-//     .then(data => {
-//       if (!data.result) {
-//         setNoRoll(true);
-//       }
-//       else {
-//         setNoRoll(false);
-//         dispatch(importRolls(data.rolls));
-//       }
-//     })
-//   }, []);
-
-
   /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
 
   function handlePressOnPlus() {
