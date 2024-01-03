@@ -39,8 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 12,
-    // borderColor: '#AAAAAA',
-    // borderWidth: 0.5,
+    
   },
   labelContainer: {
     flexDirection: 'row',

@@ -21,8 +21,6 @@ export default function CommunitySearchCategoryScreen({ navigation, route }: { n
 
   const [framesFromCategorySearched, setFramesFromCategorySearched] = useState<FrameType[]>([]);
 
-  // const navigation: any = useNavigation();
-
 
   /// GÉRER LE LIKE - UNLIKE ///
 

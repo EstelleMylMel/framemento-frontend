@@ -29,7 +29,7 @@ export const userSlice = createSlice({
  name: 'user',
  initialState,
  reducers: {
-    updateUser: (state: UserState, action: PayloadAction<UserStatePayloadAction>) => { // Je ne suis pas du tout sure que ce soit la bonne manière de typer.
+    updateUser: (state: UserState, action: PayloadAction<UserStatePayloadAction>) => {
       state.value = action.payload;
     },
     addRoll: (state: UserState, action: PayloadAction<RollType>) => {

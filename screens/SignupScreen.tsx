@@ -19,7 +19,7 @@ type SignupScreenProps = {
 
   export default function SignupScreen({ navigation }: SignupScreenProps) {
 
-    const dispatch: any = useDispatch(); //CORRIGER LE TYPE ANY
+    const dispatch: any = useDispatch();
 
     const [ email, setEmail ] = useState<string>('');
     const [ username, setUsername ] = useState<string>('');
@@ -33,8 +33,7 @@ type SignupScreenProps = {
         const pattern: RegExp = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/ // regex qui vérifie le format traditionnel d'une adresse email
         // Vérifier le bon format de l'adresse email content@content.content
         const emailFormatIsValid : boolean  = pattern.test(email);
-      
-        // Si c'est bon --> 
+       
         if ( emailFormatIsValid ) {
           
           //Enregistrement du profil dans la db
@@ -54,7 +53,7 @@ type SignupScreenProps = {
             }
             else  {
               console.log(data);
-              //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
+              //modale d'erreur pour dire à l'utilisateur que ce n'est pas bon ==> PAS TERMINE
             } 
           })
           .catch(error => {

@@ -18,7 +18,7 @@ type SigninScreenProps = {
 
   export default function SigninScreen({ navigation }: SigninScreenProps) {
 
-    const dispatch: any = useDispatch(); //CORRIGER LE TYPE
+    const dispatch: any = useDispatch();
 
     const [ email, setEmail ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
@@ -32,7 +32,6 @@ type SigninScreenProps = {
         // Vérifier le bon format de l'adresse email content@content.content
         const emailFormatIsValid : boolean  = pattern.test(email);
       
-        // Si c'est bon --> 
         if ( emailFormatIsValid ) {
           
           //Enregistrement du profil dans la db
@@ -52,7 +51,7 @@ type SigninScreenProps = {
             }
             else  {
               console.log(data);
-              //si le fetch n'est pas bon --> modale d'erreur pour dire à l'utilisateur que ce n'est pas bon.
+              //modale d'erreur pour dire à l'utilisateur que ce n'est pas bon ==> PAS TERMINE
             } 
           })
           .catch(error => {

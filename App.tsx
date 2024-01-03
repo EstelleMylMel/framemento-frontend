@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity } from 'react-na
 import { useState } from 'react';
 
 /// REDUX PERSIST ///
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+// import { persistStore, persistReducer } from 'redux-persist';
+// import { PersistGate } from 'redux-persist/integration/react';
+// import storage from 'redux-persist/lib/storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import user from './reducers/user'; 
@@ -15,8 +15,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useFonts } from 'expo-font';
 
 
-
-/// PERSITOR A FAIRE A LA FIN DU PROJET ? ///
+/// PERSITOR A FAIRE A LA FIN DU PROJET => PAS TERMINE ///
 //const reducers = combineReducers({ user });
 //const persistConfig = { key: 'framemento', storage: AsyncStorage};
 
@@ -38,7 +37,7 @@ import { NavigationContainer, NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import 'react-native-gesture-handler'; // https://reactnavigation.org/docs/drawer-navigator#installation
+import 'react-native-gesture-handler';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 /// ECRANS ///
@@ -79,17 +78,13 @@ export type RootStackParamList = {
 
 
 const MyRollsStackNavigation = () => {
-  /// navigation 
   return (
     <MyRollsStack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Ecran qui présente toutes les pellicules */}
+      
       <MyRollsStack.Screen name="Rolls" component={RollsScreen}/> 
-      {/* Ecran ou MODALE ? ajouter / modifier une pellicule  */}
-      {/* <MyRollsStack.Screen name="RollEdit" component={RollEditScreen}/> */}
-      {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+      
       <MyRollsStack.Screen name="Roll" component={RollScreen}/>
-      {/* Ecran ou MODALE ? ajouter / modifier / consulter une photo  */}
-      {/* Ecran qui présente toutes les photos de la pellicule sélectionnée */}
+      
     </MyRollsStack.Navigator>
   )
 }
@@ -110,7 +105,6 @@ type TopTabNavigationProps = {
 };
 
 const CommunityTopTabNavigation: React.FC<TopTabNavigationProps> = ({navigation}) => {
-  /// navigation 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -132,12 +126,6 @@ const CommunityTopTabNavigation: React.FC<TopTabNavigationProps> = ({navigation}
           component={CommunitySearchStackNavigation}
           options={{ tabBarLabel: 'Rechercher' }}
         />
-        {/* <CommunityTopTab.Screen
-          name="Search"
-          component={CommunitySearchScreen}
-          initialParams={{ tag: '' }}
-          options={{ tabBarLabel: 'Rechercher' }} // Options spécifiques à l'onglet
-        /> */}
       </CommunityTopTab.Navigator>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -157,7 +145,7 @@ const TabNavigator = () => {
         }
  
         const iconColor = focused ? '#EEEEEE' : '#777777';
-        return <MaterialIcons name={iconName} size={24} color={iconColor} style={{ marginBottom: -10 }}/>; // ATTENTION CHANGER LES ICONS
+        return <MaterialIcons name={iconName} size={24} color={iconColor} style={{ marginBottom: -10 }}/>;
       },
       tabBarActiveTintColor: '#EEEEEE',
       tabBarInactiveTintColor: '#777777',
@@ -168,13 +156,8 @@ const TabNavigator = () => {
         shadowOpacity: 0.3,
         shadowRadius: 20,
         shadowColor: '#000000',
-        // borderRadius: 16, 
-        // paddingHorizontal: 8, 
         position: 'absolute', 
         zIndex: 0, 
-        // bottom: 10, 
-        // left: 10,
-        // right: 10,
         justifyContent: 'space-around',
         alignItems: 'center',
         height: 80,
@@ -204,7 +187,6 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Signin" screenOptions={{
       headerShown: false,
-      //header: (props) => <Header {...props} />,
       drawerActiveTintColor: '#EEEEEE',
       drawerActiveBackgroundColor: '#050505',
       drawerInactiveTintColor: '#EEEEEE',
@@ -274,33 +256,12 @@ const DrawerNavigator = () => {
           
           <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
           <AppStack.Screen name="MyMaterial" component={MyMaterialScreen} />
-          {/* ... d'autres écrans */}
+          
         </AppStack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 }
-
-// export default function App() {
-//   return (
-//     <Provider store={store}>
-//       {/* <PersistGate persistor={persistor}> */}
-//           <NavigationContainer>
-//             <AppStack.Navigator screenOptions={{ headerShown: false }}>
-//               <AppStack.Screen name="Welcome" component={WelcomeScreen} />
-//               <AppStack.Screen name="Signup" component={SignupScreen} />
-//               <AppStack.Screen name="Signin" component={SigninScreen} />
-//               {/* POUR DEV */}
-//               <AppStack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-//               <AppStack.Screen name="Rolls" component={RollsScreen} /> 
-//               <AppStack.Screen name="Roll" component={RollScreen} />
-//               <AppStack.Screen name="TabNavigator" component={TabNavigator} />
-//             </AppStack.Navigator>
-//       </NavigationContainer>
-//       {/* </PersistGate> */}
-//     </Provider>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {

@@ -30,6 +30,7 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
   const [searchText, setSearchText] = useState<string>("");
   const [allFramesShared, setAllFramesShared] = useState<FrameType[]>([]);
 
+  /// === FONCTIONNALITEES LIKE/UNLIKE NON INTEGREE PAR MANQUE DE TEMPS === ///
 
   /// GÉRER LE LIKE - UNLIKE ///
 
@@ -191,7 +192,6 @@ const CommunitySearchScreen = ({ navigation }: {navigation: any}) => {
 
           {/* Header */}
           <View style={styles.topContainer}>
-            {/* <Text style={styles.inspirationText}>En quête d'inspiration ?</Text> */}
             <View style={styles.topContainerSub1}>
               <TextInput 
                 style={styles.searchInput} 

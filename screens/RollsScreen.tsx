@@ -38,21 +38,20 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   const [ model, setModel ] = useState<string>('');
 
 
-  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER AU MONTAGE DU COMPOSANT - INUTILE CAR IMPORTER AU SIGNIN///
-  // console.log(user.rolls)
- useEffect(() => {
-    fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
-    .then(response => response.json())
-    .then(data => {
-      if (!data.result) {
-        setNoRoll(true);
-      }
-      else {
-        setNoRoll(false);
-        dispatch(importRolls(data.rolls));
-      }
-    })
-  }, []);
+  /// STOCKER DANS LE STORE L'ENSEMBLE DES PELLICULES DU USER AU MONTAGE DU COMPOSANT - INUTILE CAR IMPORTER AU SIGNIN DEPUIS LA MISE EN PLACE DU STORE///
+//  useEffect(() => {
+//     fetch(`${BACKEND_LOCAL_ADRESS}/users/${user.username}`)
+//     .then(response => response.json())
+//     .then(data => {
+//       if (!data.result) {
+//         setNoRoll(true);
+//       }
+//       else {
+//         setNoRoll(false);
+//         dispatch(importRolls(data.rolls));
+//       }
+//     })
+//   }, []);
 
 
   /// OUVRIR ET FERMER LA MODALE D'AJOUT DE PELLICULE ///
@@ -66,7 +65,7 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
   };
 
 
-  /// AJOUTER UNE PELLICULE - BDD ROLLS -> BDD USERPROFILE -> STORE -> ECRAN ///
+  /// AJOUTER UNE PELLICULE ///
 
   function handlePressOnSaveRoll() {
     fetch(`${BACKEND_LOCAL_ADRESS}/rolls`, {
@@ -102,8 +101,6 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
     navigation.navigate('Roll', { roll })
   }
 
-  console.log('user rolls', user.rolls)
-
   const rollsList: JSX.Element[] = user.rolls?.map((data: RollType, i: number) => {
     return (
       <View key={i} style={styles.rollContainer}>
@@ -117,16 +114,9 @@ export default function RollsScreen({ navigation }: RollsScreenProps) {
             </View>
           </View>
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => handlePressOnTrash(data._id as string)}>
-          <FontAwesome name='trash' />
-        </TouchableOpacity> */}
       </View>
     )
   })
-
-  console.log('rollList : ', user.rolls);
-
-  console.log('user : ', user)
 
 
   return (
@@ -313,11 +303,10 @@ const styles = StyleSheet.create({
       shadowColor: "#000",
       shadowOffset: {
         width: 0,
-        height: 4, // La hauteur de l'ombre
+        height: 4,
       },
-      shadowOpacity: 0.30, // L'opacité de l'ombre
-      shadowRadius: 4.65, // Le rayon de flou de l'ombre
-      // right: 160,
+      shadowOpacity: 0.30,
+      shadowRadius: 4.65,
     },
     centeredView: {
       flex: 1,
@@ -424,7 +413,5 @@ const styles = StyleSheet.create({
       lineHeight: 24,
       fontFamily: 'Poppins-Light'
     },
-    saveButtonContainer: {
-    //   width: '100%',
-    }
+    saveButtonContainer: {}
 });

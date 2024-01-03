@@ -47,7 +47,6 @@ type RollScreenProps = {
     route: RouteProp<RootStackParamList, 'Roll'>
   };
 
-//  export default function RollScreen({ navigation, route: { params: { roll }} }: RollScreenProps) {
   const RollScreen: React.FC<RollScreenProps> = ({ navigation, route }) => {
     
     const user = useSelector((state: { user: UserState }) => state.user.value);
@@ -81,14 +80,10 @@ type RollScreenProps = {
     const [ previousFrame, setPreviousFrame ] = useState<FrameType | undefined>(framesData && framesData.length > 0 ? framesData[framesData?.length - 1] :  undefined);
     const [ rollNotFull, setRollNotFull ] = useState<boolean>(true);
 
-
-    // const [latitude, setLatitude] = useState<number>(0);
-    // const [longitude, setLongitude] = useState<number>(0);
     const [ currentAdress, setCurrentAdress ] = useState<string>('');
 
     
-    
-    /// INPUTS VARIABLES & FONCTIONS ///
+    /// INPUTS ///
 
 
     /// Gérer l'incrémentation irrégulière du slider speed
@@ -106,18 +101,11 @@ type RollScreenProps = {
 
     const [lastFrameApertureValue, setLastFrameApertureValue ] = useState<number>(0);
 
-    // const [location, setLocation] = useState({latitude: 0,
-    //   longitude: 0,
-    //   adress: currentAdress
-    // });
 
     const handleChangeLocation = (text: string) => {  
       
       setCurrentAdress(text);
     }
-
-    //   setLocation(customLocation);
-    // };
 
     const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -141,15 +129,7 @@ type RollScreenProps = {
 
     const [ urlPhotoFromPhone, setUrlPhotoFromPhone ] = useState<string>('');
 
-    /// DEBUG ///
-
-    // useEffect(()=> {
-    //   console.log('frames Data: ', framesData);
-    // },[framesData])
-
-    //////////////
-
-/// RECUPERER LE CONTENU DE LA PELLICULE ///
+    /// RECUPERER LE CONTENU DE LA PELLICULE ///
 
     useEffect(()=>{
 
@@ -164,7 +144,6 @@ type RollScreenProps = {
                 setFramesData(rollData.frames)
                 setPreviousFrame(rollData.frames ? rollData.frames[rollData.frames.length -1] : {})
 
-              // fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera}`)  //${rollData.roll.camera} 
               fetch(`${BACKEND_LOCAL_ADRESS}/material/cameras/${rollData.roll.camera._id}`)
               .then(response => response.json())
               .then(cameraData => {
@@ -185,7 +164,7 @@ type RollScreenProps = {
 
     function handlePressOnPlus(): void {
 
-        /// geoloc & date actuelles ///
+        /// geoloc & date actuelle ///
         (async () => {
           const { status } = await Location.requestForegroundPermissionsAsync();
 
@@ -235,7 +214,7 @@ type RollScreenProps = {
               setFrameSpeed(data.frame.shutterSpeed);
 
               
-              /// INITIALISER LES SLIDERS A LA BONNE POSITION : EN COURS //
+              /// INITIALISER LES SLIDERS A LA BONNE POSITION //
 
               const cutString = data.frame.shutterSpeed.split('/');
 
@@ -281,10 +260,9 @@ type RollScreenProps = {
     /* GERER LE SCROLL */
   
     const renderItem = ({ item }: {item: any}) => {
-      const isSelected = item === frameNumber // || item === numeros[0];
+      const isSelected = item === frameNumber
       return (
         <TouchableOpacity onPress={() => setFrameNumber(item)}>
-          {/* <View style={{ paddingLeft: 20, paddingRight: 20, borderRadius: 16, opacity: isSelected ? 1 : 0.5, backgroundColor: '#101010' }}> */}
           <View style={isSelected ? { height: 80, width: 80, borderRadius: 100, backgroundColor: '#101010', justifyContent: 'center', alignItems: 'center' } : { height: 80, width: 60, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={isSelected ? { fontSize: 48, color: '#EEEEEE', fontFamily: 'Poppins-SemiBold', lineHeight: 90 } : { fontSize: 48, color: '#222222', fontFamily: 'Poppins-SemiBold', lineHeight: 90 }}>{item}</Text>
           </View>
@@ -292,7 +270,7 @@ type RollScreenProps = {
       );
     };
 
-    /* CENTRER LA LISTE SUR LE NUMERO SELECTIONNE */
+    /* CENTRER LA LISTE SUR LE NUMERO SELECTIONNE ==> PAS TERMINE */
 
     const flatListRef = useRef<any>(null);
 
@@ -308,6 +286,7 @@ type RollScreenProps = {
       scrollToSelectedItem(frameNumber);
     }, [frameNumber]);*/
 
+    
     /// PRISE DE PHOTO AVEC SON TELEPHONE ///
 
     useEffect(()=> {
@@ -339,11 +318,10 @@ type RollScreenProps = {
 
       formData.append('photoFromFront', {
         uri: photo.uri,
-        name: 'photo.jpg', // CHANGER LE NOM DE LA PHOTO
+        name: 'photo.jpg',
         type: 'image/jpeg',
         });
 
-        /// ATTENTION AU FETCH FINAL POUR ENREGISTRER FORM DATA + JSON
         fetch(`${BACKEND_LOCAL_ADRESS}/frames/upload`, {
         method: 'POST',
         body: formData,
@@ -363,7 +341,7 @@ type RollScreenProps = {
 
     }
 
-    // SAUVEGARDER LA PHOTO EN DB 1 CLOUDINARY ///
+    // SAUVEGARDER LA PHOTO EN DB & CLOUDINARY ///
 
     function handlePressOnSaveFrame(): void {
 
@@ -408,8 +386,6 @@ type RollScreenProps = {
     // AFFICHER LE DETAIL D'UNE FRAME ///
 
     function hundlePressOnFrame(frame: FrameType): void {
-      
-      // frame.title = frame.title? frame.title : frame.location;
 
       fetch(`${BACKEND_LOCAL_ADRESS}/frames/${frame._id}`)
       .then(response => response.json())
@@ -425,8 +401,6 @@ type RollScreenProps = {
         console.error('Erreur lors du get lens :', error);
       });
     }
-
-    // création des éléments JSX
 
     const frames = framesData?.map((frame: FrameType, i: number)=> {
             
@@ -473,7 +447,7 @@ type RollScreenProps = {
 
         formData.append('photoFromFront', {
           uri: image,
-          name: 'photo.jpg', // CHANGER LE NOM DE LA PHOTO
+          name: 'photo.jpg',
           type: 'image/jpeg',
         });
         setModalAddFrameVisible(false);
@@ -495,7 +469,6 @@ type RollScreenProps = {
           .then((response) => response.json())
           .then((data) => {
             setIsLoading(false)
-            // setModalAddFrameVisible(false);
 
           })
           .catch(error => {
@@ -514,7 +487,6 @@ type RollScreenProps = {
 
 
     const pickImage = async () => {
-      // No permissions request is necessary for launching the image library
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -574,7 +546,7 @@ type RollScreenProps = {
 
     function handlePressOnModifyFrameButton() {
 
-      // TO DO : GERER LA MODIFICATION, DONC LE PASSAGE EN MODE EDITION
+      // TO DO : GERER LA MODIFICATION, DONC LE PASSAGE EN MODE EDITION ==> PAS TERMINE
 
     }
 
@@ -633,13 +605,9 @@ type RollScreenProps = {
             console.error('Erreur lors du put frameToDisplay :', error);
           });
 
-
-          // et l'icone passe en jaune
-        } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT */}
+        } else {/* message d'erreur pour informer qu'il faut une photo argentique  ALERT ==> PAS TERMINE */}
       }
     }
-
-    console.log("user from store: ", user)
 
     function handlePressOnCloseButton(): void {
 
@@ -736,7 +704,7 @@ return (
                           <Slider
                             style={{width: '100%', height: 40}}
                             minimumValue={0}
-                            maximumValue={apertures.length -1 } // dernier index du tableau de valeurs shutterSpeeds
+                            maximumValue={apertures.length -1 } // dernier index du tableau de valeurs apertureSpeeds
                             step={1}
                             value={lastFrameApertureValue}
                             minimumTrackTintColor="#FFDE67"
@@ -911,25 +879,14 @@ return (
 
         <View style={styles.centeredView}>
           <Modal visible={modalViewFrameVisible} animationType="fade" transparent>
-            {/* <SafeAreaView> */}
               <View style={styles.modalView}>
 
 
               {/* Modal Header */}
               
-              {/* <View style={styles.modalHeader}> */}
                 
                 {frameToDisplay?.shared && <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>}
                 {!frameToDisplay?.shared && <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>}
-                  {/*frameToDisplay?.shared ?
-
-                  
-                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>
-                  :
-                  <Header navigation={navigation} iconLeft='close' onPressLeftButton={() => handlePressOnCloseButton()} title={frameToDisplay? frameToDisplay.title : ''} iconRight='visibility-off' onPressRightButton={()=> handlePressOnShareButton()} marginTop={20}/>
-                */}
-          
-              {/* </View> */}
         
               {/* Modal Content */}
 
@@ -937,7 +894,7 @@ return (
 
                 <ScrollView style={styles.scrollView}>
 
-                  {/* Image? de l'argentique */}
+                  {/* Image de l'argentique */}
 
                   <TouchableOpacity onPress={pickImage} style={styles.addPhotoContainer}>
                       {frameToDisplay?.argenticPhoto && <Image source={{ uri: frameToDisplay.argenticPhoto }} style={styles.photo} resizeMode='cover'/>}
@@ -972,10 +929,7 @@ return (
                     <CustomField label='Lieu' icon='location-on' value={frameToDisplay?.location}></CustomField>
 
                     {/* date */}
-                    <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}
-                    // {frameToDisplay?.date? `${frameToDisplay.date.getDate()}/${frameToDisplay.date.getMonth() + 1}/${frameToDisplay.date.getFullYear()}` 
-                    //                                                   : ''}
-                    />
+                    <CustomField label='Date' icon='date-range' value={transformDate(frameToDisplay?.date)}/>
 
                     {/* meteo */}
                     <CustomField label='Weather' icon='cloud' value={frameToDisplay?.weather}></CustomField>
@@ -1010,15 +964,14 @@ return (
                 <View style={styles.modifyButtonContainer}>
                 <CustomButton title='MODIFIER' type='primary' onPress={()=> handlePressOnModifyFrameButton()}></CustomButton>
                 </View>
-                {/* bouton supprimer */}
 
+                {/* bouton supprimer */}
                 <TouchableOpacity onPress={handlePressOnDeleteFrameButton} style={styles.trashButtonContainer}>
                   <MaterialIcons name="delete" size={40} color="#FFDE67"/>
                 </TouchableOpacity>
               
               </View>
               </View>
-            {/* </SafeAreaView> */}
           </Modal>
         </View>
 
@@ -1200,7 +1153,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
-    //marginTop: 1200
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1241,13 +1193,13 @@ const styles = StyleSheet.create({
   },
   numSelector: {
     justifyContent: 'center',
-     alignItems: 'center', /*backgroundColor: 'green',*/
+     alignItems: 'center',
      width: '100%',
      height: 88,
   },
   flatList: {
-    height: 100, /*backgroundColor: 'red',*/
-    width: 300, /*marginLeft: -150*/
+    height: 100,
+    width: 300,
   },
   paramsText:{
     color: '#EEEEEE',
@@ -1333,7 +1285,6 @@ const styles = StyleSheet.create({
     color: '#EEEEEE',
     fontSize: 14,
     fontFamily: 'Poppins-Light',
-    // width: '70%',
   },
   addPhotoContainer: {
     borderRadius: 8,

@@ -61,8 +61,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ visible, onClose, options }) 
       },
       menuItem: {
         paddingVertical: 30,
-        // borderBottomWidth: 1,
-        // borderBottomColor: '#ddd',
       },
       text: {
         textAlign: 'center',

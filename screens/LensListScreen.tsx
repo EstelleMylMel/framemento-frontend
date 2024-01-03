@@ -134,7 +134,6 @@ function LensListScreen({ navigation }: LensListScreenProps) {
     setModalVisible(true);
   };
 
-  // Rendu du composant
   return (
     <View style={styles.lensContainer}>
       <ScrollView style={styles.scrollView}>
@@ -222,7 +221,6 @@ function LensListScreen({ navigation }: LensListScreenProps) {
 
 export default LensListScreen;
 
-// Styles du composant
 const styles = StyleSheet.create({
   lensContainer: {
     flex: 1,
@@ -278,24 +276,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#050505',
   },
-  // centeredView: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   width: '100%',
-  //   height: '100%',
-  // },
-  // modalView: {
-  //   flex: 1,
-  //   padding: 32,
-  //   backgroundColor: '#000000',
-  //   flexDirection: 'column',
-  //   justifyContent: 'flex-start',
-  //   alignItems: 'center',
-  //   gap: 32,
-  //   width: '100%',
-  //   height: '100%',
-  // },
   input: {
     backgroundColor: '#101010',
     width: 200,
@@ -330,8 +310,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',  // Ajout de cette ligne pour centrer horizontalement
+    alignSelf: 'center',  
     position: 'absolute',
-    bottom: 50,  // Ajustement pour placer le bouton à 50px du bas
+    bottom: 50, 
   },
 });

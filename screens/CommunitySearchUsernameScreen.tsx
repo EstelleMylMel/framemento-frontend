@@ -21,8 +21,6 @@ export default function CommunitySearchUsernameScreen({ navigation, route }: { n
 
   const [framesFromUserSearched, setFramesFromUserSearched] = useState<FrameType[]>([]);
 
-  // const navigation: any = useNavigation();
-
 
   /// GÉRER LE LIKE - UNLIKE ///
 
@@ -259,7 +257,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
-    // alignItems: 'flex-end'
   },
   topContainerProfile: {
     flexDirection: 'row',
@@ -283,7 +280,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#EEEEEE',
     fontFamily: 'Poppins-SemiBold',
-    // marginBottom: -8
   },
   noFrameText: {
     color: '#EEEEEE'

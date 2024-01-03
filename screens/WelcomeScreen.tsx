@@ -23,10 +23,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
     const handlePressSignin = () => {
       navigation.navigate('Signin')
     }
-    /// Redirection sur la page rolls si l'utilisateur est déjà connecté
-    // useEffect(()=> {
-    //   user.username !== '' ? navigation.navigate('Rolls') : undefined;
-    // },[]);
+
 
     return (
         <View style={styles.container}>

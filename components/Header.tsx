@@ -7,7 +7,7 @@ import { DrawerActions, useNavigation } from '@react-navigation/native';
 
 
 type HeaderProps = {
-  navigation?: any,// ou DrawerNavigationProp selon votre type de navigation
+  navigation?: any,
   iconLeft: string,
   onPressLeftButton?: any,
   title: string,
@@ -31,7 +31,7 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
 
   return (
     <SafeAreaView>
-    {/* <View style={{ ...styles.container, top }}> */}
+    
       <View style={{...styles.container, marginTop}}>
 
       {/* menu drawer */}
@@ -54,17 +54,6 @@ export default function Header({ navigation, iconLeft, onPressLeftButton, title,
           <Text style={styles.title} >{title}</Text>
         </>)
       }
-
-      {/* close and cancel input */}
-      {/* {onPressLeftButton &&
-      iconLeft === 'close' && (
-        <>
-        <TouchableOpacity onPress={onPressLeftButton} style={styles.button}>
-          <MaterialIcons name='close' size={24} color="#EEEEEE" />
-        </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
-        </>)
-      } */}
 
       {/* close */}
       {iconLeft === 'close' && (
