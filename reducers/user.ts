@@ -22,7 +22,7 @@ export type UserStatePayloadAction = {
    };
 
 const initialState: UserState = {
- value: { _id: '657cb4ed44e8fef9bfdd5a32', username: 'a4' , token: 'Q4ClOAPx4RburGyrtTttQachqLSqNfUj', rolls: [], framesShared: []},
+ value: { _id: '', username: '' , token: '', rolls: [], framesShared: []},
 };
 
 export const userSlice = createSlice({
